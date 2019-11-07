@@ -111,7 +111,6 @@ class Room2DEnergyProperties(object):
                     'and then assigning it to this Room2D.'.format(
                         self.host.name, value._parent.name))
             value._parent = self.host
-            value.lock()   # lock because we don't duplicate the system
         self._hvac = value
 
     @property
@@ -192,8 +191,9 @@ class Room2DEnergyProperties(object):
                 If None, the properties will be duplicated with the same host.
         """
         _host = new_host or self._host
+        hvac = self.hvac.duplicate() if self.is_conditioned else None
         return Room2DEnergyProperties(_host, self._program_type,
-                                      self._construction_set, self.hvac)
+                                      self._construction_set, hvac)
 
     def ToString(self):
         return self.__repr__()
