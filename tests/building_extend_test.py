@@ -2,7 +2,7 @@
 from dragonfly.building import Building
 from dragonfly.story import Story
 from dragonfly.room2d import Room2D
-from dragonfly.glazingparameter import SimpleGlazingRatio
+from dragonfly.windowparameter import SimpleWindowRatio
 
 from dragonfly_energy.properties.building import BuildingEnergyProperties
 
@@ -29,7 +29,7 @@ def test_building_init():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
@@ -50,7 +50,7 @@ def test_set_construction_set():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
@@ -88,7 +88,7 @@ def test_set_all_room_2d_program_type():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
@@ -117,7 +117,7 @@ def test_set_all_room_2d_hvac():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
@@ -149,7 +149,7 @@ def test_duplicate():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building_original = Building('Office Building', [story])
     building_dup_1 = building_original.duplicate()
@@ -187,7 +187,7 @@ def test_to_dict():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
@@ -216,7 +216,7 @@ def test_from_dict():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     building = Building('Office Building', [story])
 
