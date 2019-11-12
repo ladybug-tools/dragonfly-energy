@@ -1,7 +1,7 @@
 """Tests the features that dragonfly_energy adds to dragonfly_core Story."""
 from dragonfly.story import Story
 from dragonfly.room2d import Room2D
-from dragonfly.glazingparameter import SimpleGlazingRatio
+from dragonfly.windowparameter import SimpleWindowRatio
 
 from dragonfly_energy.properties.story import StoryEnergyProperties
 
@@ -28,7 +28,7 @@ def test_energy_properties():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     assert hasattr(story.properties, 'energy')
     assert isinstance(story.properties.energy, StoryEnergyProperties)
@@ -47,7 +47,7 @@ def test_set_construction_set():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     concrete20 = EnergyMaterial('20cm Concrete', 0.2, 2.31, 2322, 832,
@@ -83,7 +83,7 @@ def test_set_all_room_2d_program_type():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     lab_program = office_program.duplicate()
     lab_program.name = 'Bio Laboratory'
@@ -110,7 +110,7 @@ def test_set_all_room_2d_hvac():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     sensible = 0.8
     latent = 0.7
@@ -140,7 +140,7 @@ def test_duplicate():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story_original = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story_original.solve_room_2d_adjacency(0.01)
-    story_original.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story_original.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story_dup_1 = story_original.duplicate()
 
     assert story_original.properties.energy.host is story_original
@@ -176,7 +176,7 @@ def test_to_dict():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     sd = story.to_dict()
     assert 'properties' in sd
@@ -203,7 +203,7 @@ def test_from_dict():
     room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
     story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
-    story.set_outdoor_glazing_parameters(SimpleGlazingRatio(0.4))
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     story.properties.energy.construction_set = mass_set
