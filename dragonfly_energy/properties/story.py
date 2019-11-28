@@ -132,6 +132,19 @@ class StoryEnergyProperties(object):
 
         return new_prop
 
+    def apply_properties_from_dict(self, abridged_data, construction_sets):
+        """Apply properties from a StoryEnergyPropertiesAbridged dictionary.
+
+        Args:
+            abridged_data: A StoryEnergyPropertiesAbridged dictionary (typically
+                coming from a Model).
+            construction_sets: A dictionary of ConstructionSets with names of the sets
+                as keys, which will be used to re-assign construction_sets.
+        """
+        if 'construction_set' in abridged_data and \
+                abridged_data['construction_set'] is not None:
+            self.construction_set = construction_sets[abridged_data['construction_set']]
+
     def to_dict(self, abridged=False):
         """Return Story energy properties as a dictionary.
 

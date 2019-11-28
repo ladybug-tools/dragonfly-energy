@@ -16,6 +16,8 @@ from honeybee_energy.lib.programtypes import office_program
 from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.face import Face3D
 
+import json
+
 
 def test_building_init():
     """Test the initalization of Building objects and basic properties."""
@@ -77,7 +79,7 @@ def test_set_construction_set():
 
 
 def test_set_all_room_2d_program_type():
-    """Test the set_all_room_2d_program_type method on a Story."""
+    """Test the set_all_room_2d_program_type method on a Building."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
@@ -106,7 +108,7 @@ def test_set_all_room_2d_program_type():
 
 
 def test_set_all_room_2d_hvac():
-    """Test the set_all_room_2d_hvac method on a Story."""
+    """Test the set_all_room_2d_hvac method on a Building."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
@@ -137,7 +139,7 @@ def test_set_all_room_2d_hvac():
 
 
 def test_duplicate():
-    """Test what happens to energy properties when duplicating a Room2D."""
+    """Test what happens to energy properties when duplicating a Building."""
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
@@ -165,17 +167,17 @@ def test_duplicate():
     assert building_original.properties.energy.construction_set != \
         building_dup_1.properties.energy.construction_set
 
-    room_dup_2 = building_dup_1.duplicate()
+    building_dup_2 = building_dup_1.duplicate()
 
     assert building_dup_1.properties.energy.construction_set == \
-        room_dup_2.properties.energy.construction_set
-    room_dup_2.properties.energy.construction_set = None
+        building_dup_2.properties.energy.construction_set
+    building_dup_2.properties.energy.construction_set = None
     assert building_dup_1.properties.energy.construction_set != \
-        room_dup_2.properties.energy.construction_set
+        building_dup_2.properties.energy.construction_set
 
 
 def test_to_dict():
-    """Test the Story to_dict method with energy properties."""
+    """Test the Building to_dict method with energy properties."""
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
@@ -228,3 +230,40 @@ def test_from_dict():
     assert new_bldg.properties.energy.construction_set.name == \
         'Thermal Mass Construction Set'
     assert new_bldg.to_dict() == bd
+
+
+def test_to_dict_revit():
+    """Test the to_dict method in a way that mimics how the export from Revit happens."""
+    pts_1 = (Point3D(0, 0, 0), Point3D(0, 10, 0), Point3D(10, 10, 0), Point3D(10, 0, 0))
+    pts_2 = (Point3D(10, 0, 0), Point3D(10, 10, 0), Point3D(20, 10, 0), Point3D(20, 0, 0))
+    pts_3 = (Point3D(0, 10, 0), Point3D(0, 20, 0), Point3D(10, 20, 0), Point3D(10, 10, 0))
+    pts_4 = (Point3D(10, 10, 0), Point3D(10, 20, 0), Point3D(20, 20, 0), Point3D(20, 10, 0))
+    pts_5 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
+    pts_6 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
+    pts_7 = (Point3D(0, 0, 6), Point3D(0, 10, 6), Point3D(10, 10, 6), Point3D(10, 0, 6))
+    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
+    room2d_5 = Room2D('Office 5', Face3D(pts_5), 3)
+    room2d_6 = Room2D('Office 6', Face3D(pts_6), 3)
+    room2d_7 = Room2D('Office 7', Face3D(pts_7), 3)
+    story_1 = Story('Office Floor 1', [room2d_1, room2d_2, room2d_3, room2d_4])
+    story_2 = Story('Office Floor 2', [room2d_5, room2d_6])
+    story_3 = Story('Office Floor 3', [room2d_7])
+    story_1.solve_room_2d_adjacency(0.01)
+    story_2.solve_room_2d_adjacency(0.01)
+    story_1.set_outdoor_window_parameters(SimpleWindowRatio(0.3))
+    story_2.set_outdoor_window_parameters(SimpleWindowRatio(0.35))
+    story_3.set_outdoor_window_parameters(SimpleWindowRatio(0.6))
+    building = Building('Office Building', [story_1, story_2, story_3])
+    building.auto_assign_top_bottom_floors()
+
+    building.to_dict()
+    """
+    f_dir = 'C:/Users/chris/Ladybug Tools Google Drive/laybug_tools_llc/basecamp/' \
+        'pollination-revit/schema-samples'
+    dest_file = f_dir + '/3_building_schema_sample.json'
+    with open(dest_file, 'w') as fp:
+        json.dump(building.to_dict(True), fp, indent=4)
+    """
