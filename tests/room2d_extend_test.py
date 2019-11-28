@@ -23,6 +23,8 @@ from ladybug_geometry.geometry3d.face import Face3D
 
 from ladybug.dt import Time
 
+import json
+
 
 def test_energy_properties():
     """Test the existence of the Room2D energy properties."""
@@ -188,8 +190,11 @@ def test_to_dict():
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room = Room2D('Square Shoebox', Face3D(pts), 3)
-    room.set_outdoor_window_parameters(ashrae_base)
+    overhang = Overhang(1)
+    boundarycs = (bcs.outdoors, bcs.ground, bcs.outdoors, bcs.ground)
+    window = (ashrae_base, None, ashrae_base, None)
+    shading = (overhang, None, None, None)
+    room = Room2D('Shoe Box Zone', Face3D(pts), 3, boundarycs, window, shading)
 
     rd = room.to_dict()
     assert 'properties' in rd
@@ -204,8 +209,18 @@ def test_to_dict():
         rd['properties']['energy']['hvac'] is None
 
     room.properties.energy.construction_set = mass_set
+    room.properties.energy.program_type = office_program
     rd = room.to_dict()
     assert rd['properties']['energy']['construction_set'] is not None
+    assert rd['properties']['energy']['program_type'] is not None
+
+    """
+    f_dir = 'C:/Users/chris/Ladybug Tools Google Drive/laybug_tools_llc/basecamp/' \
+        'pollination-revit/schema-samples'
+    dest_file = f_dir + '/1_room2d_schema_sample.json'
+    with open(dest_file, 'w') as fp:
+        json.dump(room.to_dict(True), fp, indent=4)
+    """
 
 
 def test_from_dict():

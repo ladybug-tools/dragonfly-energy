@@ -143,6 +143,26 @@ class Room2DEnergyProperties(object):
 
         return new_prop
 
+    def apply_properties_from_dict(self, abridged_data, construction_sets,
+                                   program_types):
+        """Apply properties from a Room2DEnergyPropertiesAbridged dictionary.
+
+        Args:
+            abridged_data: A Room2DEnergyPropertiesAbridged dictionary (typically
+                coming from a Model).
+            construction_sets: A dictionary of ConstructionSets with names of the sets
+                as keys, which will be used to re-assign construction_sets.
+            program_types: A dictionary of ProgramTypes with names of the types ask
+                keys, which will be used to re-assign program_types.
+        """
+        if 'construction_set' in abridged_data and \
+                abridged_data['construction_set'] is not None:
+            self.construction_set = construction_sets[abridged_data['construction_set']]
+        if 'program_type' in abridged_data and abridged_data['program_type'] is not None:
+            self.program_type = program_types[abridged_data['program_type']]
+        if 'hvac' in abridged_data and abridged_data['hvac'] is not None:
+            self.hvac = IdealAirSystem.from_dict(abridged_data['hvac'])
+
     def to_dict(self, abridged=False):
         """Return Room2D energy properties as a dictionary.
 
@@ -178,7 +198,7 @@ class Room2DEnergyProperties(object):
         Args:
             new_host: A honeybee-core Room object that will host these properties.
         """
-        constr_set = self.construction_set
+        constr_set = self.construction_set  # includes story and building-assigned sets
         hb_constr = constr_set if constr_set is not generic_construction_set else None
         hvac = self.hvac.duplicate() if self.is_conditioned else None
         return RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
