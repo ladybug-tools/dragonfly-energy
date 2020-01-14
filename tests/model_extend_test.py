@@ -15,7 +15,6 @@ import honeybee.model as hb_model
 from honeybee.boundarycondition import Outdoors, Surface
 
 from honeybee_energy.constructionset import ConstructionSet
-from honeybee_energy.idealair import IdealAirSystem
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.window import WindowConstruction
 from honeybee_energy.construction.shade import ShadeConstruction
@@ -54,7 +53,7 @@ def test_energy_properties():
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
-        room.properties.energy.hvac = IdealAirSystem()
+        room.properties.energy.add_default_ideal_air()
     building = Building('Office Building', [story])
 
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
@@ -99,7 +98,7 @@ def test_check_duplicate_construction_set_names():
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
-        room.properties.energy.hvac = IdealAirSystem()
+        room.properties.energy.add_default_ideal_air()
     building = Building('Office Building', [story])
     building.auto_assign_top_bottom_floors()
     building.separate_top_bottom_floors()
@@ -142,7 +141,7 @@ def test_check_duplicate_program_type_names():
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
-        room.properties.energy.hvac = IdealAirSystem()
+        room.properties.energy.add_default_ideal_air()
     building = Building('Office Building', [story])
     building.auto_assign_top_bottom_floors()
     building.separate_top_bottom_floors()
@@ -183,7 +182,7 @@ def test_to_from_dict():
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
-        room.properties.energy.hvac = IdealAirSystem()
+        room.properties.energy.add_default_ideal_air()
     building = Building('Office Building', [story])
     building.auto_assign_top_bottom_floors()
     building.separate_top_bottom_floors()

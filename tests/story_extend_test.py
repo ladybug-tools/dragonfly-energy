@@ -6,7 +6,7 @@ from dragonfly.windowparameter import SimpleWindowRatio
 from dragonfly_energy.properties.story import StoryEnergyProperties
 
 from honeybee_energy.constructionset import ConstructionSet
-from honeybee_energy.idealair import IdealAirSystem
+from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.shade import ShadeConstruction
 from honeybee_energy.material.opaque import EnergyMaterial
@@ -116,12 +116,12 @@ def test_set_all_room_2d_hvac():
 
     sensible = 0.8
     latent = 0.7
-    ideal_air_sys = IdealAirSystem(sensible_heat_recovery=sensible,
+    ideal_air_sys = IdealAirSystem('Office HVAC', sensible_heat_recovery=sensible,
                                    latent_heat_recovery=latent)
 
     story.properties.energy.set_all_room_2d_hvac(ideal_air_sys)
 
-    assert all(room.properties.energy.hvac == ideal_air_sys
+    assert all(isinstance(room.properties.energy.hvac, IdealAirSystem)
                for room in story.room_2ds)
     assert all(room.properties.energy.hvac.sensible_heat_recovery == sensible
                for room in story.room_2ds)

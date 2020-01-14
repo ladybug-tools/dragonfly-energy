@@ -1,9 +1,11 @@
 # coding=utf-8
 """Room2D Energy Properties."""
+from honeybee_energy.properties.room import RoomEnergyProperties
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
-from honeybee_energy.idealair import IdealAirSystem
-from honeybee_energy.properties.room import RoomEnergyProperties
+from honeybee_energy.hvac import HVAC_TYPES_DICT
+from honeybee_energy.hvac._base import _HVACSystem
+from honeybee_energy.hvac.idealair import IdealAirSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 from honeybee_energy.lib.programtypes import plenum_program
@@ -101,22 +103,48 @@ class Room2DEnergyProperties(object):
     @hvac.setter
     def hvac(self, value):
         if value is not None:
-            assert isinstance(value, IdealAirSystem), \
-                'Expected IdealAirSystem for Room2D hvac. Got {}'.format(type(value))
-            if value._parent is not None:
-                raise ValueError(
-                    'IdealAirSystem objects can be assigned to a only one Room2D.\n'
-                    'IdealAirSystem cannot be assigned to Room2D "{}" since it is '
-                    'already assigned to "{}".\nTry duplicating the IdealAirSystem, '
-                    'and then assigning it to this Room2D.'.format(
-                        self.host.name, value._parent.name))
-            value._parent = self.host
+            assert isinstance(value, _HVACSystem), \
+                'Expected HVACSystem for Room2D hvac. Got {}'.format(type(value))
+            if value.is_single_room:
+                if value._parent is None:
+                    value._parent = self.host
+                elif value._parent.name != self.host.name:
+                    raise ValueError(
+                        '{0} objects can be assigned to a only one Room2D.\n'
+                        '{0} "{1}" cannot be assigned to Room "{2}" since it is '
+                        'already assigned to "{3}".\nTry duplicating the {0}, '
+                        'and then assigning it to this Room.'.format(
+                            value.__class__.__name__, value.name,
+                            self.host.name, value._parent.name))
+            value.lock()   # lock in case hvac has multiple references
         self._hvac = value
 
     @property
     def is_conditioned(self):
         """Boolean to note whether the Room is conditioned."""
         return self._hvac is not None
+
+    def add_default_ideal_air(self):
+        """Add a default IdealAirSystem to this Room2D.
+        
+        The name of this system will be derived from the room name.
+        """
+        self.hvac = IdealAirSystem('{}_IdealAir'.format(self.host.name))
+
+    def add_prefix(self, prefix):
+        """Change the name extension attributes unique to this object by adding a prefix.
+        
+        Notably, this method only adds the prefix to extension attributes that must
+        be unique to the Room (eg. single-room HVAC systems) and does not add the
+        prefix to attributes that are shared across several Rooms (eg. ConstructionSets).
+
+        Args:
+            prefix: Text that will be inserted at the start of extension attribute names.
+        """
+        if self._hvac is not None and self._hvac.is_single_room:
+            new_hvac = self._hvac.duplicate()
+            new_hvac.name = '{}_{}'.format(prefix, self._hvac.name)
+            self.hvac = new_hvac
 
     @classmethod
     def from_dict(cls, data, host):
@@ -139,12 +167,13 @@ class Room2DEnergyProperties(object):
         if 'program_type' in data and data['program_type'] is not None:
             new_prop.program_type = ProgramType.from_dict(data['program_type'])
         if 'hvac' in data and data['hvac'] is not None:
-            new_prop.hvac = IdealAirSystem.from_dict(data['hvac'])
+            hvac_class = HVAC_TYPES_DICT[data['hvac']['type']]
+            new_prop.hvac = hvac_class.from_dict(data['hvac'])
 
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets,
-                                   program_types):
+                                   program_types, hvacs):
         """Apply properties from a Room2DEnergyPropertiesAbridged dictionary.
 
         Args:
@@ -154,6 +183,8 @@ class Room2DEnergyProperties(object):
                 as keys, which will be used to re-assign construction_sets.
             program_types: A dictionary of ProgramTypes with names of the types ask
                 keys, which will be used to re-assign program_types.
+            hvacs: A dictionary of HVACSystems with the names of the systems as
+                keys, which will be used to re-assign hvac to the Room.
         """
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
@@ -161,7 +192,7 @@ class Room2DEnergyProperties(object):
         if 'program_type' in abridged_data and abridged_data['program_type'] is not None:
             self.program_type = program_types[abridged_data['program_type']]
         if 'hvac' in abridged_data and abridged_data['hvac'] is not None:
-            self.hvac = IdealAirSystem.from_dict(abridged_data['hvac'])
+            self.hvac = hvacs[abridged_data['hvac']]
 
     def to_dict(self, abridged=False):
         """Return Room2D energy properties as a dictionary.
@@ -188,7 +219,8 @@ class Room2DEnergyProperties(object):
 
         # write the hvac into the dictionary
         if self._hvac is not None:
-            base['energy']['hvac'] = self._hvac.to_dict()
+            base['energy']['hvac'] = \
+                self._hvac.name if abridged else self._hvac.to_dict()
 
         return base
 
@@ -200,8 +232,7 @@ class Room2DEnergyProperties(object):
         """
         constr_set = self.construction_set  # includes story and building-assigned sets
         hb_constr = constr_set if constr_set is not generic_construction_set else None
-        hvac = self.hvac.duplicate() if self.is_conditioned else None
-        return RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
+        return RoomEnergyProperties(new_host, self._program_type, hb_constr, self._hvac)
 
     def duplicate(self, new_host=None):
         """Get a copy of this object.
@@ -211,9 +242,10 @@ class Room2DEnergyProperties(object):
                 If None, the properties will be duplicated with the same host.
         """
         _host = new_host or self._host
-        hvac = self.hvac.duplicate() if self.is_conditioned else None
-        return Room2DEnergyProperties(_host, self._program_type,
-                                      self._construction_set, hvac)
+        hvac = self._hvac.duplicate() if self._hvac is not None and \
+            self._hvac.is_single_room else self._hvac
+        return Room2DEnergyProperties(
+            _host, self._program_type, self._construction_set, hvac)
 
     def ToString(self):
         return self.__repr__()

@@ -2,7 +2,8 @@
 """Building Energy Properties."""
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
-from honeybee_energy.idealair import IdealAirSystem
+from honeybee_energy.hvac._base import _HVACSystem
+from honeybee_energy.hvac.idealair import IdealAirSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 
@@ -98,19 +99,38 @@ class BuildingEnergyProperties(object):
             room_2d.properties.energy.program_type = program_type
 
     def set_all_room_2d_hvac(self, hvac):
-        """Set all children Room2Ds of this Building to have the same HVAC properties.
+        """Set all children Room2Ds of this Buiding to have the same HVAC system.
 
-        Note that each individual Room2D will get it's own IdealAirSystem instance
-        but they will all have the properties of the input hvac.
+        For an HVAC system that is intended to be applied across multiple zones
+        (such as a VAVSystem), all Room2Ds will receive the same HVAC instance
+        as their HVAC system. In the case of an HVAC that can only be assigned
+        to individual zones (such as an IdealAirSystem), the input hvac will be
+        duplicated and renamed (with an integer appended to the end) for each
+        Room2D to which is it applied.
 
         Args:
-            hvac: An IdealAirSystem with properties that will be assigned to all
+            hvac: An HVAC system with properties that will be assigned to all
                 children Room2Ds.
         """
-        assert isinstance(hvac, IdealAirSystem), 'Expected IdealAirSystem for ' \
-            'Building set_all_room_2d_hvac. Got {}'.format(type(hvac))
+        assert isinstance(hvac, _HVACSystem), 'Expected HVACSystem for Building.' \
+            'set_all_room_2d_hvac. Got {}'.format(type(hvac))
+        
+        if not hvac.is_single_room:  # apply the same instance to all rooms
+            for room_2d in self.host.unique_room_2ds:
+                room_2d.properties.energy.hvac = hvac
+        else:  # duplicate the HVAC instance as it is applied to rooms
+            for i, room_2d in enumerate(self.host.unique_room_2ds):
+                new_hvac = hvac.duplicate()
+                new_hvac.name = '{}_{}'.format(hvac.name, i)
+                room_2d.properties.energy.hvac = new_hvac
+
+    def add_default_ideal_air(self):
+        """Add a default IdealAirSystem to all children Room2Ds of this Story.
+        
+        The name of the systems will be derived from the room names.
+        """
         for room_2d in self.host.unique_room_2ds:
-            room_2d.properties.energy.hvac = hvac.duplicate()
+            room_2d.properties.energy.add_default_ideal_air()
 
     @classmethod
     def from_dict(cls, data, host):

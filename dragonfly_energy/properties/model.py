@@ -29,6 +29,8 @@ class ModelEnergyProperties(object):
         * schedule_type_limits
         * schedules
         * shade_schedules
+        * program_type_schedules
+        * hvac_schedules
         * program_types
     """
     TERRAIN_TYPES = hb_model_properties.ModelEnergyProperties.TERRAIN_TYPES
@@ -160,11 +162,8 @@ class ModelEnergyProperties(object):
 
         This includes schedules across all ProgramTypes and ContextShades.
         """
-        p_type_scheds = []
-        for p_type in self.program_types:
-            for sched in p_type.schedules:
-                self._check_and_add_schedule(sched, p_type_scheds)
-        all_scheds = p_type_scheds + self.shade_schedules
+        all_scheds = self.hvac_schedules + self.program_type_schedules + \
+            self.shade_schedules
         return list(set(all_scheds))
 
     @property
@@ -174,6 +173,24 @@ class ModelEnergyProperties(object):
         schedules = []
         for shade in self.host._context_shades:
             self._check_and_add_shade_schedule(shade, schedules)
+        return list(set(schedules))
+    
+    @property
+    def program_type_schedules(self):
+        """A list of all unique schedules assigned to ProgramTypes in the model."""
+        schedules = []
+        for p_type in self.program_types:
+            for sched in p_type.schedules:
+                self._check_and_add_schedule(sched, schedules)
+        return list(set(schedules))
+    
+    @property
+    def hvac_schedules(self):
+        """A list of all unique HVAC-assigned schedules in the model."""
+        schedules = []
+        for hvac in self.hvacs:
+            for sched in hvac.schedules:
+                self._check_and_add_schedule(sched, schedules)
         return list(set(schedules))
 
     @property
@@ -188,6 +205,19 @@ class ModelEnergyProperties(object):
                                 room.properties.energy._program_type, program_types):
                             program_types.append(room.properties.energy._program_type)
         return list(set(program_types))  # catch equivalent program types
+    
+    @property
+    def hvacs(self):
+        """A list of all unique HVAC systems in the Model."""
+        hvacs = []
+        for bldg in self.host._buildings:
+            for story in bldg:
+                for room in story:
+                    if room.properties.energy._hvac is not None:
+                        if not self._instance_in_array(
+                                room.properties.energy._hvac, hvacs):
+                            hvacs.append(room.properties.energy._hvac)
+        return hvacs
 
     def check_duplicate_construction_set_names(self, raise_exception=True):
         """Check that there are no duplicate ConstructionSet names in the model."""
@@ -223,6 +253,23 @@ class ModelEnergyProperties(object):
             return False
         return True
     
+    def check_duplicate_hvac_names(self, raise_exception=True):
+        """Check that there are no duplicate HVAC names in the model."""
+        hvac_names = set()
+        duplicate_names = set()
+        for hvac in self.hvacs:
+            if hvac.name not in hvac_names:
+                hvac_names.add(hvac.name)
+            else:
+                duplicate_names.add(hvac.name)
+        if len(duplicate_names) != 0:
+            if raise_exception:
+                raise ValueError(
+                    'The model has the following duplicated HVAC system '
+                    'names:\n{}'.format('\n'.join(duplicate_names)))
+            return False
+        return True
+    
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
 
@@ -239,21 +286,21 @@ class ModelEnergyProperties(object):
             self.terrain_type = data['properties']['energy']['terrain_type']
 
         materials, constructions, construction_sets, schedule_type_limits, \
-            schedules, program_types = \
+            schedules, program_types, hvacs = \
             hb_model_properties.ModelEnergyProperties.load_properties_from_dict(data)
 
         # collect lists of energy property dictionaries
         building_e_dicts, story_e_dicts, room2d_e_dicts, context_e_dicts = \
             model_extension_dicts(data, 'energy')
 
-        # apply energy properties to objects uwing the energy property dictionaries
+        # apply energy properties to objects using the energy property dictionaries
         for bldg, b_dict in zip(self.host.buildings, building_e_dicts):
             bldg.properties.energy.apply_properties_from_dict(b_dict, construction_sets)
         for story, s_dict in zip(self.host.stories, story_e_dicts):
             story.properties.energy.apply_properties_from_dict(s_dict, construction_sets)
         for room, r_dict in zip(self.host.room_2ds, room2d_e_dicts):
             room.properties.energy.apply_properties_from_dict(
-                r_dict, construction_sets, program_types)
+                r_dict, construction_sets, program_types, hvacs)
         for shade, s_dict in zip(self.host.context_shades, context_e_dicts):
             shade.properties.energy.apply_properties_from_dict(
                 s_dict, constructions, schedules)
@@ -272,10 +319,10 @@ class ModelEnergyProperties(object):
         base['energy']['terrain_type'] = self.terrain_type
 
         # add all materials, constructions and construction sets to the dictionary
-        self._add_constructions_to_dict(base, include_global_construction_set)
+        self._add_constr_type_objs_to_dict(base, include_global_construction_set)
 
         # add all schedule type limits, schedules, and program types to the dictionary
-        self._add_schedules_to_dict(base)
+        self._add_sched_type_objs_to_dict(base)
 
         return base
     
@@ -296,7 +343,7 @@ class ModelEnergyProperties(object):
         _host = new_host or self._host
         return ModelEnergyProperties(_host, self.terrain_type)
     
-    def _add_constructions_to_dict(self, base, include_global_construction_set=True):
+    def _add_constr_type_objs_to_dict(self, base, include_global_construction_set=True):
         """Add materials, constructions and construction sets to a base dictionary.
         
         Args:
@@ -341,12 +388,18 @@ class ModelEnergyProperties(object):
                 pass  # ShadeConstruction
         base['energy']['materials'] = [mat.to_dict() for mat in set(materials)]
     
-    def _add_schedules_to_dict(self, base):
+    def _add_sched_type_objs_to_dict(self, base):
         """Add schedule type limits, schedules, and program types to a base dictionary.
         
         Args:
             base: A base dictionary for a Dragonfly Model.
         """
+        # add all unique hvacs to the dictionary
+        hvacs = self.hvacs
+        base['energy']['hvacs'] = []
+        for hvac in hvacs:
+            base['energy']['hvacs'].append(hvac.to_dict(abridged=True))
+
         # add all unique ProgramTypes to the dictionary
         program_types = self.program_types
         base['energy']['program_types'] = []
@@ -358,7 +411,11 @@ class ModelEnergyProperties(object):
         for p_type in program_types:
             for sched in p_type.schedules:
                 self._check_and_add_schedule(sched, p_type_scheds)
-        all_scheds = p_type_scheds + self.shade_schedules
+        hvac_scheds = []
+        for hvac in hvacs:
+            for sched in hvac.schedules:
+                self._check_and_add_schedule(sched, hvac_scheds)
+        all_scheds = hvac_scheds + p_type_scheds + self.shade_schedules
         schedules = tuple(set(all_scheds))
         base['energy']['schedules'] = []
         for sched in schedules:
