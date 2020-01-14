@@ -9,7 +9,7 @@ from honeybee.boundarycondition import boundary_conditions as bcs
 
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
-from honeybee_energy.idealair import IdealAirSystem
+from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.shade import ShadeConstruction
 from honeybee_energy.material.opaque import EnergyMaterial
@@ -37,7 +37,7 @@ def test_energy_properties():
     room = Room2D('Square Shoebox', Face3D(pts), 3, boundarycs, window, shading)
 
     room.properties.energy.program_type = office_program
-    room.properties.energy.hvac = IdealAirSystem()
+    room.properties.energy.add_default_ideal_air()
 
     assert hasattr(room.properties, 'energy')
     assert isinstance(room.properties.energy, Room2DEnergyProperties)
@@ -141,7 +141,7 @@ def test_set_ideal_air():
 
     sensible = 0.8
     latent = 0.7
-    ideal_air_sys = IdealAirSystem(sensible_heat_recovery=sensible,
+    ideal_air_sys = IdealAirSystem('Test HVAC', sensible_heat_recovery=sensible,
                                    latent_heat_recovery=latent)
 
     room.properties.energy.hvac = ideal_air_sys
