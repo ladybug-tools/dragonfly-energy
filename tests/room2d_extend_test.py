@@ -215,9 +215,9 @@ def test_to_dict():
     assert rd['properties']['energy']['program_type'] is not None
 
     """
-    f_dir = 'C:/Users/chris/Ladybug Tools Google Drive/laybug_tools_llc/basecamp/' \
-        'pollination-revit/schema-samples'
-    dest_file = f_dir + '/1_room2d_schema_sample.json'
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+        'samples'
+    dest_file = f_dir + '/room2d_simple.json'
     with open(dest_file, 'w') as fp:
         json.dump(room.to_dict(True), fp, indent=4)
     """
