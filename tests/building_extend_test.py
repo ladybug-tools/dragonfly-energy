@@ -368,9 +368,9 @@ def test_to_dict_revit():
 
     building.to_dict()
     """
-    f_dir = 'C:/Users/chris/Ladybug Tools Google Drive/laybug_tools_llc/basecamp/' \
-        'pollination-revit/schema-samples'
-    dest_file = f_dir + '/3_building_schema_sample.json'
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+        'samples'
+    dest_file = f_dir + '/building_simple.json'
     with open(dest_file, 'w') as fp:
         json.dump(building.to_dict(True), fp, indent=4)
     """

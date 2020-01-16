@@ -44,9 +44,9 @@ def test_set_construction_schedule():
     assert tree_canopy.properties.energy.transmittance_schedule == tree_trans
 
     """
-    f_dir = 'C:/Users/chris/Ladybug Tools Google Drive/laybug_tools_llc/basecamp/' \
-        'pollination-revit/schema-samples'
-    dest_file = f_dir + '/4_context_schema_sample.json'
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+        'samples'
+    dest_file = f_dir + '/context_shade_two_tree_canopy.json'
     with open(dest_file, 'w') as fp:
         json.dump(tree_canopy.to_dict(True), fp, indent=4)
     """
