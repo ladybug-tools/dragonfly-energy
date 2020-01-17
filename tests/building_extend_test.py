@@ -364,11 +364,11 @@ def test_to_dict_revit():
     story_2.set_outdoor_window_parameters(SimpleWindowRatio(0.35))
     story_3.set_outdoor_window_parameters(SimpleWindowRatio(0.6))
     building = Building('Office Building', [story_1, story_2, story_3])
-    building.auto_assign_top_bottom_floors()
+    building.separate_top_bottom_floors()
 
     building.to_dict()
     """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
         'samples'
     dest_file = f_dir + '/building_simple.json'
     with open(dest_file, 'w') as fp:

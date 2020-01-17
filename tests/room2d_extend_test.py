@@ -215,7 +215,7 @@ def test_to_dict():
     assert rd['properties']['energy']['program_type'] is not None
 
     """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
         'samples'
     dest_file = f_dir + '/room2d_simple.json'
     with open(dest_file, 'w') as fp:
