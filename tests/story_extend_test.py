@@ -193,7 +193,7 @@ def test_to_dict():
     assert sd['properties']['energy']['construction_set'] is not None
 
     """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema-master/dragonfly_schema/' \
+    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
         'samples'
     dest_file = f_dir + '/story_simple.json'
     with open(dest_file, 'w') as fp:
