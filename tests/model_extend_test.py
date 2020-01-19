@@ -36,8 +36,6 @@ from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
 from ladybug_geometry.geometry3d.plane import Plane
 from ladybug_geometry.geometry3d.face import Face3D
 
-import json
-
 
 def test_energy_properties():
     """Test the existence of the Model energy properties."""
@@ -236,14 +234,6 @@ def test_to_from_dict():
     assert tree_trans in new_model.properties.energy.schedules
     assert new_model.context_shades[0].properties.energy.construction == bright_leaves
     assert new_model.context_shades[0].properties.energy.transmittance_schedule == tree_trans
-
-    """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
-        'samples'
-    dest_file = f_dir + '/model_complete_simple.json'
-    with open(dest_file, 'w') as fp:
-        json.dump(model_dict, fp, indent=4)
-    """
 
 
 def test_to_honeybee():

@@ -12,8 +12,6 @@ from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.plane import Plane
 from ladybug_geometry.geometry3d.face import Face3D
 
-import json
-
 
 def test_energy_properties():
     """Test the existence of the ContextShade energy properties."""
@@ -42,14 +40,6 @@ def test_set_construction_schedule():
 
     assert tree_canopy.properties.energy.construction == bright_leaves
     assert tree_canopy.properties.energy.transmittance_schedule == tree_trans
-
-    """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
-        'samples'
-    dest_file = f_dir + '/context_shade_two_tree_canopy.json'
-    with open(dest_file, 'w') as fp:
-        json.dump(tree_canopy.to_dict(True), fp, indent=4)
-    """
 
 
 def test_duplicate():
