@@ -23,8 +23,6 @@ from ladybug_geometry.geometry3d.face import Face3D
 
 from ladybug.dt import Time
 
-import json
-
 
 def test_energy_properties():
     """Test the existence of the Room2D energy properties."""
@@ -213,14 +211,6 @@ def test_to_dict():
     rd = room.to_dict()
     assert rd['properties']['energy']['construction_set'] is not None
     assert rd['properties']['energy']['program_type'] is not None
-
-    """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
-        'samples'
-    dest_file = f_dir + '/room2d_simple.json'
-    with open(dest_file, 'w') as fp:
-        json.dump(room.to_dict(True), fp, indent=4)
-    """
 
 
 def test_from_dict():

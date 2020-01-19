@@ -29,7 +29,6 @@ from ladybug.dt import Time
 from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.face import Face3D
 
-import json
 import pytest
 
 
@@ -337,40 +336,3 @@ def test_from_dict():
     assert new_bldg.properties.energy.construction_set.name == \
         'Thermal Mass Construction Set'
     assert new_bldg.to_dict() == bd
-
-
-def test_to_dict_revit():
-    """Test the to_dict method in a way that mimics how the export from Revit happens."""
-    pts_1 = (Point3D(0, 0, 0), Point3D(0, 10, 0), Point3D(10, 10, 0), Point3D(10, 0, 0))
-    pts_2 = (Point3D(10, 0, 0), Point3D(10, 10, 0), Point3D(20, 10, 0), Point3D(20, 0, 0))
-    pts_3 = (Point3D(0, 10, 0), Point3D(0, 20, 0), Point3D(10, 20, 0), Point3D(10, 10, 0))
-    pts_4 = (Point3D(10, 10, 0), Point3D(10, 20, 0), Point3D(20, 20, 0), Point3D(20, 10, 0))
-    pts_5 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
-    pts_6 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
-    pts_7 = (Point3D(0, 0, 6), Point3D(0, 10, 6), Point3D(10, 10, 6), Point3D(10, 0, 6))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    room2d_5 = Room2D('Office 5', Face3D(pts_5), 3)
-    room2d_6 = Room2D('Office 6', Face3D(pts_6), 3)
-    room2d_7 = Room2D('Office 7', Face3D(pts_7), 3)
-    story_1 = Story('Office Floor 1', [room2d_1, room2d_2, room2d_3, room2d_4])
-    story_2 = Story('Office Floor 2', [room2d_5, room2d_6])
-    story_3 = Story('Office Floor 3', [room2d_7])
-    story_1.solve_room_2d_adjacency(0.01)
-    story_2.solve_room_2d_adjacency(0.01)
-    story_1.set_outdoor_window_parameters(SimpleWindowRatio(0.3))
-    story_2.set_outdoor_window_parameters(SimpleWindowRatio(0.35))
-    story_3.set_outdoor_window_parameters(SimpleWindowRatio(0.6))
-    building = Building('Office Building', [story_1, story_2, story_3])
-    building.separate_top_bottom_floors()
-
-    building.to_dict()
-    """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
-        'samples'
-    dest_file = f_dir + '/building_simple.json'
-    with open(dest_file, 'w') as fp:
-        json.dump(building.to_dict(True), fp, indent=4)
-    """

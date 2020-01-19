@@ -15,8 +15,6 @@ from honeybee_energy.lib.programtypes import office_program
 from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.face import Face3D
 
-import json
-
 
 def test_energy_properties():
     """Test the existence of the Story energy properties."""
@@ -191,14 +189,6 @@ def test_to_dict():
     story.properties.energy.construction_set = mass_set
     sd = story.to_dict()
     assert sd['properties']['energy']['construction_set'] is not None
-
-    """
-    f_dir = 'C:/Users/chris/Documents/GitHub/dragonfly-schema/dragonfly_schema/' \
-        'samples'
-    dest_file = f_dir + '/story_simple.json'
-    with open(dest_file, 'w') as fp:
-        json.dump(story.to_dict(True), fp, indent=4)
-    """
 
 
 def test_from_dict():
