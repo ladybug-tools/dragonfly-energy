@@ -291,7 +291,7 @@ class ModelEnergyProperties(object):
 
         # collect lists of energy property dictionaries
         building_e_dicts, story_e_dicts, room2d_e_dicts, context_e_dicts = \
-            model_extension_dicts(data, 'energy')
+            model_extension_dicts(data, 'energy', [], [], [], [])
 
         # apply energy properties to objects using the energy property dictionaries
         for bldg, b_dict in zip(self.host.buildings, building_e_dicts):
