@@ -11,6 +11,14 @@ from honeybee_energy.lib.constructionsets import generic_construction_set
 class BuildingEnergyProperties(object):
     """Energy Properties for Dragonfly Building.
 
+    Args:
+        host: A dragonfly_core Building object that hosts these properties.
+        construction_set: A honeybee ConstructionSet object to specify all
+            default constructions for the Faces of the Building. If None, the
+            Building will use the honeybee default construction set, which is not
+            representative of a particular building code or climate zone.
+            Default: None.
+
     Properties:
         * host
         * construction_set
@@ -19,16 +27,7 @@ class BuildingEnergyProperties(object):
     __slots__ = ('_host', '_construction_set')
 
     def __init__(self, host, construction_set=None):
-        """Initialize Building energy properties.
-
-        Args:
-            host: A dragonfly_core Building object that hosts these properties.
-            construction_set: A honeybee ConstructionSet object to specify all
-                default constructions for the Faces of the Building. If None, the
-                Building will use the honeybee default construction set, which is not
-                representative of a particular building code or climate zone.
-                Default: None.
-        """
+        """Initialize Building energy properties."""
         self._host = host
         self.construction_set = construction_set
 
@@ -114,7 +113,7 @@ class BuildingEnergyProperties(object):
         """
         assert isinstance(hvac, _HVACSystem), 'Expected HVACSystem for Building.' \
             'set_all_room_2d_hvac. Got {}'.format(type(hvac))
-        
+
         if not hvac.is_single_room:  # apply the same instance to all rooms
             for room_2d in self.host.unique_room_2ds:
                 room_2d.properties.energy.hvac = hvac
@@ -126,7 +125,7 @@ class BuildingEnergyProperties(object):
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to all children Room2Ds of this Story.
-        
+
         The name of the systems will be derived from the room names.
         """
         for room_2d in self.host.unique_room_2ds:

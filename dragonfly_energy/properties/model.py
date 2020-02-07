@@ -18,6 +18,12 @@ except ImportError:
 class ModelEnergyProperties(object):
     """Energy Properties for Dragonfly Model.
 
+    Args:
+        host: A dragonfly_core Model object that hosts these properties.
+        terrain_type: Text for the terrain type in which the model sits.
+            Choose from: 'Ocean', 'Country', 'Suburbs', 'Urban', 'City'.
+            Default: 'City'.
+
     Properties:
         * host
         * terrain_type
@@ -36,14 +42,7 @@ class ModelEnergyProperties(object):
     TERRAIN_TYPES = hb_model_properties.ModelEnergyProperties.TERRAIN_TYPES
 
     def __init__(self, host, terrain_type='City'):
-        """Initialize Model energy properties.
-
-        Args:
-            host: A dragonfly_core Model object that hosts these properties.
-            terrain_type: Text for the terrain type in which the model sits.
-                Choose from: 'Ocean', 'Country', 'Suburbs', 'Urban', 'City'.
-                Default: 'City'.
-        """
+        """Initialize Model energy properties."""
         self._host = host
         self.terrain_type = terrain_type
 
@@ -58,11 +57,12 @@ class ModelEnergyProperties(object):
 
         This is used to determine the wind profile over the height of the
         building. Default is 'City'. Choose from the following options:
-            * Ocean
-            * Country
-            * Suburbs
-            * Urban
-            * City
+
+        * Ocean
+        * Country
+        * Suburbs
+        * Urban
+        * City
         """
         return self._terrain_type
 
@@ -115,11 +115,11 @@ class ModelEnergyProperties(object):
                         shade.properties.energy.construction, constructions):
                     constructions.append(shade.properties.energy.construction)
         return list(set(constructions))
-    
+
     @property
     def construction_sets(self):
         """A list of all unique Building-Assigned ConstructionSets in the Model.
-        
+
         Note that this includes ConstructionSets assigned to individual Stories and
         Room2Ds in the Building.
         """
@@ -174,7 +174,7 @@ class ModelEnergyProperties(object):
         for shade in self.host._context_shades:
             self._check_and_add_shade_schedule(shade, schedules)
         return list(set(schedules))
-    
+
     @property
     def program_type_schedules(self):
         """A list of all unique schedules assigned to ProgramTypes in the model."""
@@ -183,7 +183,7 @@ class ModelEnergyProperties(object):
             for sched in p_type.schedules:
                 self._check_and_add_schedule(sched, schedules)
         return list(set(schedules))
-    
+
     @property
     def hvac_schedules(self):
         """A list of all unique HVAC-assigned schedules in the model."""
@@ -205,7 +205,7 @@ class ModelEnergyProperties(object):
                                 room.properties.energy._program_type, program_types):
                             program_types.append(room.properties.energy._program_type)
         return list(set(program_types))  # catch equivalent program types
-    
+
     @property
     def hvacs(self):
         """A list of all unique HVAC systems in the Model."""
@@ -252,7 +252,7 @@ class ModelEnergyProperties(object):
                     'names:\n{}'.format('\n'.join(duplicate_names)))
             return False
         return True
-    
+
     def check_duplicate_hvac_names(self, raise_exception=True):
         """Check that there are no duplicate HVAC names in the model."""
         hvac_names = set()
@@ -269,7 +269,7 @@ class ModelEnergyProperties(object):
                     'names:\n{}'.format('\n'.join(duplicate_names)))
             return False
         return True
-    
+
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
 
@@ -308,10 +308,11 @@ class ModelEnergyProperties(object):
     def to_dict(self, include_global_construction_set=True):
         """Return Model energy properties as a dictionary.
 
-        include_global_construction_set: Boolean to note whether the
-            global_construction_set should be included within the dictionary. This
-            will ensure that all objects lacking a construction specification always
-            have a default construction. Default: True.
+        Args:
+            include_global_construction_set: Boolean to note whether the
+                global_construction_set should be included within the dictionary. This
+                will ensure that all objects lacking a construction specification always
+                have a default construction. Default: True.
         """
         base = {'energy': {'type': 'ModelEnergyProperties'}}
 
@@ -325,7 +326,7 @@ class ModelEnergyProperties(object):
         self._add_sched_type_objs_to_dict(base)
 
         return base
-    
+
     def to_honeybee(self, new_host):
         """Get a honeybee version of this object.
 
@@ -333,19 +334,20 @@ class ModelEnergyProperties(object):
             new_host: A honeybee-core Model object that will host these properties.
         """
         return hb_model_properties.ModelEnergyProperties(new_host, self.terrain_type)
-    
+
     def duplicate(self, new_host=None):
         """Get a copy of this Model.
 
-        new_host: A new Model object that hosts these properties.
-            If None, the properties will be duplicated with the same host.
+        Args:
+            new_host: A new Model object that hosts these properties.
+                If None, the properties will be duplicated with the same host.
         """
         _host = new_host or self._host
         return ModelEnergyProperties(_host, self.terrain_type)
-    
+
     def _add_constr_type_objs_to_dict(self, base, include_global_construction_set=True):
         """Add materials, constructions and construction sets to a base dictionary.
-        
+
         Args:
             base: A base dictionary for a Dragonfly Model.
             include_global_construction_set: Boolean to note whether the
@@ -387,10 +389,10 @@ class ModelEnergyProperties(object):
             except AttributeError:
                 pass  # ShadeConstruction
         base['energy']['materials'] = [mat.to_dict() for mat in set(materials)]
-    
+
     def _add_sched_type_objs_to_dict(self, base):
         """Add schedule type limits, schedules, and program types to a base dictionary.
-        
+
         Args:
             base: A base dictionary for a Dragonfly Model.
         """
@@ -462,7 +464,7 @@ class ModelEnergyProperties(object):
             if val is object_instance:
                 return True
         return False
-    
+
     def ToString(self):
         return self.__repr__()
 

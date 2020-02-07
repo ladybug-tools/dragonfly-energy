@@ -14,6 +14,20 @@ from honeybee_energy.lib.programtypes import plenum_program
 class Room2DEnergyProperties(object):
     """Energy Properties for Dragonfly Room2D.
 
+    Args:
+        host: A dragonfly_core Room2D object that hosts these properties.
+        program_type: A honeybee ProgramType object to specify all default
+            schedules and loads for the Room2D. If None, the Room2D will have a
+            Plenum program (with no loads or setpoints). Default: None.
+        construction_set: A honeybee ConstructionSet object to specify all
+            default constructions for the Faces of the Room2D. If None, the
+            Room2D will use the honeybee default construction set, which is not
+            representative of a particular building code or climate zone.
+            Default: None.
+        hvac: A honeybee HVAC object (such as an IdealAirSystem) that specifies
+            how the Room2D is conditioned. If None, it will be assumed that the
+            Room2D is not conditioned. Default: None.
+
     Properties:
         * host
         * program_type
@@ -25,22 +39,7 @@ class Room2DEnergyProperties(object):
     __slots__ = ('_host', '_program_type', '_construction_set', '_hvac')
 
     def __init__(self, host, program_type=None, construction_set=None, hvac=None):
-        """Initialize Room2D energy properties.
-
-        Args:
-            host: A dragonfly_core Room2D object that hosts these properties.
-            program_type: A honeybee ProgramType object to specify all default
-                schedules and loads for the Room2D. If None, the Room2D will have a
-                Plenum program (with no loads or setpoints). Default: None.
-            construction_set: A honeybee ConstructionSet object to specify all
-                default constructions for the Faces of the Room2D. If None, the
-                Room2D will use the honeybee default construction set, which is not
-                representative of a particular building code or climate zone.
-                Default: None.
-            hvac: A honeybee HVAC object (such as an IdealAirSystem) that specifies
-                how the Room2D is conditioned. If None, it will be assumed that the
-                Room2D is not conditioned. Default: None.
-        """
+        """Initialize Room2D energy properties."""
         self._host = host
         self.program_type = program_type
         self.construction_set = construction_set
@@ -126,14 +125,14 @@ class Room2DEnergyProperties(object):
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to this Room2D.
-        
+
         The name of this system will be derived from the room name.
         """
         self.hvac = IdealAirSystem('{}_IdealAir'.format(self.host.name))
 
     def add_prefix(self, prefix):
         """Change the name extension attributes unique to this object by adding a prefix.
-        
+
         Notably, this method only adds the prefix to extension attributes that must
         be unique to the Room (eg. single-room HVAC systems) and does not add the
         prefix to attributes that are shared across several Rooms (eg. ConstructionSets).
