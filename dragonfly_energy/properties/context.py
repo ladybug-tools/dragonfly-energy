@@ -11,6 +11,15 @@ from honeybee_energy.lib.constructions import generic_context
 class ContextShadeEnergyProperties(object):
     """Energy Properties for Dragonfly ContextShade.
 
+    Args:
+        host_shade: A dragonfly_core ContextShade object that hosts these properties.
+        construction: An optional ShadeConstruction object to set the reflectance
+            and specularity of the ContextShade. The default is a completely
+            diffuse construction with 0.2 visible and solar reflectance.
+        transmittance_schedule: An optional schedule to set the transmittance
+            of the shade, which can vary throughout the day or year.  Default
+            is a completely opaque object.
+
     Properties:
         * host
         * construction
@@ -21,17 +30,7 @@ class ContextShadeEnergyProperties(object):
     __slots__ = ('_host', '_construction', '_transmittance_schedule')
 
     def __init__(self, host_shade, construction=None, transmittance_schedule=None):
-        """Initialize ContextShade energy properties.
-
-        Args:
-            host_shade: A dragonfly_core ContextShade object that hosts these properties.
-            construction: An optional ShadeConstruction object to set the reflectance
-                and specularity of the ContextShade. The default is a completely
-                diffuse construction with 0.2 visible and solar reflectance.
-            transmittance_schedule: An optional schedule to set the transmittance
-                of the shade, which can vary throughout the day or year.  Default
-                is a completely opaque object.
-        """
+        """Initialize ContextShade energy properties."""
         self._host = host_shade
         self.construction = construction
         self.transmittance_schedule = transmittance_schedule
@@ -149,7 +148,7 @@ class ContextShadeEnergyProperties(object):
                 self.transmittance_schedule.name if abridged else \
                 self.transmittance_schedule.to_dict()
         return base
-    
+
     def to_honeybee(self, new_host):
         """Get a honeybee version of this object.
 
