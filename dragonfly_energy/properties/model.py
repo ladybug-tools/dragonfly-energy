@@ -5,6 +5,7 @@ from dragonfly.extensionutil import model_extension_dicts
 from honeybee_energy.lib.constructionsets import generic_construction_set
 
 from honeybee_energy.constructionset import ConstructionSet
+from honeybee_energy.construction.air import AirBoundaryConstruction
 from honeybee_energy.programtype import ProgramType
 import honeybee_energy.properties.model as hb_model_properties
 
@@ -320,10 +321,10 @@ class ModelEnergyProperties(object):
         base['energy']['terrain_type'] = self.terrain_type
 
         # add all materials, constructions and construction sets to the dictionary
-        self._add_constr_type_objs_to_dict(base, include_global_construction_set)
+        schs = self._add_constr_type_objs_to_dict(base, include_global_construction_set)
 
         # add all schedule type limits, schedules, and program types to the dictionary
-        self._add_sched_type_objs_to_dict(base)
+        self._add_sched_type_objs_to_dict(base, schs)
 
         return base
 
@@ -390,11 +391,20 @@ class ModelEnergyProperties(object):
                 pass  # ShadeConstruction
         base['energy']['materials'] = [mat.to_dict() for mat in set(materials)]
 
-    def _add_sched_type_objs_to_dict(self, base):
+        # extract all of the schedules from the constructions
+        schedules = []
+        for constr in constructions:
+            if isinstance(constr, AirBoundaryConstruction):
+                self._check_and_add_schedule(constr.air_mixing_schedule, schedules)
+        return schedules
+
+    def _add_sched_type_objs_to_dict(self, base, schs):
         """Add schedule type limits, schedules, and program types to a base dictionary.
 
         Args:
             base: A base dictionary for a Dragonfly Model.
+            schs: A list of additional schedules to be serialized to the
+                base dictionary.
         """
         # add all unique hvacs to the dictionary
         hvacs = self.hvacs
@@ -417,7 +427,7 @@ class ModelEnergyProperties(object):
         for hvac in hvacs:
             for sched in hvac.schedules:
                 self._check_and_add_schedule(sched, hvac_scheds)
-        all_scheds = hvac_scheds + p_type_scheds + self.shade_schedules
+        all_scheds = hvac_scheds + p_type_scheds + self.shade_schedules + schs
         schedules = tuple(set(all_scheds))
         base['energy']['schedules'] = []
         for sched in schedules:

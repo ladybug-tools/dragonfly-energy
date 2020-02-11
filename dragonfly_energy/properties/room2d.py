@@ -231,7 +231,9 @@ class Room2DEnergyProperties(object):
         """
         constr_set = self.construction_set  # includes story and building-assigned sets
         hb_constr = constr_set if constr_set is not generic_construction_set else None
-        return RoomEnergyProperties(new_host, self._program_type, hb_constr, self._hvac)
+        hvac = self._hvac.duplicate() if self._hvac is not None and \
+            self._hvac.is_single_room else self._hvac
+        return RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
 
     def duplicate(self, new_host=None):
         """Get a copy of this object.
