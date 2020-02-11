@@ -18,6 +18,7 @@ from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.window import WindowConstruction
 from honeybee_energy.construction.shade import ShadeConstruction
+from honeybee_energy.construction.air import AirBoundaryConstruction
 from honeybee_energy.material._base import _EnergyMaterialBase
 from honeybee_energy.material.opaque import EnergyMaterial
 from honeybee_energy.schedule.ruleset import ScheduleRuleset
@@ -73,10 +74,11 @@ def test_energy_properties():
     assert len(model.properties.energy.materials) == 15
     for mat in model.properties.energy.materials:
         assert isinstance(mat, _EnergyMaterialBase)
-    assert len(model.properties.energy.constructions) == 15
+    assert len(model.properties.energy.constructions) == 16
     for cnst in model.properties.energy.constructions:
         assert isinstance(
-            cnst, (WindowConstruction, OpaqueConstruction, ShadeConstruction))
+            cnst, (WindowConstruction, OpaqueConstruction,
+                   ShadeConstruction, AirBoundaryConstruction))
     assert len(model.properties.energy.shade_constructions) == 1
     assert len(model.properties.energy.construction_sets) == 0
     assert isinstance(model.properties.energy.global_construction_set, ConstructionSet)
