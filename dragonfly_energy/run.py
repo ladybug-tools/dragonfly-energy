@@ -10,7 +10,7 @@ import subprocess
 from ladybug.futil import nukedir, write_to_file
 
 
-def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path):
+def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path, cpu_count=2):
     """Prepare a directory for URBANopt simulation.
 
     This includes deleting any uo_folder that already exists, running the uo -p
@@ -28,6 +28,8 @@ def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path):
             dictionary can be obtained from a dragonfly Model by calling the
             to_geojson_dict method.
         epw_file_path: The full path to an EPW file to be used for the simulation.
+        cpu_count: A positive integer for the number of CPUs to use in the
+            simulation. (Default: 2).
 
     Returns:
         Paths to the following files
@@ -67,6 +69,16 @@ def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path):
         f.seek(0)  # reset file position to the beginning
         json.dump(data, f, indent=2)
         f.truncate()  # remove remaining part
+    
+    # set the CPU count based on the input
+    if cpu_count != 2:
+        runner_conf = os.path.join(uo_folder, 'runner.conf')
+        with open(runner_conf, 'r+') as f:
+            data = json.load(f)
+            data['num_parallel'] = cpu_count
+            f.seek(0)  # reset file position to the beginning
+            json.dump(data, f, indent=2)
+            f.truncate()  # remove remaining part
 
     # delete the example_project.json and write out the geoJSON
     os.remove(os.path.join(uo_folder, 'example_project.json'))
