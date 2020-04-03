@@ -44,29 +44,29 @@ def test_energy_properties():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
         room.properties.energy.add_default_ideal_air()
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
     tree_canopy.properties.energy.construction = bright_leaves
     tree_trans = ScheduleRuleset.from_constant_value(
         'Tree Transmittance', 0.5, schedule_types.fractional)
     tree_canopy.properties.energy.transmittance_schedule = tree_trans
 
-    model = Model('New Development', [building], [tree_canopy])
+    model = Model('NewDevelopment', [building], [tree_canopy])
 
     assert hasattr(model.properties, 'energy')
     assert isinstance(model.properties.energy, ModelEnergyProperties)
@@ -88,20 +88,20 @@ def test_energy_properties():
     assert len(model.properties.energy.program_types) == 1
 
 
-def test_check_duplicate_construction_set_names():
-    """Test the check_duplicate_construction_set_names method."""
+def test_check_duplicate_construction_set_identifiers():
+    """Test the check_duplicate_construction_set_identifiers method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
         room.properties.energy.add_default_ideal_air()
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
     building.separate_top_bottom_floors()
 
     constr_set = ConstructionSet('Attic Construction Set')
@@ -117,37 +117,37 @@ def test_check_duplicate_construction_set_names():
 
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
-    model = Model('New Development', [building], [tree_canopy])
+    model = Model('NewDevelopment', [building], [tree_canopy])
 
-    assert model.properties.energy.check_duplicate_construction_set_names(False)
+    assert model.properties.energy.check_duplicate_construction_set_identifiers(False)
     constr_set.unlock()
-    constr_set.name = 'Default Generic Construction Set'
+    constr_set.identifier = 'Default Generic Construction Set'
     constr_set.lock()
-    assert not model.properties.energy.check_duplicate_construction_set_names(False)
+    assert not model.properties.energy.check_duplicate_construction_set_identifiers(False)
     with pytest.raises(ValueError):
-        model.properties.energy.check_duplicate_construction_set_names(True)
+        model.properties.energy.check_duplicate_construction_set_identifiers(True)
 
 
-def test_check_duplicate_program_type_names():
-    """Test the check_duplicate_program_type_names method."""
+def test_check_duplicate_program_type_identifiers():
+    """Test the check_duplicate_program_type_identifiers method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
         room.properties.energy.add_default_ideal_air()
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
     building.separate_top_bottom_floors()
 
     attic_program_type = plenum_program.duplicate()
-    attic_program_type.name = 'Attic Space'
+    attic_program_type.identifier = 'Attic Space'
     schedule = ScheduleRuleset.from_constant_value(
         'Always Dim', 1, schedule_types.fractional)
     lighting = Lighting('Attic Lighting', 3, schedule)
@@ -157,37 +157,37 @@ def test_check_duplicate_program_type_names():
 
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
-    model = Model('New Development', [building], [tree_canopy])
+    model = Model('NewDevelopment', [building], [tree_canopy])
 
-    assert model.properties.energy.check_duplicate_program_type_names(False)
+    assert model.properties.energy.check_duplicate_program_type_identifiers(False)
     attic_program_type.unlock()
-    attic_program_type.name = office_program.name
+    attic_program_type.identifier = office_program.identifier
     attic_program_type.lock()
-    assert not model.properties.energy.check_duplicate_program_type_names(False)
+    assert not model.properties.energy.check_duplicate_program_type_identifiers(False)
     with pytest.raises(ValueError):
-        model.properties.energy.check_duplicate_program_type_names(True)
+        model.properties.energy.check_duplicate_program_type_identifiers(True)
 
 
 def test_to_from_dict():
     """Test the Model to_dict and from_dict method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
     for room in story.room_2ds:
         room.properties.energy.program_type = office_program
         room.properties.energy.add_default_ideal_air()
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
     building.separate_top_bottom_floors()
 
     attic_program_type = plenum_program.duplicate()
-    attic_program_type.name = 'Attic Space'
+    attic_program_type.identifier = 'Attic Space'
     schedule = ScheduleRuleset.from_constant_value(
         'Always Dim', 1, schedule_types.fractional)
     lighting = Lighting('Attic Lighting', 3, schedule)
@@ -208,14 +208,14 @@ def test_to_from_dict():
 
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
     tree_canopy.properties.energy.construction = bright_leaves
     tree_trans = ScheduleRuleset.from_constant_value(
         'Tree Transmittance', 0.5, schedule_types.fractional)
     tree_canopy.properties.energy.transmittance_schedule = tree_trans
 
-    model = Model('New Development', [building], [tree_canopy])
+    model = Model('NewDevelopment', [building], [tree_canopy])
 
     model.north_angle = 15
     model_dict = model.to_dict()
@@ -243,23 +243,23 @@ def test_to_honeybee():
     pts_1 = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(20, 0, 3), Point3D(20, 10, 3), Point3D(10, 10, 3))
     pts_3 = (Point3D(0, 20, 3), Point3D(20, 20, 3), Point3D(20, 30, 3), Point3D(0, 30, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    story_big = Story('Office Floor Big', [room2d_3])
-    story = Story('Office Floor', [room2d_1, room2d_2])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    story_big = Story('OfficeFloorBig', [room2d_3])
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
     building.separate_top_bottom_floors()
     story_big.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story_big.multiplier = 4
-    building_big = Building('Office Building Big', [story_big])
+    building_big = Building('OfficeBuildingBig', [story_big])
     building_big.separate_top_bottom_floors()
 
     attic_program_type = plenum_program.duplicate()
-    attic_program_type.name = 'Attic Space'
+    attic_program_type.identifier = 'Attic Space'
     schedule = ScheduleRuleset.from_constant_value(
         'Always Dim', 1, schedule_types.fractional)
     lighting = Lighting('Attic Lighting', 3, schedule)
@@ -280,14 +280,14 @@ def test_to_honeybee():
     
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
     tree_canopy.properties.energy.construction = bright_leaves
     tree_trans = ScheduleRuleset.from_constant_value(
         'Tree Transmittance', 0.5, schedule_types.fractional)
     tree_canopy.properties.energy.transmittance_schedule = tree_trans
 
-    model = Model('New Development', [building, building_big], [tree_canopy])
+    model = Model('NewDevelopment', [building, building_big], [tree_canopy])
 
     hb_models = model.to_honeybee('Building', 10, False, 0.01)
     assert len(hb_models) == 2

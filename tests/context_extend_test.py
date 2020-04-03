@@ -17,7 +17,7 @@ def test_energy_properties():
     """Test the existence of the ContextShade energy properties."""
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
     assert hasattr(tree_canopy.properties, 'energy')
     assert isinstance(tree_canopy.properties.energy, ContextShadeEnergyProperties)
@@ -29,7 +29,7 @@ def test_set_construction_schedule():
     """Test the setting of a Construction and Schedule on a ContextShade."""
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
     tree_trans = ScheduleRuleset.from_constant_value(
@@ -46,7 +46,7 @@ def test_duplicate():
     """Test what happens to energy properties when duplicating a Room2D."""
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    shade_original = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    shade_original = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
     shade_dup_1 = shade_original.duplicate()
 
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
@@ -77,7 +77,7 @@ def test_to_dict():
     """Test the Building to_dict method with energy properties."""
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
     sd = tree_canopy.to_dict()
     assert 'properties' in sd
@@ -102,7 +102,7 @@ def test_from_dict():
     """Test the Story from_dict method with energy properties."""
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
     bright_leaves = ShadeConstruction('Bright Light Leaves', 0.5, 0.5, True)
     tree_trans = ScheduleRuleset.from_constant_value(

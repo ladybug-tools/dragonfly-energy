@@ -38,15 +38,15 @@ def test_building_init():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     assert hasattr(building.properties, 'energy')
     assert isinstance(building.properties.energy, BuildingEnergyProperties)
@@ -59,15 +59,15 @@ def test_set_construction_set():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     concrete20 = EnergyMaterial('20cm Concrete', 0.2, 2.31, 2322, 832,
@@ -97,18 +97,18 @@ def test_set_all_room_2d_program_type():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     lab_program = office_program.duplicate()
-    lab_program.name = 'Bio Laboratory'
+    lab_program.identifier = 'Bio Laboratory'
     lab_program.electric_equipment.watts_per_area = 50
     lab_program.ventilation.flow_per_person = 0
     lab_program.ventilation.flow_per_area = 0
@@ -126,15 +126,15 @@ def test_set_all_room_2d_hvac():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     sensible = 0.8
     latent = 0.7
@@ -154,15 +154,15 @@ def test_averaged_program_type():
     """Test the averaged_program_type method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
 
     simple_office = ScheduleDay('Simple Weekday Occupancy', [0, 1, 0],
                                 [Time(0, 0), Time(9, 0), Time(17, 0)])
     occ_schedule = ScheduleRuleset('Office Occupancy Schedule', simple_office,
                                    None, schedule_types.fractional)
     light_schedule = occ_schedule.duplicate()
-    light_schedule.name = 'Office Lighting-Equip Schedule'
+    light_schedule.identifier = 'Office Lighting-Equip Schedule'
     light_schedule.default_day_schedule.values = [0.25, 1, 0.25]
     equip_schedule = light_schedule.duplicate()
     inf_schedule = ScheduleRuleset.from_constant_value(
@@ -185,11 +185,11 @@ def test_averaged_program_type():
     room2d_1.properties.energy.program_type = office_program
     room2d_2.properties.energy.program_type = plenum_program
 
-    story = Story('Office Floor', [room2d_1, room2d_2])
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     office_avg = building.properties.energy.averaged_program_type('Office Avg Program')
 
@@ -245,21 +245,21 @@ def test_averaged_program_type():
 
 
 def test_duplicate():
-    """Test what happens to energy properties when duplicating a Building."""
+    """Test what happens to energy properties during duplication."""
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building_original = Building('Office Building', [story])
+    building_original = Building('OfficeBuilding', [story])
     building_dup_1 = building_original.duplicate()
 
     assert building_original.properties.energy.host is building_original
@@ -289,15 +289,15 @@ def test_to_dict():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     bd = building.to_dict()
     assert 'properties' in bd
@@ -318,21 +318,21 @@ def test_from_dict():
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
     pts_4 = (Point3D(10, 10, 3), Point3D(10, 20, 3), Point3D(20, 20, 3), Point3D(20, 10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    story = Story('Office Floor', [room2d_1, room2d_2, room2d_3, room2d_4])
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2, room2d_3, room2d_4])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 4
-    building = Building('Office Building', [story])
+    building = Building('OfficeBuilding', [story])
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     building.properties.energy.construction_set = mass_set
 
     bd = building.to_dict()
     new_bldg = Building.from_dict(bd)
-    assert new_bldg.properties.energy.construction_set.name == \
+    assert new_bldg.properties.energy.construction_set.identifier == \
         'Thermal Mass Construction Set'
     assert new_bldg.to_dict() == bd

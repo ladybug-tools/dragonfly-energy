@@ -220,54 +220,54 @@ class ModelEnergyProperties(object):
                             hvacs.append(room.properties.energy._hvac)
         return hvacs
 
-    def check_duplicate_construction_set_names(self, raise_exception=True):
-        """Check that there are no duplicate ConstructionSet names in the model."""
-        con_set_names = set()
-        duplicate_names = set()
+    def check_duplicate_construction_set_identifiers(self, raise_exception=True):
+        """Check that there are no duplicate ConstructionSet identifiers in the model."""
+        con_set_identifiers = set()
+        duplicate_identifiers = set()
         for con_set in self.construction_sets + [self.global_construction_set]:
-            if con_set.name not in con_set_names:
-                con_set_names.add(con_set.name)
+            if con_set.identifier not in con_set_identifiers:
+                con_set_identifiers.add(con_set.identifier)
             else:
-                duplicate_names.add(con_set.name)
-        if len(duplicate_names) != 0:
+                duplicate_identifiers.add(con_set.identifier)
+        if len(duplicate_identifiers) != 0:
             if raise_exception:
                 raise ValueError(
                     'The model has the following duplicated ConstructionSet '
-                    'names:\n{}'.format('\n'.join(duplicate_names)))
+                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
             return False
         return True
 
-    def check_duplicate_program_type_names(self, raise_exception=True):
-        """Check that there are no duplicate ProgramType names in the model."""
-        p_type_names = set()
-        duplicate_names = set()
+    def check_duplicate_program_type_identifiers(self, raise_exception=True):
+        """Check that there are no duplicate ProgramType identifiers in the model."""
+        p_type_identifiers = set()
+        duplicate_identifiers = set()
         for p_type in self.program_types:
-            if p_type.name not in p_type_names:
-                p_type_names.add(p_type.name)
+            if p_type.identifier not in p_type_identifiers:
+                p_type_identifiers.add(p_type.identifier)
             else:
-                duplicate_names.add(p_type.name)
-        if len(duplicate_names) != 0:
+                duplicate_identifiers.add(p_type.identifier)
+        if len(duplicate_identifiers) != 0:
             if raise_exception:
                 raise ValueError(
                     'The model has the following duplicated ProgramType '
-                    'names:\n{}'.format('\n'.join(duplicate_names)))
+                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
             return False
         return True
 
-    def check_duplicate_hvac_names(self, raise_exception=True):
-        """Check that there are no duplicate HVAC names in the model."""
-        hvac_names = set()
-        duplicate_names = set()
+    def check_duplicate_hvac_identifiers(self, raise_exception=True):
+        """Check that there are no duplicate HVAC identifiers in the model."""
+        hvac_identifiers = set()
+        duplicate_identifiers = set()
         for hvac in self.hvacs:
-            if hvac.name not in hvac_names:
-                hvac_names.add(hvac.name)
+            if hvac.identifier not in hvac_identifiers:
+                hvac_identifiers.add(hvac.identifier)
             else:
-                duplicate_names.add(hvac.name)
-        if len(duplicate_names) != 0:
+                duplicate_identifiers.add(hvac.identifier)
+        if len(duplicate_identifiers) != 0:
             if raise_exception:
                 raise ValueError(
                     'The model has the following duplicated HVAC system '
-                    'names:\n{}'.format('\n'.join(duplicate_names)))
+                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
             return False
         return True
 
@@ -359,7 +359,8 @@ class ModelEnergyProperties(object):
         # add all ConstructionSets to the dictionary
         base['energy']['construction_sets'] = []
         if include_global_construction_set:
-            base['energy']['global_construction_set'] = self.global_construction_set.name
+            base['energy']['global_construction_set'] = \
+                self.global_construction_set.identifier
             base['energy']['construction_sets'].append(
                 self.global_construction_set.to_dict(abridged=True,
                                                      none_for_defaults=False))
@@ -479,4 +480,4 @@ class ModelEnergyProperties(object):
         return self.__repr__()
 
     def __repr__(self):
-        return 'Model Energy Properties:\n host: {}'.format(self.host.name)
+        return 'Model Energy Properties: {}'.format(self.host.identifier)
