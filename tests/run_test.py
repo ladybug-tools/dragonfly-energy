@@ -12,8 +12,8 @@ from dragonfly.windowparameter import SimpleWindowRatio
 
 from honeybee_energy.run import to_openstudio_osw, run_osw
 from honeybee_energy.simulation.parameter import SimulationParameter
-from honeybee_energy.lib.constructionsets import construction_set_by_name
-from honeybee_energy.lib.programtypes import program_type_by_name
+from honeybee_energy.lib.constructionsets import construction_set_by_identifier
+from honeybee_energy.lib.programtypes import program_type_by_identifier
 
 from honeybee.config import folders
 
@@ -33,47 +33,47 @@ def run_urban_model_with_urbanopt():
     pts_1 = (Point3D(50, 50, 3), Point3D(60, 50, 3), Point3D(60, 60, 3), Point3D(50, 60, 3))
     pts_2 = (Point3D(60, 50, 3), Point3D(70, 50, 3), Point3D(70, 60, 3), Point3D(60, 60, 3))
     pts_3 = (Point3D(50, 70, 3), Point3D(70, 70, 3), Point3D(70, 80, 3), Point3D(50, 80, 3))
-    room2d_1 = Room2D('Residence 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Residence 2', Face3D(pts_2), 3)
+    room2d_1 = Room2D('Residence1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Residence2', Face3D(pts_2), 3)
     room2d_3 = Room2D('Retail', Face3D(pts_3), 3)
-    story_big = Story('Retail Floor', [room2d_3])
-    story = Story('Residence Floor', [room2d_1, room2d_2])
+    story_big = Story('RetailFloor', [room2d_3])
+    story = Story('ResidenceFloor', [room2d_1, room2d_2])
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 3
-    building = Building('Residence Building', [story])
+    building = Building('ResidenceBuilding', [story])
     story_big.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story_big.multiplier = 1
-    building_big = Building('Retail Building Big', [story_big])
+    building_big = Building('RetailBuildingBig', [story_big])
 
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 5, 3), Point3D(15, 5, 3), Point3D(15, 0, 3))
     pts_2 = (Point3D(15, 0, 3), Point3D(15, 15, 3), Point3D(20, 15, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 5, 3), Point3D(0, 20, 3), Point3D(5, 20, 3), Point3D(5, 5, 3))
     pts_4 = (Point3D(5, 15, 3), Point3D(5, 20, 3), Point3D(20, 20, 3), Point3D(20, 15, 3))
     pts_5 = (Point3D(-5, -5, 3), Point3D(-10, -5, 3), Point3D(-10, -10, 3), Point3D(-5, -10, 3))
-    room2d_1 = Room2D('Office 1', Face3D(pts_1), 3)
-    room2d_2 = Room2D('Office 2', Face3D(pts_2), 3)
-    room2d_3 = Room2D('Office 3', Face3D(pts_3), 3)
-    room2d_4 = Room2D('Office 4', Face3D(pts_4), 3)
-    room2d_5 = Room2D('Office 5', Face3D(pts_5), 3)
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    room2d_3 = Room2D('Office3', Face3D(pts_3), 3)
+    room2d_4 = Room2D('Office4', Face3D(pts_4), 3)
+    room2d_5 = Room2D('Office5', Face3D(pts_5), 3)
     int_rms = Room2D.intersect_adjacency(
         [room2d_1, room2d_2, room2d_3, room2d_4, room2d_5], 0.01)
-    story = Story('Office Floor', int_rms)
+    story = Story('OfficeFloor', int_rms)
     story.rotate_xy(5, Point3D(0, 0, 0))
     story.solve_room_2d_adjacency(0.01)
     story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
     story.multiplier = 5
-    building_mult = Building('Office Building', [story])
+    building_mult = Building('OfficeBuilding', [story])
 
     # set program type and construction set
-    c_set = construction_set_by_name('2013::ClimateZone5::SteelFramed')
+    c_set = construction_set_by_identifier('2013::ClimateZone5::SteelFramed')
     building.properties.energy.construction_set = c_set
     building_big.properties.energy.construction_set = c_set
     building_mult.properties.energy.construction_set = c_set
 
-    office_type = program_type_by_name('2013::LargeOffice::OpenOffice')
-    residence_type = program_type_by_name('2013::MidriseApartment::Apartment')
-    retail_type = program_type_by_name('2013::Retail::Retail')
+    office_type = program_type_by_identifier('2013::LargeOffice::OpenOffice')
+    residence_type = program_type_by_identifier('2013::MidriseApartment::Apartment')
+    retail_type = program_type_by_identifier('2013::Retail::Retail')
     building.properties.energy.set_all_room_2d_program_type(residence_type)
     building_big.properties.energy.set_all_room_2d_program_type(retail_type)
     building_mult.properties.energy.set_all_room_2d_program_type(office_type)
@@ -81,7 +81,7 @@ def run_urban_model_with_urbanopt():
     # get context shade
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
-    tree_canopy = ContextShade('Tree Canopy', [tree_canopy_geo1, tree_canopy_geo2])
+    tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
 
     # create the Model object
     model = Model('TestGeoJSON', [building, building_big, building_mult], [tree_canopy])
@@ -90,8 +90,7 @@ def run_urban_model_with_urbanopt():
     location = Location('Boston', 'MA', 'USA', 42.366151, -71.019357)
     geo_dict = model.to_geojson_dict(location)
 
-    #sim_folder = os.path.join(folders.default_simulation_folder, 'district_test')
-    sim_folder = 'C:\district_test'
+    sim_folder = os.path.join(folders.default_simulation_folder, 'district_test')
     preparedir(sim_folder)
     epw_file = os.path.abspath('./tests/epw/chicago.epw')
 
@@ -112,8 +111,8 @@ def run_urban_model_with_urbanopt():
                 raise ValueError('No _ddy_file_ has been input and no .ddy file was '
                                 'found next to the _epw_file.')
 
-        # process the simulation folder name and the directory
-        directory = os.path.join(sim_folder, hb_model.name, 'OpenStudio')
+        # process the simulation folder identifier and the directory
+        directory = os.path.join(sim_folder, hb_model.identifier, 'OpenStudio')
 
         # delete any existing files in the directory and prepare it for simulation
         nukedir(directory, True)
@@ -121,7 +120,7 @@ def run_urban_model_with_urbanopt():
 
         # write the model parameter JSONs
         model_dict = hb_model.to_dict(triangulate_sub_faces=True)
-        model_json = os.path.join(directory, '{}.json'.format(model.name))
+        model_json = os.path.join(directory, '{}.json'.format(model.identifier))
         with open(model_json, 'w') as fp:
             json.dump(model_dict, fp)
 

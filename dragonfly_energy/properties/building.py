@@ -55,23 +55,26 @@ class BuildingEnergyProperties(object):
             value.lock()   # lock in case construction set has multiple references
         self._construction_set = value
 
-    def averaged_program_type(self, name=None, timestep_resolution=1):
+    def averaged_program_type(self, identifier=None, timestep_resolution=1):
         """Get a ProgramType that is averaged across all of the children Room2Ds.
 
         The weights used in the averaging process are the floor area weights and they
         account for the multipliers on the child Story objects.
 
         Args:
-            name: A name for the new averaged ProgramType object. If None, the
-                resulting ProgramType will use the name of the host Building.
-                Default: None.
+            identifier: A unique ID text string for the new averaged ProgramType.
+                Must be < 100 characters and not contain any EnergyPlus special
+                characters. This will be used to identify the object across a model
+                and in the exported IDF. If None, the resulting ProgramType will
+                use the identifier of the host Building. (Default: None)
             timestep_resolution: An optional integer for the timestep resolution
                 at which the schedules will be averaged. Any schedule details
                 smaller than this timestep will be lost in the averaging process.
                 Default: 1.
         """
-        # get the default name of the ProgramType if None
-        name = name if name is not None else '{}_Program'.format(self.host.name)
+        # get the default identifier of the ProgramType if None
+        identifier = identifier if identifier is not None else \
+            '{}_Program'.format(self.host.identifier)
 
         # compute the floor area weights and programs
         flr_areas = []
@@ -84,7 +87,8 @@ class BuildingEnergyProperties(object):
         weights = [room_area / total_area for room_area in flr_areas]
 
         # compute the averaged program
-        return ProgramType.average(name, program_types, weights, timestep_resolution)
+        return ProgramType.average(
+            identifier, program_types, weights, timestep_resolution)
 
     def set_all_room_2d_program_type(self, program_type):
         """Set all of the children Room2Ds of this Building to have the same ProgramType.
@@ -104,7 +108,7 @@ class BuildingEnergyProperties(object):
         (such as a VAVSystem), all Room2Ds will receive the same HVAC instance
         as their HVAC system. In the case of an HVAC that can only be assigned
         to individual zones (such as an IdealAirSystem), the input hvac will be
-        duplicated and renamed (with an integer appended to the end) for each
+        duplicated and identified (with an integer appended to the end) for each
         Room2D to which is it applied.
 
         Args:
@@ -120,13 +124,13 @@ class BuildingEnergyProperties(object):
         else:  # duplicate the HVAC instance as it is applied to rooms
             for i, room_2d in enumerate(self.host.unique_room_2ds):
                 new_hvac = hvac.duplicate()
-                new_hvac.name = '{}_{}'.format(hvac.name, i)
+                new_hvac._identifier = '{}_{}'.format(hvac.identifier, i)
                 room_2d.properties.energy.hvac = new_hvac
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to all children Room2Ds of this Story.
 
-        The name of the systems will be derived from the room names.
+        The identifier of the systems will be derived from the room identifiers.
         """
         for room_2d in self.host.unique_room_2ds:
             room_2d.properties.energy.add_default_ideal_air()
@@ -158,8 +162,8 @@ class BuildingEnergyProperties(object):
         Args:
             abridged_data: A BuildingEnergyPropertiesAbridged dictionary (typically
                 coming from a Model).
-            construction_sets: A dictionary of ConstructionSets with names of the sets
-                as keys, which will be used to re-assign construction_sets.
+            construction_sets: A dictionary of ConstructionSets with identifiers
+                of the sets as keys, which will be used to re-assign construction_sets.
         """
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
@@ -170,7 +174,7 @@ class BuildingEnergyProperties(object):
 
         Args:
             abridged: Boolean for whether the full dictionary of the Building should
-                be written (False) or just the name of the the individual
+                be written (False) or just the identifier of the the individual
                 properties (True). Default: False.
         """
         base = {'energy': {}}
@@ -180,7 +184,7 @@ class BuildingEnergyProperties(object):
         # write the ConstructionSet into the dictionary
         if self._construction_set is not None:
             base['energy']['construction_set'] = \
-                self._construction_set.name if abridged else \
+                self._construction_set.identifier if abridged else \
                 self._construction_set.to_dict()
 
         return base
@@ -198,4 +202,4 @@ class BuildingEnergyProperties(object):
         return self.__repr__()
 
     def __repr__(self):
-        return 'Building Energy Properties:\n host: {}'.format(self.host.name)
+        return 'Building Energy Properties: {}'.format(self.host.identifier)

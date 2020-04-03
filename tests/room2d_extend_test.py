@@ -32,7 +32,7 @@ def test_energy_properties():
     boundarycs = (bcs.outdoors, bcs.ground, bcs.outdoors, bcs.ground)
     window = (ashrae_base, None, ashrae_base, None)
     shading = (overhang, None, None, None)
-    room = Room2D('Square Shoebox', Face3D(pts), 3, boundarycs, window, shading)
+    room = Room2D('SquareShoebox', Face3D(pts), 3, boundarycs, window, shading)
 
     room.properties.energy.program_type = office_program
     room.properties.energy.add_default_ideal_air()
@@ -50,12 +50,12 @@ def test_default_properties():
     """Test the auto-assigning of Room2D properties."""
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room = Room2D('Square Shoebox', Face3D(pts), 3)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
     room.set_outdoor_window_parameters(ashrae_base)
 
-    assert room.properties.energy.construction_set.name == \
+    assert room.properties.energy.construction_set.identifier == \
         'Default Generic Construction Set'
-    assert room.properties.energy.program_type.name == 'Plenum'
+    assert room.properties.energy.program_type.identifier == 'Plenum'
     assert room.properties.energy.hvac is None
     assert not room.properties.energy.is_conditioned
 
@@ -68,7 +68,7 @@ def test_set_construction_set():
     boundarycs = (bcs.outdoors, bcs.ground, bcs.outdoors, bcs.ground)
     window = (ashrae_base, None, ashrae_base, None)
     shading = (overhang, None, None, None)
-    room = Room2D('Square Shoebox', Face3D(pts), 3, boundarycs, window, shading)
+    room = Room2D('SquareShoebox', Face3D(pts), 3, boundarycs, window, shading)
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     concrete20 = EnergyMaterial('20cm Concrete', 0.2, 2.31, 2322, 832,
@@ -103,7 +103,7 @@ def test_set_program_type():
     lab_ventilation = ScheduleRuleset('Lab Ventilation', lab_vent_day,
                                       None, schedule_types.fractional)
     lab_program = office_program.duplicate()
-    lab_program.name = 'Bio Laboratory'
+    lab_program.identifier = 'Bio Laboratory'
     lab_program.electric_equipment.watts_per_area = 50
     lab_program.electric_equipment.schedule = lab_equipment
     lab_program.ventilation.flow_per_person = 0
@@ -113,12 +113,12 @@ def test_set_program_type():
 
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room = Room2D('Square Shoebox', Face3D(pts), 3)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
     room.set_outdoor_window_parameters(ashrae_base)
 
     room.properties.energy.program_type = lab_program
 
-    assert room.properties.energy.program_type.name == 'Bio Laboratory'
+    assert room.properties.energy.program_type.identifier == 'Bio Laboratory'
     assert room.properties.energy.program_type == lab_program
 
     hb_room = room.to_honeybee()
@@ -134,7 +134,7 @@ def test_set_ideal_air():
     """Test the setting of a IdealAirSystems on a Room2D."""
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room = Room2D('Square Shoebox', Face3D(pts), 3)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
     room.set_outdoor_window_parameters(ashrae_base)
 
     sensible = 0.8
@@ -159,7 +159,7 @@ def test_duplicate():
     mass_set = ConstructionSet('Thermal Mass Construction Set')
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room_original = Room2D('Square Shoebox', Face3D(pts), 3)
+    room_original = Room2D('SquareShoebox', Face3D(pts), 3)
     room_original.set_outdoor_window_parameters(ashrae_base)
     room_dup_1 = room_original.duplicate()
 
@@ -192,7 +192,7 @@ def test_to_dict():
     boundarycs = (bcs.outdoors, bcs.ground, bcs.outdoors, bcs.ground)
     window = (ashrae_base, None, ashrae_base, None)
     shading = (overhang, None, None, None)
-    room = Room2D('Shoe Box Zone', Face3D(pts), 3, boundarycs, window, shading)
+    room = Room2D('ShoeBoxZone', Face3D(pts), 3, boundarycs, window, shading)
 
     rd = room.to_dict()
     assert 'properties' in rd
@@ -217,7 +217,7 @@ def test_from_dict():
     """Test the Room2D from_dict method with energy properties."""
     pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
     ashrae_base = SimpleWindowRatio(0.4)
-    room = Room2D('Square Shoebox', Face3D(pts), 3)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
     room.set_outdoor_window_parameters(ashrae_base)
 
     mass_set = ConstructionSet('Thermal Mass Construction Set')
@@ -225,6 +225,6 @@ def test_from_dict():
 
     rd = room.to_dict()
     new_room = Room2D.from_dict(rd)
-    assert new_room.properties.energy.construction_set.name == \
+    assert new_room.properties.energy.construction_set.identifier == \
         'Thermal Mass Construction Set'
     assert new_room.to_dict() == rd
