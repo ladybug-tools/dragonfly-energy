@@ -8,21 +8,22 @@
 Dragonfly extension for energy simulation.
 
 ## Installation
-```console
-pip install dragonfly-energy
-```
+`pip install dragonfly-energy`
+
+If you want to also include the command line interface try:
+
+`pip install -U dragonfly-energy[cli]`
 
 ## QuickStart
-```python
+```
 import dragonfly_energy
-
 ```
 
 ## [API Documentation](http://ladybug-tools.github.io/dragonfly-energy/docs)
 
 ## Local Development
 1. Clone this repo locally
-```console
+```
 git clone git@github.com:ladybug-tools/dragonfly-energy
 
 # or
@@ -30,19 +31,19 @@ git clone git@github.com:ladybug-tools/dragonfly-energy
 git clone https://github.com/ladybug-tools/dragonfly-energy
 ```
 2. Install dependencies:
-```console
+```
 cd dragonfly-energy
 pip install -r dev-requirements.txt
 pip install -r requirements.txt
 ```
 
 3. Run Tests:
-```console
+```
 python -m pytest tests/
 ```
 
 4. Generate Documentation:
-```console
+```
 sphinx-apidoc -f -e -d 4 -o ./docs ./dragonfly_energy
 sphinx-build -b html ./docs ./docs/_build/docs
 ```
