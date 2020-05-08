@@ -200,9 +200,7 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
             ver_str = energyplus_idf_version() if folders.energyplus_version \
                 is not None else energyplus_idf_version((9, 2, 0))
             sim_par_str = sim_par.to_idf()
-            model_str = hb_model.to.idf(
-                hb_model, schedule_directory=sch_directory,
-                solar_distribution=sim_par.shadow_calculation.solar_distribution)
+            model_str = hb_model.to.idf(hb_model, schedule_directory=sch_directory)
             idf_str = '\n\n'.join([ver_str, sim_par_str, model_str])
 
             # write out the IDF file

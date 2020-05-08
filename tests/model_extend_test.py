@@ -217,7 +217,6 @@ def test_to_from_dict():
 
     model = Model('NewDevelopment', [building], [tree_canopy])
 
-    model.north_angle = 15
     model_dict = model.to_dict()
     new_model = Model.from_dict(model_dict)
     assert model_dict == new_model.to_dict()
