@@ -85,7 +85,7 @@ def test_set_construction_set():
     room.properties.energy.construction_set = mass_set
     assert room.properties.energy.construction_set == mass_set
 
-    hb_room = room.to_honeybee()
+    hb_room, adj = room.to_honeybee()
     assert hb_room.properties.energy.construction_set == mass_set
     assert hb_room[1].properties.energy.construction == thick_constr
     assert hb_room[5].properties.energy.construction == thin_constr
@@ -121,7 +121,7 @@ def test_set_program_type():
     assert room.properties.energy.program_type.identifier == 'Bio Laboratory'
     assert room.properties.energy.program_type == lab_program
 
-    hb_room = room.to_honeybee()
+    hb_room, adj = room.to_honeybee()
     assert hb_room.properties.energy.electric_equipment.watts_per_area == 50
     assert hb_room.properties.energy.electric_equipment.schedule == lab_equipment
     assert hb_room.properties.energy.ventilation.flow_per_person == 0
@@ -148,7 +148,7 @@ def test_set_ideal_air():
     assert room.properties.energy.hvac.sensible_heat_recovery == sensible
     assert room.properties.energy.hvac.latent_heat_recovery == latent
 
-    hb_room = room.to_honeybee()
+    hb_room, adj = room.to_honeybee()
     assert hb_room.properties.energy.hvac == ideal_air_sys
     assert hb_room.properties.energy.hvac.sensible_heat_recovery == sensible
     assert hb_room.properties.energy.hvac.latent_heat_recovery == latent
