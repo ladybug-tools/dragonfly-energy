@@ -12,6 +12,8 @@ from honeybee_energy.construction.shade import ShadeConstruction
 from honeybee_energy.material.opaque import EnergyMaterial
 from honeybee_energy.lib.programtypes import office_program
 
+import honeybee.model as hb_model
+
 from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.face import Face3D
 
@@ -65,10 +67,11 @@ def test_set_construction_set():
     assert story.properties.energy.construction_set == mass_set
     assert story[0].properties.energy.construction_set == mass_set
 
-    hb_model = story.to_honeybee()
-    assert len(hb_model.properties.energy.construction_sets) == 1
-    assert hb_model.properties.energy.construction_sets[0] == mass_set
-    assert hb_model.rooms[0].properties.energy.construction_set == mass_set
+    rooms = story.to_honeybee()
+    model = hb_model.Model(story.identifier, rooms)
+    assert len(model.properties.energy.construction_sets) == 1
+    assert model.properties.energy.construction_sets[0] == mass_set
+    assert model.rooms[0].properties.energy.construction_set == mass_set
 
 
 def test_set_all_room_2d_program_type():
