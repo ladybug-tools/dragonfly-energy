@@ -12,7 +12,8 @@ from dragonfly.model import Model
 from ladybug.futil import preparedir
 
 from honeybee_energy.simulation.parameter import SimulationParameter
-from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf
+from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
+    _output_energyplus_files
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
 
@@ -46,6 +47,9 @@ def simulate():
               'If None, all other buildings will be included as context shade in '
               'each and every Model. Set to 0 to exclude all neighboring buildings '
               'from the resulting models.', default=None, show_default=True)
+@click.option('--base-osw', help='Full path to an OSW JSON be used as the base for '
+              'the execution of the OpenStuduo CLI. This can be used to add '
+              'measures in the workflow.', default=None, show_default=True)
 @click.option('--folder', help='Folder on this computer, into which the OSM and IDF '
               'files will be written. If None, the files will be output in the'
               'same location as the model_json.', default=None, show_default=True)
@@ -53,7 +57,7 @@ def simulate():
               'translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-')
 def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, use_multiplier,
-                   shade_dist, folder, log_file):
+                   shade_dist, base_osw, folder, log_file):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
     \n
     Args:
@@ -114,20 +118,33 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, use_multip
                 json.dump(model_dict, fp, indent=4)
 
             # Write the osw file to translate the model to osm
-            osw = to_openstudio_osw(directory, file_path, sim_par_json)
+            osw = to_openstudio_osw(directory, file_path, sim_par_json,
+                                    base_osw=base_osw, epw_file=epw_file)
 
             # run the measure to translate the model JSON to an openstudio measure
             if osw is not None and os.path.isfile(osw):
-                osm, idf = run_osw(osw)
-                if idf is not None and os.path.isfile(idf):
-                    sql, eio, rdd, html, err = run_idf(idf, epw_file)
+                if base_osw is None:  # separate the OS CLI run from the E+ run
+                    osm, idf = run_osw(osw)
+                    if idf is not None and os.path.isfile(idf):
+                        sql, eio, rdd, html, err = run_idf(idf, epw_file)
+                        osms.append(osm)
+                        idfs.append(idf)
+                        sqls.append(sql)
+                        if err is None or not os.path.isfile(err):
+                            raise Exception('Running EnergyPlus failed.')
+                    else:
+                        raise Exception('Running OpenStudio CLI failed.')
+                else:  # run the whole simulation with the OpenStudio CLI
+                    osm, idf = run_osw(osw, measures_only=False)
+                    if idf is None or not os.path.isfile(idf):
+                        raise Exception('Running OpenStudio CLI failed.')
+                    sql, eio, rdd, html, err = \
+                        _output_energyplus_files(os.path.dirname(idf))
+                    if err is None or not os.path.isfile(err):
+                        raise Exception('Running EnergyPlus failed.')
                     osms.append(osm)
                     idfs.append(idf)
                     sqls.append(sql)
-                    if err is None or not os.path.isfile(err):
-                        raise Exception('Running EnergyPlus failed.')
-                else:
-                    raise Exception('Running OpenStudio CLI failed.')
             else:
                 raise Exception('Writing OSW file failed.')
         log_file.write('The following OSMs were generated:\n{}\n'.format('\n'.join(osms)))
