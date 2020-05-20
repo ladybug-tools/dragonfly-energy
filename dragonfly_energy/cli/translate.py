@@ -143,8 +143,8 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
 @click.option('--folder', help='Folder on this computer, into which the OSM and IDF '
               'files will be written. If None, the files will be output in the'
               'same location as the model_json.', default=None, show_default=True)
-@click.option('--log-file', help='Optional log file to output the progress of the'
-              'translation. By default this will be printed out to stdout',
+@click.option('--log-file', help='Optional log file to output the list of IDF files '
+              'generated. By default this will be printed out to stdout',
               type=click.File('w'), default='-')
 def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
                  shade_dist, folder, log_file):
@@ -177,14 +177,12 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
             sim_par.output.add_zone_energy_use()
 
         # re-serialize the Dragonfly Model
-        log_file.write('Re-serailizing Dragonfly model JSON.\n')
         with open(model_json) as json_file:
             data = json.load(json_file)
         df_model = Model.from_dict(data)
         df_model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
-        log_file.write('Converting Dragonfly Models to Honeybee.\n')
         hb_models = df_model.to_honeybee(obj_per_model, shade_dist, use_multiplier)
 
         # set the schedule directory in case it is needed
@@ -193,7 +191,6 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
         sch_directory = os.path.join(os.path.split(sch_path)[0], 'schedules')
 
         # write out the honeybee JSONs
-        log_file.write('Writing Honeybee Models to IDF.\n')
         idfs = []
         for hb_model in hb_models:
             # create the strings for simulation paramters and model
@@ -208,7 +205,7 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
             with open(idf_path, 'w') as idf_file:
                 idf_file.write(idf_str)
             idfs.append(idf_path)
-        log_file.write('The following IDFs were generated:\n{}\n'.format('\n'.join(idfs)))
+        log_file.write('\n'.join(idfs))
     except Exception as e:
         _logger.exception('Model translation failed.\n{}\n'.format(e))
         sys.exit(1)
