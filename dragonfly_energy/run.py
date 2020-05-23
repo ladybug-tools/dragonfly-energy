@@ -16,8 +16,8 @@ def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path, cpu_count=2)
     This includes deleting any uo_folder that already exists, running the uo -p
     command, and deleting several files it generates like example_project.json,
     the Buffalo EPW files, the .osm files, and the HighEfficiency mapper. Then,
-    a geoJOSN is exported using the input geojson_dict. Then, the ChangeBuildingLocation
-    measure is skipped in the base_workdlow.osw. Lastly, the uo -m command
+    a geoJSON is exported using the input geojson_dict. Then, the ChangeBuildingLocation
+    measure is skipped in the base_workflow.osw. Lastly, the uo -m command
     is run to generate the scenario csv file from the exported geoJSON and
     Baseline mapper.
 
@@ -282,7 +282,7 @@ def _output_urbanopt_files(directory):
         -   rdd -- Array of paths to .rdd files containing all possible outputs
             that can be requested from the simulation.
 
-        -   html -- Array of paths to .html files containing all summary reports.
+        -   html -- Array of paths to .htm files containing all summary reports.
 
         -   err -- Array of paths to .err files containing all errors and warnings from the
             simulation.
@@ -294,7 +294,7 @@ def _output_urbanopt_files(directory):
     html = []
     err = []
 
-    # generate paths to the simulation files and check their existance
+    # generate paths to the simulation files and check their existence
     sim_dir = os.path.join(directory, 'run', 'baseline_scenario')
     for bldg_name in os.listdir(sim_dir):
         bldg_dir = os.path.join(sim_dir, bldg_name)
@@ -307,7 +307,7 @@ def _output_urbanopt_files(directory):
         rdd_file = os.path.join(bldg_dir, 'eplusout.rdd')
         if os.path.isfile(rdd_file):
             rdd.append(rdd_file)
-        html_file = os.path.join(bldg_dir, 'eplusout.html')
+        html_file = os.path.join(bldg_dir, 'eplustbl.htm')
         if os.path.isfile(html_file):
             html.append(html_file)
         err_file = os.path.join(bldg_dir, 'eplusout.err')
