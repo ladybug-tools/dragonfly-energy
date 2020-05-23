@@ -13,7 +13,7 @@ from ladybug.futil import preparedir
 
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
-    _output_energyplus_files
+    output_energyplus_files
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
 
