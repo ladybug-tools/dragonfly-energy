@@ -1,7 +1,7 @@
 # coding=utf-8
 import pytest
 
-from dragonfly_energy.run import prepare_urbanopt_folder, run_urbanopt
+from dragonfly_energy.run import base_honeybee_osw
 
 from dragonfly.model import Model
 from dragonfly.building import Building
@@ -10,15 +10,13 @@ from dragonfly.room2d import Room2D
 from dragonfly.context import ContextShade
 from dragonfly.windowparameter import SimpleWindowRatio
 
-from honeybee_energy.run import to_openstudio_osw, run_osw
 from honeybee_energy.simulation.parameter import SimulationParameter
-from honeybee_energy.lib.constructionsets import construction_set_by_identifier
-from honeybee_energy.lib.programtypes import program_type_by_identifier
+from honeybee_energy.measure import Measure
+from honeybee_energy.lib.programtypes import office_program
 
-from honeybee.config import folders
-
-from ladybug.futil import preparedir, nukedir
 from ladybug.location import Location
+from ladybug.futil import nukedir
+
 from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
 from ladybug_geometry.geometry3d.plane import Plane
 from ladybug_geometry.geometry3d.face import Face3D
@@ -27,9 +25,8 @@ import os
 import json
 
 
-def run_urban_model_with_urbanopt():
+def test_base_honeybee_osw():
     """Test the simulation of an urban model with URBANopt."""
-    # TODO: add 'test_' to the front of this method once CI can install URBANopt CLI
     pts_1 = (Point3D(50, 50, 3), Point3D(60, 50, 3), Point3D(60, 60, 3), Point3D(50, 60, 3))
     pts_2 = (Point3D(60, 50, 3), Point3D(70, 50, 3), Point3D(70, 60, 3), Point3D(60, 60, 3))
     pts_3 = (Point3D(50, 70, 3), Point3D(70, 70, 3), Point3D(70, 80, 3), Point3D(50, 80, 3))
@@ -65,18 +62,10 @@ def run_urban_model_with_urbanopt():
     story.multiplier = 5
     building_mult = Building('OfficeBuilding', [story])
 
-    # set program type and construction set
-    c_set = construction_set_by_identifier('2013::ClimateZone5::SteelFramed')
-    building.properties.energy.construction_set = c_set
-    building_big.properties.energy.construction_set = c_set
-    building_mult.properties.energy.construction_set = c_set
-
-    office_type = program_type_by_identifier('2013::LargeOffice::OpenOffice')
-    residence_type = program_type_by_identifier('2013::MidriseApartment::Apartment')
-    retail_type = program_type_by_identifier('2013::Retail::Retail')
-    building.properties.energy.set_all_room_2d_program_type(residence_type)
-    building_big.properties.energy.set_all_room_2d_program_type(retail_type)
-    building_mult.properties.energy.set_all_room_2d_program_type(office_type)
+    # set program type
+    building.properties.energy.set_all_room_2d_program_type(office_program)
+    building_big.properties.energy.set_all_room_2d_program_type(office_program)
+    building_mult.properties.energy.set_all_room_2d_program_type(office_program)
 
     # get context shade
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
@@ -86,57 +75,33 @@ def run_urban_model_with_urbanopt():
     # create the Model object
     model = Model('TestGeoJSON', [building, building_big, building_mult], [tree_canopy])
 
-    # get the geoJSON dictionary
+    # create the urbanopt feature geoJSON
     location = Location('Boston', 'MA', 'USA', 42.366151, -71.019357)
-    geo_dict = model.to_geojson_dict(location)
+    sim_folder = './tests/simulation'
+    geojson, hb_model_jsons, hb_models = \
+        model.to.urbanopt(model, location, folder=sim_folder)
+    
+    # create the simulation parameters
+    sim_par = SimulationParameter()
+    sim_par.output.add_zone_energy_use()
+    ddy_file = './tests/epw/chicago.ddy'
+    sim_par.sizing_parameter.add_from_ddy_996_004(ddy_file)
+    simpar_json_path = './tests/simulation/simulation_parameter.json'
+    with open(simpar_json_path, 'w') as fp:
+        json.dump(sim_par.to_dict(), fp)
 
-    sim_folder = os.path.join(folders.default_simulation_folder, 'district_test')
-    preparedir(sim_folder)
-    epw_file = os.path.abspath('./tests/epw/chicago.epw')
+    # load up an additional measure to include
+    measure_path = './tests/measure/edit_fraction_radiant_of_lighting_and_equipment'
+    measure = Measure(measure_path)
+    measure.arguments[0].value = 0.25
+    measure.arguments[1].value = 0.25
 
-    # write out the OpenStudio Models
-    hb_models = model.to_honeybee('Building', 100, False, 0.01)
-    for hb_model in hb_models:
-        # process the simulation parameters
-        _sim_par_ = SimulationParameter()
-        _sim_par_.output.add_zone_energy_use()
-        
-        # assign design days from the EPW if there are not in the _sim_par_
-        if len(_sim_par_.sizing_parameter.design_days) == 0:
-            folder, epw_file_name = os.path.split(epw_file)
-            ddy_file = os.path.join(folder, epw_file_name.replace('.epw', '.ddy'))
-            if os.path.isfile(ddy_file):
-                _sim_par_.sizing_parameter.add_from_ddy_996_004(ddy_file)
-            else:
-                raise ValueError('No _ddy_file_ has been input and no .ddy file was '
-                                'found next to the _epw_file.')
+    # create the honeybee osw
+    epw_file = './tests/epw/chicago.epw'
+    base_workflow = base_honeybee_osw(
+        sim_folder, simpar_json_path, additional_measures=[measure], epw_file=epw_file)
 
-        # process the simulation folder identifier and the directory
-        directory = os.path.join(sim_folder, hb_model.identifier, 'OpenStudio')
+    assert os.path.isfile(base_workflow)
 
-        # delete any existing files in the directory and prepare it for simulation
-        nukedir(directory, True)
-        preparedir(directory)
-
-        # write the model parameter JSONs
-        model_dict = hb_model.to_dict(triangulate_sub_faces=True)
-        model_json = os.path.join(directory, '{}.json'.format(model.identifier))
-        with open(model_json, 'w') as fp:
-            json.dump(model_dict, fp)
-
-        # write the simulation parameter JSONs
-        sim_par_dict = _sim_par_.to_dict()
-        sim_par_json = os.path.join(directory, 'simulation_parameter.json')
-        with open(sim_par_json, 'w') as fp:
-            json.dump(sim_par_dict, fp)
-
-        # collect the two jsons for output and write out the osw file
-        jsons = [model_json, sim_par_json]
-        osw = to_openstudio_osw(directory, model_json, sim_par_json, epw_file)
-
-        # run the measure to translate the model JSON to an openstudio measure
-        osm, idf = run_osw(osw)
-
-    uo_dir = os.path.join(sim_folder, 'urbanopt')
-    feat, scen = prepare_urbanopt_folder(uo_dir, geo_dict, epw_file)
-    result = run_urbanopt(feat, scen)
+    # clean up the files
+    nukedir(sim_folder, True)
