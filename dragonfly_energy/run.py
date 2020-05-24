@@ -2,117 +2,202 @@
 """Module for running geoJSON and OpenStudio files through URBANopt."""
 from __future__ import division
 
+from .config import folders
+from honeybee_energy.config import folders as hb_energy_folders
+
 import os
 import json
 import shutil
 import subprocess
 
-from ladybug.futil import nukedir, write_to_file
+from ladybug.futil import preparedir, write_to_file
 
 
-def prepare_urbanopt_folder(uo_folder, geojson_dict, epw_file_path, cpu_count=2):
-    """Prepare a directory for URBANopt simulation.
+def base_honeybee_osw(
+        project_directory, sim_par_json=None, additional_measures=None, base_osw=None,
+        epw_file=None, skip_report=True):
+    """Create a honeybee_workflow.osw to be used as a base in URBANopt simulations.
 
-    This includes deleting any uo_folder that already exists, running the uo -p
-    command, and deleting several files it generates like example_project.json,
-    the Buffalo EPW files, the .osm files, and the HighEfficiency mapper. Then,
-    a geoJSON is exported using the input geojson_dict. Then, the ChangeBuildingLocation
-    measure is skipped in the base_workflow.osw. Lastly, the uo -m command
-    is run to generate the scenario csv file from the exported geoJSON and
-    Baseline mapper.
+    This method will also copy the Honeybee.rb mapper to this folder if it is
+    available in the config of this library.
 
     Args:
-        uo_folder: The directory into which the URBANopt simulation will be run.
-        geojson_dict: A Python dictionary in a geoJSON style, which will serve
-            as the basis of a feature file for the URBANopt simulation. This
-            dictionary can be obtained from a dragonfly Model by calling the
-            to_geojson_dict method.
-        epw_file_path: The full path to an EPW file to be used for the simulation.
-        cpu_count: A positive integer for the number of CPUs to use in the
-            simulation. (Default: 2).
+        project_directory: Full path to a folder out of which the URBANopt simulation
+            will be run. This is the folder that contains the feature geoJSON.
+        sim_par_json: Optional file path to the SimulationParameter JSON.
+            If None, the OpenStudio models generated in the URBANopt run will
+            not have everything they need to be simulate-able unless such parameters
+            are supplied from one of the additional_measures or the base_osw.
+        additional_measures: An optional array of honeybee-energy Measure objects
+            to be included in the output osw. These Measure objects must have
+            values for all required input arguments or an exception will be
+            raised while running this function.
+        base_osw: Optional file path to an existing OSW JSON be used as the base
+            for the honeybee_workflow.osw. This is another way that outside measures
+            can be incorporated into the workflow.
+        epw_file: Optional file path to an EPW that should be associated with the
+            output energy model.
+        skip_report: Set to True to have the URBANopt default feature reporting
+            measure skipped as part of the workflow. If False, the measure will
+            be run after all simulations are complete. Note that this input
+            has no effect if the default_feature_reports measure is already
+            in the base_osw or additional_measures (Default: True)
 
     Returns:
-        Paths to the following files
-
-        -   feature -- Path to a .geojson file containing the footprints of buildings
-            to be simulated.
-
-        -   scenario -- Path to a .csv file for the URBANopt scenario.
+        The file path to the honeybee_workflow.osw written out by this method.
+        This is used as the base for translating all features in the geoJSON.
     """
-    # nuke the directory if it already exists
-    if os.path.isdir(uo_folder):
-        nukedir(uo_folder, True)
+    # create a dictionary representation of the .osw with steps to run
+    # the model measure and the simulation parameter measure
+    if base_osw is None:
+        osw_dict = {'steps': [], 'name': None, 'description': None}
+    else:
+        assert os.path.isfile(base_osw), 'No base OSW file found at {}.'.format(base_osw)
+        with open(base_osw, 'r') as base_file:
+            osw_dict = json.load(base_file)
+
+    # add a simulation parameter step if it is specified
+    if sim_par_json is not None:
+        sim_par_dict = {
+            'arguments' : {
+                'simulation_parameter_json' : sim_par_json
+                },
+            'measure_dir_name': 'from_honeybee_simulation_parameter'
+            }
+        osw_dict['steps'].insert(0, sim_par_dict)
+
+    # addd the model json serialization into the steps
+    model_measure_dict = {
+        'arguments' : {
+            'model_json' : 'model_json_to_be_mapped.json'
+            },
+         'measure_dir_name': 'from_honeybee_model'
+        }
+    osw_dict['steps'].insert(0, model_measure_dict)
+
+    # assign the measure_paths to the osw_dict
+    if 'measure_paths' not in osw_dict:
+        osw_dict['measure_paths'] = []
+    if hb_energy_folders.energy_model_measure_path:  # pass the energy-model-measure path
+        m_dir = os.path.join(hb_energy_folders.energy_model_measure_path, 'measures')
+        osw_dict['measure_paths'].append(m_dir)
+
+    # add any additional measures to the osw_dict
+    if additional_measures:
+        measure_paths = set()  # set of all unique measure paths
+        # ensure measures are correctly ordered
+        m_dict = {'ModelMeasure': [], 'EnergyPlusMeasure': [], 'ReportingMeasure': []}
+        for measure in additional_measures:
+            m_dict[measure.type].append(measure)
+        sorted_measures = m_dict['ModelMeasure'] + m_dict['EnergyPlusMeasure'] + \
+            m_dict['ReportingMeasure']
+        for measure in sorted_measures:
+            measure.validate()  # ensure that all required arguments have values
+            measure_paths.add(os.path.dirname(measure.folder))
+            osw_dict['steps'].append(measure.to_osw_dict())  # add measure to workflow
+        for m_path in measure_paths:  # add outside measure paths
+            osw_dict['measure_paths'].append(m_path)
+
+    # add default feature reports if they aren't already in the steps
+    all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
+    if 'default_feature_reports' not in all_measures:
+        report_measure_dict = {
+            'arguments' : {
+                'feature_id': None,
+                'feature_name': None,
+                'feature_type': None
+                },
+            'measure_dir_name': 'default_feature_reports'
+            }
+        if skip_report:
+            report_measure_dict['arguments']['__SKIP__'] = True
+        osw_dict['steps'].append(report_measure_dict)
+
+    # assign the epw_file to the osw if it is input
+    if epw_file is not None:
+        osw_dict['weather_file'] = epw_file
+
+    # write the dictionary to a honeybee_workflow.osw
+    mappers_dir = os.path.join(project_directory, 'mappers')
+    if not os.path.isdir(mappers_dir):
+        preparedir(mappers_dir)
+    osw_json = os.path.join(mappers_dir, 'honeybee_workflow.osw')
+    with open(osw_json, 'w') as fp:
+        json.dump(osw_dict, fp, indent=4)
     
-    # run the folder creation command and check that it was created
-    cmd_str = 'uo -p {}'.format(uo_folder)
-    os.system(cmd_str)
-    assert os.path.isfile(os.path.join(uo_folder, 'Gemfile')), \
-        'URBANopt project folder creation failed.\n' \
-        'Be sure that you have installed the URBANopt CLI correctly.'
+    # copy the Honeybee.rb mapper if it exists in the config
+    if folders.mapper_path:
+        shutil.copy(folders.mapper_path, os.path.join(mappers_dir, 'Honeybee.rb'))
 
-    # delete the EPW file and replace it with the correct file
-    weather_dir = os.path.join(uo_folder, 'weather')
-    nukedir(weather_dir, False)
-    epw_name = os.path.split(epw_file_path)[-1]
-    shutil.copy(epw_file_path, os.path.join(weather_dir, epw_name))
+    return os.path.abspath(osw_json)
 
-    # delete the OSM files and the HighEfficiency mapper
-    osm_dir = os.path.join(uo_folder, 'osm_building')
-    nukedir(osm_dir, False)
-    os.remove(os.path.join(uo_folder, 'mappers', 'HighEfficiency.rb'))
 
-    # skip the ChangeBuildingLocation measure
-    base_osw = os.path.join(uo_folder, 'mappers', 'base_workflow.osw')
-    with open(base_osw, 'r+') as f:
-        data = json.load(f)
-        data['steps'][1]['arguments']['__SKIP__'] = True
-        f.seek(0)  # reset file position to the beginning
-        json.dump(data, f, indent=2)
-        f.truncate()  # remove remaining part
-    
-    # set the CPU count based on the input
-    if cpu_count != 2:
-        runner_conf = os.path.join(uo_folder, 'runner.conf')
-        with open(runner_conf, 'r+') as f:
-            data = json.load(f)
-            data['num_parallel'] = cpu_count
-            f.seek(0)  # reset file position to the beginning
-            json.dump(data, f, indent=2)
-            f.truncate()  # remove remaining part
+def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
+    """Prepare a directory with a feature geoJSON for URBANopt simulation.
 
-    # delete the example_project.json and write out the geoJSON
-    os.remove(os.path.join(uo_folder, 'example_project.json'))
-    try:
-        model_name = geojson_dict['project']['id']
-        geojson_dict['project']['weather_filename'] = epw_name
-    except KeyError:
-        model_name = 'unnamed'
-    feature = os.path.join(uo_folder, '{}.geojson'.format(model_name))
-    with open(feature, 'w') as fp:
-        json.dump(geojson_dict, fp, indent=4)
+    This includes copying the Gemfile to the folder and generating the runner.conf
+    to specify the number of CPUs to be used in the simulation. Lastly, the
+    uo -m command is run to generate the scenario .csv file from the exported
+    geoJSON and mapper.
+
+    Args:
+        feature_geojson: An URBANopt feature geoJSON to be prepared for URBANopt
+            simulation.
+        cpu_count: A positive integer for the number of CPUs to use in the
+            simulation. (Default: 2).
+        verbose: Boolean to note if the simulation should be run with verbose
+            reporting of progress.
+
+    Returns:
+        Path to the .csv file for the URBANopt scenario.
+    """
+    # copy the Gemfile into the folder containing the feature_geojson
+    assert folders.urbanopt_gemfile_path, \
+        'No URBANopt Gemfile was found in dragonfly_energy.config.folders.\n' \
+        'This file must exist to run URBANopt.'
+    uo_folder = os.path.dirname(feature_geojson)
+    shutil.copy(folders.urbanopt_gemfile_path, os.path.join(uo_folder, 'Gemfile'))
+
+    # generate the runner.conf to set the number of CPUs based on the input
+    runner_dict = {
+        'file_version': '0.1.0',
+        'max_datapoints': 1000000000,
+        'num_parallel': cpu_count,
+        'run_simulations': True,
+        'verbose': False
+        }
+    runner_conf = os.path.join(uo_folder, 'runner.conf')
+    with open(runner_conf, 'w') as fp:
+        json.dump(runner_dict, fp, indent=2)
 
     # run the command to generate the scenario csv file
     if os.name == 'nt':  # we are on Windows
-        _make_scenario_windows(feature)
+        _make_scenario_windows(feature_geojson)
     else:  # we are on Mac, Linux, or some other unix-based system
-        _make_scenario_unix(feature)
-    scenario = os.path.join(uo_folder, 'baseline_scenario.csv')
+        _make_scenario_unix(feature_geojson)
+    scenario = os.path.join(uo_folder, 'honeybee_scenario.csv')
     assert os.path.isfile(scenario), \
-        'URBANopt scenario CSV creation creation failed.'
+        'URBANopt scenario CSV creation creation failed.\n' \
+        'Be sure that you have installed the URBANopt CLI correctly.'
 
-    return feature, scenario
+    return scenario
 
 
-def run_urbanopt(feature_file_path, scenario_file_path):
+def run_urbanopt(feature_geojson, scenario_csv):
     """Run a feature and scenario file through URBANopt on any operating system.
 
     Args:
-        feature_file_path: The full path to a .geojson file containing the
+        feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
-        scenario_file_path: The full path to  a .csv file for the URBANopt scenario.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
         A series of file paths to the simulation output files
+
+        -   osm -- Array of paths to .osm files for all generated OpenStudio models.
+
+        -   idf -- Array of paths to .idf files containing the input for the
+            EnergyPlus simulation.
 
         -   sql -- Array of paths to .sqlite files containing all simulation results.
 
@@ -124,29 +209,29 @@ def run_urbanopt(feature_file_path, scenario_file_path):
 
         -   html -- Array of paths to .html files containing all summary reports.
 
-        -   err -- Array of paths to .err files containing all errors and warnings from the
-            simulation.
+        -   err -- Array of paths to .err files containing all errors and warnings
+            from the simulation.
     """
     # run the simulation
     if os.name == 'nt':  # we are on Windows
-        directory = _run_urbanopt_windows(feature_file_path, scenario_file_path)
+        directory = _run_urbanopt_windows(feature_geojson, scenario_csv)
     else:  # we are on Mac, Linux, or some other unix-based system
-        directory = _run_urbanopt_unix(feature_file_path, scenario_file_path)
+        directory = _run_urbanopt_unix(feature_geojson, scenario_csv)
 
     # output the simulation files
     return _output_urbanopt_files(directory)
 
 
-def _make_scenario_windows(feature_file_path):
+def _make_scenario_windows(feature_geojson):
     """Generate a scenario file using URBANopt CLI on a Windows-based os.
 
     A batch file will be used to run the URBANopt CLI.
 
     Args:
-        feature_file_path: The full path to a .geojson file.
+        feature_geojson: The full path to a .geojson file.
     """
-    directory, feature_name = os.path.split(feature_file_path)
-    clean_feature = feature_file_path.replace('\\', '/')
+    directory, feature_name = os.path.split(feature_geojson)
+    clean_feature = feature_geojson.replace('\\', '/')
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
     batch = '{}\ncd {}\nuo -m -f {}'.format(
@@ -158,17 +243,17 @@ def _make_scenario_windows(feature_file_path):
     os.system(batch_file)
 
 
-def _make_scenario_unix(feature_file_path):
+def _make_scenario_unix(feature_geojson):
     """Generate a scenario file using URBANopt CLI on a Unix-based os.
 
     This includes both Mac OS and Linux since a shell will be used to run
     the URBANopt CLI.
 
     Args:
-        feature_file_path: The full path to a .geojson file.
+        feature_geojson: The full path to a .geojson file.
     """
-    directory, feature_name = os.path.split(feature_file_path)
-    clean_feature = feature_file_path.replace('\\', '/')
+    directory, feature_name = os.path.split(feature_geojson)
+    clean_feature = feature_geojson.replace('\\', '/')
     # Write the shell script to call OpenStudio CLI
     shell = '#!/usr/bin/env bash\nuo -m -f {}'.format(clean_feature)
     shell_file = os.path.join(directory, 'make_scenario.sh')
@@ -182,26 +267,26 @@ def _make_scenario_unix(feature_file_path):
     subprocess.call(shell_file)
 
 
-def _run_urbanopt_windows(feature_file_path, scenario_file_path):
+def _run_urbanopt_windows(feature_geojson, scenario_csv):
     """Run a feature and scenario file through URBANopt on a Windows-based os.
 
     A batch file will be used to run the simulation.
 
     Args:
-        feature_file_path: The full path to a .geojson file containing the
+        feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
-        scenario_file_path: The full path to  a .csv file for the URBANopt scenario.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
         Path to the folder out of which the simulation was run.
     """
     # check the input file
-    directory = _check_urbanopt_file(feature_file_path, scenario_file_path)
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
 
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
     batch = '{}\nuo -r -f {} -s {}'.format(
-        working_drive, feature_file_path, scenario_file_path)
+        working_drive, feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
 
@@ -211,26 +296,26 @@ def _run_urbanopt_windows(feature_file_path, scenario_file_path):
     return directory
 
 
-def _run_urbanopt_unix(feature_file_path, scenario_file_path):
+def _run_urbanopt_unix(feature_geojson, scenario_csv):
     """Run a feature and scenario file through URBANopt on a Unix-based os.
 
     This includes both Mac OS and Linux since a shell will be used to run
     the simulation.
 
     Args:
-        feature_file_path: The full path to a .geojson file containing the
+        feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
-        scenario_file_path: The full path to  a .csv file for the URBANopt scenario.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
         Path to the folder out of which the simulation was run.
     """
     # check the input file
-    directory = _check_urbanopt_file(feature_file_path, scenario_file_path)
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
 
     # Write the shell script to call OpenStudio CLI
     shell = '#!/usr/bin/env bash\nuo -r -f {} -s {}'.format(
-        feature_file_path, scenario_file_path)
+        feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
 
@@ -244,24 +329,24 @@ def _run_urbanopt_unix(feature_file_path, scenario_file_path):
     return directory
 
 
-def _check_urbanopt_file(feature_file_path, scenario_file_path):
+def _check_urbanopt_file(feature_geojson, scenario_csv):
     """Prepare an OSW file to be run through OpenStudio CLI.
 
     Args:
-        feature_file_path: The full path to a .geojson file containing the
+        feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
-        scenario_file_path: The full path to  a .csv file for the URBANopt scenario.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
         The folder in which the OSW exists and out of which the OpenStudio CLI
         will operate.
     """
     # check the input files
-    assert os.path.isfile(feature_file_path), \
-        'No feature file found at {}.'.format(feature_file_path)
-    assert os.path.isfile(scenario_file_path), \
-        'No scenario file found at {}.'.format(scenario_file_path)
-    return os.path.split(feature_file_path)[0]
+    assert os.path.isfile(feature_geojson), \
+        'No feature file found at {}.'.format(feature_geojson)
+    assert os.path.isfile(scenario_csv), \
+        'No scenario file found at {}.'.format(scenario_csv)
+    return os.path.split(feature_geojson)[0]
 
 
 def _output_urbanopt_files(directory):
@@ -274,6 +359,11 @@ def _output_urbanopt_files(directory):
     Returns:
         A series of file paths to the simulation output files
 
+        -   osm -- Array of paths to .osm files for all generated OpenStudio models.
+
+        -   idf -- Array of paths to .idf files containing the input for the
+            EnergyPlus simulation.
+
         -   sql -- Array of paths to .sqlite files containing all simulation results.
 
         -   zsz -- Array of paths to .csv files containing detailed zone load
@@ -284,10 +374,12 @@ def _output_urbanopt_files(directory):
 
         -   html -- Array of paths to .htm files containing all summary reports.
 
-        -   err -- Array of paths to .err files containing all errors and warnings from the
-            simulation.
+        -   err -- Array of paths to .err files containing all errors and
+            warnings from the simulation.
     """
     # empty list which will be filled with simulation output files
+    osm = []
+    idf = []
     sql = []
     zsz = []
     rdd = []
@@ -295,9 +387,15 @@ def _output_urbanopt_files(directory):
     err = []
 
     # generate paths to the simulation files and check their existence
-    sim_dir = os.path.join(directory, 'run', 'baseline_scenario')
+    sim_dir = os.path.join(directory, 'run', 'honeybee_scenario')
     for bldg_name in os.listdir(sim_dir):
         bldg_dir = os.path.join(sim_dir, bldg_name)
+        osm_file = os.path.join(bldg_dir, 'in.osm')
+        if os.path.isfile(osm_file):
+            osm.append(osm_file)
+        idf_file = os.path.join(bldg_dir, 'in.idf')
+        if os.path.isfile(idf_file):
+            idf.append(idf_file)
         sql_file = os.path.join(bldg_dir, 'eplusout.sql')
         if os.path.isfile(sql_file):
             sql.append(sql_file)
@@ -314,4 +412,4 @@ def _output_urbanopt_files(directory):
         if os.path.isfile(err_file):
             err.append(err_file)
 
-    return sql, zsz, rdd, html, err
+    return osm, idf, sql, zsz, rdd, html, err
