@@ -130,8 +130,8 @@ class Folders(object):
 
     @staticmethod
     def _find_mapper_path():
-        """Find the mapper path that is distributed with the energy-model-measure."""
-        measure_install = hb_energy_config.folders.energy_model_measure_path
+        """Find the mapper that is distributed with the honeybee-openstudio-gem."""
+        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
         if measure_install:
             mapper_file = os.path.join(measure_install, 'files', 'Honeybee.rb')
             if os.path.isfile(mapper_file):
@@ -140,8 +140,8 @@ class Folders(object):
 
     @staticmethod
     def _find_urbanopt_gemfile_path():
-        """Find the URBANopt Gemfile that's distributed with the energy-model-measure."""
-        measure_install = hb_energy_config.folders.energy_model_measure_path
+        """Find the URBANopt Gemfile that's distributed with honeybee-openstudio-gem."""
+        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
         if measure_install:
             gem_file = os.path.join(measure_install, 'files', 'urbanopt_Gemfile')
             if os.path.isfile(gem_file):

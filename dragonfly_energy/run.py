@@ -78,8 +78,8 @@ def base_honeybee_osw(
     # assign the measure_paths to the osw_dict
     if 'measure_paths' not in osw_dict:
         osw_dict['measure_paths'] = []
-    if hb_energy_folders.energy_model_measure_path:  # pass the energy-model-measure path
-        m_dir = os.path.join(hb_energy_folders.energy_model_measure_path, 'measures')
+    if hb_energy_folders.honeybee_openstudio_gem_path:  # add honeybee-openstudio measure
+        m_dir = os.path.join(hb_energy_folders.honeybee_openstudio_gem_path, 'measures')
         osw_dict['measure_paths'].append(m_dir)
 
     # add any additional measures to the osw_dict
