@@ -73,7 +73,7 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
     preparedir(hb_model_folder)
 
     # write out the geoJSON file from the model
-    geojson_dict = model.to_geojson_dict(location, point, folder, tolerance)
+    geojson_dict = model.to_geojson_dict(location, point, tolerance=tolerance)
     for feature_dict in geojson_dict['features']:  # add the detailed model filename
         if feature_dict['properties']['type'] == 'Building':
             bldg_id = feature_dict['properties']['id']
