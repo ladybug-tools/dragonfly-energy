@@ -260,15 +260,21 @@ class ModelEnergyProperties(object):
 
         # apply energy properties to objects using the energy property dictionaries
         for bldg, b_dict in zip(self.host.buildings, building_e_dicts):
-            bldg.properties.energy.apply_properties_from_dict(b_dict, construction_sets)
+            if b_dict is not None:
+                bldg.properties.energy.apply_properties_from_dict(
+                    b_dict, construction_sets)
         for story, s_dict in zip(self.host.stories, story_e_dicts):
-            story.properties.energy.apply_properties_from_dict(s_dict, construction_sets)
+            if s_dict is not None:
+                story.properties.energy.apply_properties_from_dict(
+                    s_dict, construction_sets)
         for room, r_dict in zip(self.host.room_2ds, room2d_e_dicts):
-            room.properties.energy.apply_properties_from_dict(
-                r_dict, construction_sets, program_types, hvacs)
+            if r_dict is not None:
+                room.properties.energy.apply_properties_from_dict(
+                    r_dict, construction_sets, program_types, hvacs)
         for shade, s_dict in zip(self.host.context_shades, context_e_dicts):
-            shade.properties.energy.apply_properties_from_dict(
-                s_dict, constructions, schedules)
+            if s_dict is not None:
+                shade.properties.energy.apply_properties_from_dict(
+                    s_dict, constructions, schedules)
 
     def to_dict(self, include_global_construction_set=True):
         """Return Model energy properties as a dictionary.
