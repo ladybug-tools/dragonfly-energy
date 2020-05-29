@@ -3,7 +3,6 @@
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
-from honeybee_energy.hvac.idealair import IdealAirSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 
@@ -102,7 +101,7 @@ class BuildingEnergyProperties(object):
             room_2d.properties.energy.program_type = program_type
 
     def set_all_room_2d_hvac(self, hvac):
-        """Set all children Room2Ds of this Buiding to have the same HVAC system.
+        """Set all children Room2Ds of this Building to have the same HVAC system.
 
         For an HVAC system that is intended to be applied across multiple zones
         (such as a VAVSystem), all Room2Ds will receive the same HVAC instance
