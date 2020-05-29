@@ -3,7 +3,6 @@
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
-from honeybee_energy.hvac.idealair import IdealAirSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 

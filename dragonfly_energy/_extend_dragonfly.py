@@ -25,6 +25,7 @@ def model_energy_properties(self):
         self._energy = ModelEnergyProperties(self.host)
     return self._energy
 
+
 def building_energy_properties(self):
     if self._energy is None:
         self._energy = BuildingEnergyProperties(self.host)

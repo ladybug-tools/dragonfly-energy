@@ -78,7 +78,7 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
         if feature_dict['properties']['type'] == 'Building':
             bldg_id = feature_dict['properties']['id']
             feature_dict['properties']['detailed_model_filename'] = \
-                        os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
+                os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
     feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
     with open(feature_geojson, 'w') as fp:
         json.dump(geojson_dict, fp, indent=4)

@@ -4,9 +4,7 @@ from dragonfly.extensionutil import model_extension_dicts
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 
-from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.construction.air import AirBoundaryConstruction
-from honeybee_energy.programtype import ProgramType
 import honeybee_energy.properties.model as hb_model_properties
 
 

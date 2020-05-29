@@ -14,8 +14,6 @@ from ladybug.futil import preparedir
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
     output_energyplus_files
-from honeybee_energy.writer import energyplus_idf_version
-from honeybee_energy.config import folders
 
 import sys
 import os
@@ -28,6 +26,7 @@ _logger = logging.getLogger(__name__)
 @click.group(help='Commands for simulating Dragonfly JSON files in EnergyPlus.')
 def simulate():
     pass
+
 
 @simulate.command('model')
 @click.argument('model-json')
@@ -139,7 +138,7 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, use_multip
                     if idf is None or not os.path.isfile(idf):
                         raise Exception('Running OpenStudio CLI failed.')
                     sql, eio, rdd, html, err = \
-                        _output_energyplus_files(os.path.dirname(idf))
+                        output_energyplus_files(os.path.dirname(idf))
                     if err is None or not os.path.isfile(err):
                         raise Exception('Running EnergyPlus failed.')
                     osms.append(osm)

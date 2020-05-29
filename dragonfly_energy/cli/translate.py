@@ -28,6 +28,7 @@ _logger = logging.getLogger(__name__)
 def translate():
     pass
 
+
 @translate.command('model-to-osm')
 @click.argument('model-json')
 @click.option('--sim-par-json', help='Full path to a honeybee energy SimulationParameter'
@@ -122,6 +123,7 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
         sys.exit(1)
     else:
         sys.exit(0)
+
 
 @translate.command('model-to-idf')
 @click.argument('model-json')
