@@ -17,6 +17,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/ladybug-tools/dragonfly-energy",
     packages=setuptools.find_packages(exclude=["tests"]),
+    include_package_data=True,
     install_requires=requirements,
     extras_require={
         'cli': ['click==7.1.2', 'dragonfly-core[cli]==1.21.0']
