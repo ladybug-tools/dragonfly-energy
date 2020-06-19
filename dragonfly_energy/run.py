@@ -59,20 +59,20 @@ def base_honeybee_osw(
     # add a simulation parameter step if it is specified
     if sim_par_json is not None:
         sim_par_dict = {
-            'arguments' : {
-                'simulation_parameter_json' : sim_par_json
-                },
+            'arguments': {
+                'simulation_parameter_json': sim_par_json
+            },
             'measure_dir_name': 'from_honeybee_simulation_parameter'
-            }
+        }
         osw_dict['steps'].insert(0, sim_par_dict)
 
     # addd the model json serialization into the steps
     model_measure_dict = {
-        'arguments' : {
-            'model_json' : 'model_json_to_be_mapped.json'
-            },
-         'measure_dir_name': 'from_honeybee_model'
-        }
+        'arguments': {
+            'model_json': 'model_json_to_be_mapped.json'
+        },
+        'measure_dir_name': 'from_honeybee_model'
+    }
     osw_dict['steps'].insert(0, model_measure_dict)
 
     # assign the measure_paths to the osw_dict
@@ -102,13 +102,13 @@ def base_honeybee_osw(
     all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
     if 'default_feature_reports' not in all_measures:
         report_measure_dict = {
-            'arguments' : {
+            'arguments': {
                 'feature_id': None,
                 'feature_name': None,
                 'feature_type': None
-                },
+            },
             'measure_dir_name': 'default_feature_reports'
-            }
+        }
         if skip_report:
             report_measure_dict['arguments']['__SKIP__'] = True
         osw_dict['steps'].append(report_measure_dict)
@@ -124,7 +124,7 @@ def base_honeybee_osw(
     osw_json = os.path.join(mappers_dir, 'honeybee_workflow.osw')
     with open(osw_json, 'w') as fp:
         json.dump(osw_dict, fp, indent=4)
-    
+
     # copy the Honeybee.rb mapper if it exists in the config
     if folders.mapper_path:
         shutil.copy(folders.mapper_path, os.path.join(mappers_dir, 'Honeybee.rb'))
@@ -165,7 +165,7 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
         'num_parallel': cpu_count,
         'run_simulations': True,
         'verbose': False
-        }
+    }
     runner_conf = os.path.join(uo_folder, 'runner.conf')
     with open(runner_conf, 'w') as fp:
         json.dump(runner_dict, fp, indent=2)
@@ -234,8 +234,8 @@ def _make_scenario_windows(feature_geojson):
     clean_feature = feature_geojson.replace('\\', '/')
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\nuo -m -f {}'.format(
-        working_drive, directory, clean_feature)
+    batch = '{}\ncd {}\nuo create -s {}'.format(
+        working_drive, working_drive, clean_feature)
     batch_file = os.path.join(directory, 'make_scenario.bat')
     write_to_file(batch_file, batch, True)
 
@@ -255,13 +255,13 @@ def _make_scenario_unix(feature_geojson):
     directory, feature_name = os.path.split(feature_geojson)
     clean_feature = feature_geojson.replace('\\', '/')
     # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nuo -m -f {}'.format(clean_feature)
+    shell = '#!/usr/bin/env bash\nuo create -s {}'.format(clean_feature)
     shell_file = os.path.join(directory, 'make_scenario.sh')
     write_to_file(shell_file, shell, True)
 
     # make the shell script executable using subprocess.check_call
     # this is more reliable than native Python chmod on Mac
-    subprocess.check_call(['chmod','u+x', shell_file])
+    subprocess.check_call(['chmod', 'u+x', shell_file])
 
     # run the shell script
     subprocess.call(shell_file)
@@ -285,8 +285,8 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
 
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\nuo -r -f {} -s {}'.format(
-        working_drive, feature_geojson, scenario_csv)
+    batch = '{}\ncd {}\nuo run -f {} -s {}'.format(
+        working_drive, working_drive, feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
 
@@ -321,7 +321,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
 
     # make the shell script executable using subprocess.check_call
     # this is more reliable than native Python chmod on Mac
-    subprocess.check_call(['chmod','u+x', shell_file])
+    subprocess.check_call(['chmod', 'u+x', shell_file])
 
     # run the shell script
     subprocess.call(shell_file)
