@@ -20,7 +20,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=requirements,
     extras_require={
-        'cli': ['click==7.1.2', 'dragonfly-core[cli]==1.21.8']
+        'cli': ['click==7.1.2', 'dragonfly-core[cli]==1.21.9']
     },
     entry_points={
         "console_scripts": ["dragonfly-energy = dragonfly_energy.cli:energy"]
