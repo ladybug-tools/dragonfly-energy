@@ -41,6 +41,8 @@ def translate():
               'Building story will be passed along to the generated Honeybee Room '
               'objects. If False, full geometry objects will be written for each '
               'story in the building.', default=True, show_default=True)
+@click.option('--add-plenum', help='Boolean to indicate whether ceiling/floor plenums '
+              'should be auto-generated for the Rooms.', default=False, show_default=True)
 @click.option('--shade-dist', help='An optional number to note the distance beyond '
               'which other buildings shade should not be exported into a given Model. '
               'If None, all other buildings will be included as context shade in '
@@ -52,7 +54,7 @@ def translate():
 @click.option('--log-file', help='Optional log file to output the progress of the'
               'translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-')
-def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
+def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier, add_plenum,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file into an OpenStudio Model.
     \n
@@ -89,7 +91,8 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
 
         # convert Dragonfly Model to Honeybee
         log_file.write('Converting Dragonfly Models to Honeybee.\n')
-        hb_models = model.to_honeybee(obj_per_model, shade_dist, use_multiplier)
+        hb_models = model.to_honeybee(
+            obj_per_model, shade_dist, use_multiplier, add_plenum)
 
         # write out the honeybee JSONs
         log_file.write('Writing Honeybee Models to JSON.\n')
@@ -137,6 +140,8 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
               'Building story will be passed along to the generated Honeybee Room '
               'objects. If False, full geometry objects will be written for each '
               'story in the building.', default=True, show_default=True)
+@click.option('--add-plenum', help='Boolean to indicate whether ceiling/floor plenums '
+              'should be auto-generated for the Rooms.', default=False, show_default=True)
 @click.option('--shade-dist', help='An optional number to note the distance beyond '
               'which other buildings shade should not be exported into a given Model. '
               'If None, all other buildings will be included as context shade in '
@@ -148,7 +153,7 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier,
 @click.option('--log-file', help='Optional log file to output the list of IDF files '
               'generated. By default this will be printed out to stdout',
               type=click.File('w'), default='-')
-def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
+def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier, add_plenum,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file to an IDF using direct-to-idf translators.
     \n
@@ -185,7 +190,8 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier,
         df_model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
-        hb_models = df_model.to_honeybee(obj_per_model, shade_dist, use_multiplier)
+        hb_models = df_model.to_honeybee(
+            obj_per_model, shade_dist, use_multiplier, add_plenum)
 
         # set the schedule directory in case it is needed
         sch_path = os.path.abspath(model_json) if 'stdout' in str(log_file) \

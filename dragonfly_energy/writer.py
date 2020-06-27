@@ -10,7 +10,7 @@ import json
 
 
 def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
-                      use_multiplier=True, folder=None, tolerance=0.01):
+                      use_multiplier=True, add_plenum=False, folder=None, tolerance=0.01):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
     Args:
@@ -26,13 +26,15 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
             connected buildings are too far away to have a meaningful impact on
             the results. If None, all other buildings will be included as context
             shade in each and every Model. Set to 0 to exclude all neighboring
-            buildings from the resulting models. Default: None.
+            buildings from the resulting models. (Default: None).
         use_multiplier: If True, the multipliers on the Model's Stories will be
             passed along to the generated Honeybee Room objects, indicating the
             simulation will be run once for each unique room and then results
             will be multiplied. If False, full geometry objects will be written
             for each and every floor in the building that are represented through
-            multipliers and all resulting multipliers will be 1. Default: True
+            multipliers and all resulting multipliers will be 1. (Default: True).
+        add_plenum: Boolean to indicate whether ceiling/floor plenums should
+            be auto-generated for the Rooms. (Default: False).
         folder: An optional folder to be used as the root of the model's
             URBANopt folder. If None, the files will be written into a sub-directory
             of the honeybee-core default_simulation_folder. This sub-directory
@@ -49,7 +51,7 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
 
         hb_model_jsons -- An array of file paths to honeybee Model JSONS that
             correspond to the detailed_model_filename keys in the feature_geojson.
-        
+
         hb_models -- An array of honeybee Model objects that were generated in
             process of writing the URBANopt files.
     """
@@ -85,7 +87,8 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
 
     # write out the honeybee Model JSONS from the model
     hb_model_jsons = []
-    hb_models = model.to_honeybee('Building', shade_distance, use_multiplier, tolerance)
+    hb_models = model.to_honeybee(
+        'Building', shade_distance, use_multiplier, add_plenum, tolerance=tolerance)
     for bldg_model in hb_models:
         bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
         model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
