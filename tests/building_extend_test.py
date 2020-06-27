@@ -150,6 +150,7 @@ def test_set_all_room_2d_hvac():
     assert all(room.properties.energy.hvac.latent_heat_recovery == latent
                for room in building.unique_room_2ds)
 
+
 def test_averaged_program_type():
     """Test the averaged_program_type method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))

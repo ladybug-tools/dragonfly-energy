@@ -280,7 +280,7 @@ def test_to_honeybee():
     constr_set.roof_ceiling_set.exterior_construction = roof_constr
     building.unique_room_2ds[-1].properties.energy.construction_set = constr_set
     building.unique_room_2ds[-2].properties.energy.construction_set = constr_set
-    
+
     tree_canopy_geo1 = Face3D.from_regular_polygon(6, 6, Plane(o=Point3D(5, -10, 6)))
     tree_canopy_geo2 = Face3D.from_regular_polygon(6, 2, Plane(o=Point3D(-5, -10, 3)))
     tree_canopy = ContextShade('TreeCanopy', [tree_canopy_geo1, tree_canopy_geo2])
@@ -292,7 +292,7 @@ def test_to_honeybee():
 
     model = Model('NewDevelopment', [building, building_big], [tree_canopy])
 
-    hb_models = model.to_honeybee('Building', 10, False, 0.01)
+    hb_models = model.to_honeybee('Building', 10, False, tolerance=0.01)
     assert len(hb_models) == 2
 
     assert polyiso in hb_models[0].properties.energy.materials
