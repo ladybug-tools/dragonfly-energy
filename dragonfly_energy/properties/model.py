@@ -2,8 +2,6 @@
 """Model Energy Properties."""
 from dragonfly.extensionutil import model_extension_dicts
 
-from honeybee_energy.lib.constructionsets import generic_construction_set
-
 from honeybee_energy.construction.air import AirBoundaryConstruction
 import honeybee_energy.properties.model as hb_model_properties
 
@@ -26,7 +24,6 @@ class ModelEnergyProperties(object):
         * constructions
         * shade_constructions
         * construction_sets
-        * global_construction_set
         * schedule_type_limits
         * schedules
         * shade_schedules
@@ -49,7 +46,8 @@ class ModelEnergyProperties(object):
         """List of all unique materials contained within the model.
 
         This includes materials across all Room2Ds, Stories, and Building
-        ConstructionSets, and the global_construction_set.
+        ConstructionSets but it does NOT include the Honeybee generic default
+        construction set.
         """
         materials = []
         for constr in self.constructions:
@@ -63,14 +61,14 @@ class ModelEnergyProperties(object):
     def constructions(self):
         """A list of all unique constructions in the model.
 
-        This includes constructions across all Room2Ds, Stories, and Building
-        ConstructionSets, and the global_construction_set.
+        This includes materials across all Room2Ds, Stories, and Building
+        ConstructionSets but it does NOT include the Honeybee generic default
+        construction set.
         """
         bldg_constrs = []
         for cnstr_set in self.construction_sets:
             bldg_constrs.extend(cnstr_set.modified_constructions_unique)
-        all_constrs = self.global_construction_set.constructions_unique + \
-            bldg_constrs + self.shade_constructions
+        all_constrs = bldg_constrs + self.shade_constructions
         return list(set(all_constrs))
 
     @property
@@ -99,17 +97,6 @@ class ModelEnergyProperties(object):
                 for room in story.room_2ds:
                     self._check_and_add_obj_constr_set(room, construction_sets)
         return list(set(construction_sets))  # catch equivalent construction sets
-
-    @property
-    def global_construction_set(self):
-        """A default ConstructionSet object for all unassigned objects in the Model.
-
-        This ConstructionSet will be written in its entirety to the dictionary
-        representation of ModelEnergyProperties as well as the resulting OpenStudio
-        model.  This is to ensure that all objects lacking a construction specification
-        always have a default.
-        """
-        return generic_construction_set
 
     @property
     def schedule_type_limits(self):
@@ -191,7 +178,7 @@ class ModelEnergyProperties(object):
         """Check that there are no duplicate ConstructionSet identifiers in the model."""
         con_set_identifiers = set()
         duplicate_identifiers = set()
-        for con_set in self.construction_sets + [self.global_construction_set]:
+        for con_set in self.construction_sets:
             if con_set.identifier not in con_set_identifiers:
                 con_set_identifiers.add(con_set.identifier)
             else:
@@ -274,19 +261,12 @@ class ModelEnergyProperties(object):
                 shade.properties.energy.apply_properties_from_dict(
                     s_dict, constructions, schedules)
 
-    def to_dict(self, include_global_construction_set=True):
-        """Return Model energy properties as a dictionary.
-
-        Args:
-            include_global_construction_set: Boolean to note whether the
-                global_construction_set should be included within the dictionary. This
-                will ensure that all objects lacking a construction specification always
-                have a default construction. Default: True.
-        """
+    def to_dict(self):
+        """Return Model energy properties as a dictionary."""
         base = {'energy': {'type': 'ModelEnergyProperties'}}
 
         # add all materials, constructions and construction sets to the dictionary
-        schs = self._add_constr_type_objs_to_dict(base, include_global_construction_set)
+        schs = self._add_constr_type_objs_to_dict(base)
 
         # add all schedule type limits, schedules, and program types to the dictionary
         self._add_sched_type_objs_to_dict(base, schs)
@@ -311,24 +291,14 @@ class ModelEnergyProperties(object):
         _host = new_host or self._host
         return ModelEnergyProperties(_host)
 
-    def _add_constr_type_objs_to_dict(self, base, include_global_construction_set=True):
+    def _add_constr_type_objs_to_dict(self, base):
         """Add materials, constructions and construction sets to a base dictionary.
 
         Args:
             base: A base dictionary for a Dragonfly Model.
-            include_global_construction_set: Boolean to note whether the
-                global_construction_set should be included within the dictionary.
-                This will ensure that all objects lacking a construction
-                specification always have a default construction. Default: True.
         """
         # add all ConstructionSets to the dictionary
         base['energy']['construction_sets'] = []
-        if include_global_construction_set:
-            base['energy']['global_construction_set'] = \
-                self.global_construction_set.identifier
-            base['energy']['construction_sets'].append(
-                self.global_construction_set.to_dict(abridged=True,
-                                                     none_for_defaults=False))
         construction_sets = self.construction_sets
         for cnstr_set in construction_sets:
             base['energy']['construction_sets'].append(cnstr_set.to_dict(abridged=True))
@@ -338,8 +308,6 @@ class ModelEnergyProperties(object):
         for cnstr_set in construction_sets:
             room_constrs.extend(cnstr_set.modified_constructions_unique)
         all_constrs = room_constrs + self.shade_constructions
-        if include_global_construction_set:
-            all_constrs.extend(self.global_construction_set.constructions_unique)
         constructions = tuple(set(all_constrs))
         base['energy']['constructions'] = []
         for cnst in constructions:
