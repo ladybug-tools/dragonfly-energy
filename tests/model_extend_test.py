@@ -8,12 +8,10 @@ from dragonfly.story import Story
 from dragonfly.room2d import Room2D
 from dragonfly.context import ContextShade
 from dragonfly.windowparameter import SimpleWindowRatio
-from dragonfly.shadingparameter import Overhang
 
 from dragonfly_energy.properties.model import ModelEnergyProperties
 
 import honeybee.model as hb_model
-from honeybee.boundarycondition import Outdoors, Surface
 
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.construction.opaque import OpaqueConstruction
@@ -27,17 +25,12 @@ from honeybee_energy.load.lighting import Lighting
 
 from honeybee_energy.lib.programtypes import office_program, plenum_program
 import honeybee_energy.lib.scheduletypelimits as schedule_types
-from honeybee_energy.lib.materials import clear_glass, air_gap, roof_membrane, \
-    wood, insulation
-from honeybee_energy.lib.constructions import generic_exterior_wall, \
-    generic_interior_wall, generic_interior_floor, generic_interior_ceiling, \
-    generic_double_pane
+from honeybee_energy.lib.materials import roof_membrane, wood, insulation
 
 from ladybug.location import Location
 from ladybug.futil import nukedir
 
-from ladybug_geometry.geometry2d.pointvector import Point2D, Vector2D
-from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
+from ladybug_geometry.geometry3d.pointvector import Point3D
 from ladybug_geometry.geometry3d.plane import Plane
 from ladybug_geometry.geometry3d.face import Face3D
 
@@ -75,17 +68,16 @@ def test_energy_properties():
     assert hasattr(model.properties, 'energy')
     assert isinstance(model.properties.energy, ModelEnergyProperties)
     assert isinstance(model.properties.host, Model)
-    assert len(model.properties.energy.materials) == 15
+    assert len(model.properties.energy.materials) == 0
     for mat in model.properties.energy.materials:
         assert isinstance(mat, _EnergyMaterialBase)
-    assert len(model.properties.energy.constructions) == 16
+    assert len(model.properties.energy.constructions) == 1
     for cnst in model.properties.energy.constructions:
         assert isinstance(
             cnst, (WindowConstruction, OpaqueConstruction,
                    ShadeConstruction, AirBoundaryConstruction))
     assert len(model.properties.energy.shade_constructions) == 1
     assert len(model.properties.energy.construction_sets) == 0
-    assert isinstance(model.properties.energy.global_construction_set, ConstructionSet)
     assert len(model.properties.energy.schedule_type_limits) == 3
     assert len(model.properties.energy.schedules) == 8
     assert len(model.properties.energy.shade_schedules) == 1
@@ -126,9 +118,8 @@ def test_check_duplicate_construction_set_identifiers():
     model = Model('NewDevelopment', [building], [tree_canopy])
 
     assert model.properties.energy.check_duplicate_construction_set_identifiers(False)
-    constr_set.unlock()
-    constr_set.identifier = 'Default Generic Construction Set'
-    constr_set.lock()
+    constr_set2 = ConstructionSet('Attic Construction Set')
+    building.unique_room_2ds[-2].properties.energy.construction_set = constr_set2
     assert not model.properties.energy.check_duplicate_construction_set_identifiers(False)
     with pytest.raises(ValueError):
         model.properties.energy.check_duplicate_construction_set_identifiers(True)
@@ -384,7 +375,6 @@ def test_to_urbanopt():
         assert os.path.isfile(model_json)
     for h_model in hb_models:
         assert isinstance(h_model, hb_model.Model)
-    
+
     # clean up the files
     nukedir(sim_folder, True)
-
