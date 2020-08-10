@@ -117,9 +117,11 @@ class BuildingEnergyProperties(object):
         assert isinstance(hvac, _HVACSystem), 'Expected HVACSystem for Building.' \
             'set_all_room_2d_hvac. Got {}'.format(type(hvac))
 
-        if not hvac.is_single_room:  # apply the same instance to all rooms
+        if not hvac.is_single_room:  # duplicate once; apply same instance to all rooms
+            new_hvac = hvac.duplicate()
+            new_hvac._identifier = '{}_{}'.format(hvac.identifier, self.host.identifier)
             for room_2d in self.host.unique_room_2ds:
-                room_2d.properties.energy.hvac = hvac
+                room_2d.properties.energy.hvac = new_hvac
         else:  # duplicate the HVAC instance as it is applied to rooms
             for i, room_2d in enumerate(self.host.unique_room_2ds):
                 new_hvac = hvac.duplicate()

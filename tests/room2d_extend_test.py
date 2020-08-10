@@ -10,6 +10,9 @@ from honeybee.boundarycondition import boundary_conditions as bcs
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac.idealair import IdealAirSystem
+from honeybee_energy.hvac.allair.vav import VAV
+from honeybee_energy.ventcool.opening import VentilationOpening
+from honeybee_energy.ventcool.control import VentilationControl
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.shade import ShadeConstruction
 from honeybee_energy.material.opaque import EnergyMaterial
@@ -154,6 +157,58 @@ def test_set_ideal_air():
     assert hb_room.properties.energy.hvac.latent_heat_recovery == latent
 
 
+def test_set_vav():
+    """Test the setting of a VAV system on a Room2D."""
+    pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
+    ashrae_base = SimpleWindowRatio(0.4)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
+    room.set_outdoor_window_parameters(ashrae_base)
+
+    hvac_sys = VAV('Test HVAC')
+    hvac_sys.economizer_type = 'DifferentialDryBulb'
+    hvac_sys.sensible_heat_recovery = 0.8
+    hvac_sys.latent_heat_recovery = 0.65
+
+    room.properties.energy.hvac = hvac_sys
+
+    assert room.properties.energy.hvac == hvac_sys
+    assert room.properties.energy.hvac.sensible_heat_recovery == 0.8
+    assert room.properties.energy.hvac.latent_heat_recovery == 0.65
+
+    hb_room, adj = room.to_honeybee()
+    assert hb_room.properties.energy.hvac == hvac_sys
+    assert hb_room.properties.energy.hvac.economizer_type == 'DifferentialDryBulb'
+    assert hb_room.properties.energy.hvac.sensible_heat_recovery == 0.8
+    assert hb_room.properties.energy.hvac.latent_heat_recovery == 0.65
+
+
+def test_set_window_opening():
+    """Test the setting of window openings on a Room2D."""
+    pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
+    ashrae_base = SimpleWindowRatio(0.4)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
+    room.set_outdoor_window_parameters(ashrae_base)
+
+    ventilation = VentilationControl()
+    ventilation.min_indoor_temperature = 22
+    ventilation.max_indoor_temperature = 28
+    ventilation.min_outdoor_temperature = 12
+    ventilation.max_outdoor_temperature = 32
+    ventilation.delta_temperature = 0
+
+    opening = VentilationOpening()
+    opening.fraction_area_operable = 0.25
+    opening.fraction_height_operable = 0.5
+    opening.wind_cross_vent = True
+
+    room.properties.energy.window_vent_control = ventilation
+    room.properties.energy.window_vent_opening = opening
+
+    hb_room, adj = room.to_honeybee()
+    assert hb_room.properties.energy.window_vent_control == ventilation
+    assert hb_room[1].apertures[0].properties.energy.vent_opening == opening
+
+
 def test_duplicate():
     """Test what happens to energy properties when duplicating a Room2D."""
     mass_set = ConstructionSet('Thermal Mass Construction Set')
@@ -227,4 +282,31 @@ def test_from_dict():
     new_room = Room2D.from_dict(rd)
     assert new_room.properties.energy.construction_set.identifier == \
         'Thermal Mass Construction Set'
+    assert new_room.to_dict() == rd
+
+
+def test_from_dict_vent_opening():
+    """Test the Room2D from_dict method with ventilation opening energy properties."""
+    pts = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
+    ashrae_base = SimpleWindowRatio(0.4)
+    room = Room2D('SquareShoebox', Face3D(pts), 3)
+    room.set_outdoor_window_parameters(ashrae_base)
+
+    ventilation = VentilationControl()
+    ventilation.min_indoor_temperature = 22
+    ventilation.max_indoor_temperature = 28
+    ventilation.min_outdoor_temperature = 12
+    ventilation.max_outdoor_temperature = 32
+    ventilation.delta_temperature = 0
+
+    opening = VentilationOpening()
+    opening.fraction_area_operable = 0.25
+    opening.fraction_height_operable = 0.5
+    opening.wind_cross_vent = True
+
+    room.properties.energy.window_vent_control = ventilation
+    room.properties.energy.window_vent_opening = opening
+
+    rd = room.to_dict()
+    new_room = Room2D.from_dict(rd)
     assert new_room.to_dict() == rd
