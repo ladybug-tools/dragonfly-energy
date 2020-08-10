@@ -6,6 +6,8 @@ from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac import HVAC_TYPES_DICT
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
+from honeybee_energy.ventcool.control import VentilationControl
+from honeybee_energy.ventcool.opening import VentilationOpening
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 from honeybee_energy.lib.programtypes import plenum_program
@@ -33,10 +35,13 @@ class Room2DEnergyProperties(object):
         * program_type
         * construction_set
         * hvac
+        * window_vent_control
+        * window_vent_opening
         * is_conditioned
     """
 
-    __slots__ = ('_host', '_program_type', '_construction_set', '_hvac')
+    __slots__ = ('_host', '_program_type', '_construction_set', '_hvac',
+                 '_window_vent_control', '_window_vent_opening')
 
     def __init__(self, host, program_type=None, construction_set=None, hvac=None):
         """Initialize Room2D energy properties."""
@@ -44,6 +49,8 @@ class Room2DEnergyProperties(object):
         self.program_type = program_type
         self.construction_set = construction_set
         self.hvac = hvac
+        self._window_vent_control = None  # set to None by default
+        self._window_vent_opening = None  # set to None by default
 
     @property
     def host(self):
@@ -119,6 +126,41 @@ class Room2DEnergyProperties(object):
         self._hvac = value
 
     @property
+    def window_vent_control(self):
+        """Get or set a VentilationControl object to dictate the opening of windows.
+
+        If None or no window_vent_opening object is assigned to this Room2D,
+        the windows will never open.
+        """
+        return self._window_vent_control
+
+    @window_vent_control.setter
+    def window_vent_control(self, value):
+        if value is not None:
+            assert isinstance(value, VentilationControl), 'Expected VentilationControl ' \
+                'object for Room2D window_vent_control. Got {}'.format(type(value))
+            assert value.schedule.identifier == 'Always On', 'VentilationControl ' \
+                'schedule must be default in order to apply it to dragonfly Room2D.'
+            value.lock()   # lock because we don't duplicate the object
+        self._window_vent_control = value
+
+    @property
+    def window_vent_opening(self):
+        """Get or set a VentilationOpening object for the operability of all windows.
+
+        If None or no window_vent_control object is assigned to this Room2D,
+        the windows will never open.
+        """
+        return self._window_vent_opening
+
+    @window_vent_opening.setter
+    def window_vent_opening(self, value):
+        if value is not None:
+            assert isinstance(value, VentilationOpening), 'Expected VentilationOpening ' \
+                'for Room2D window_vent_opening. Got {}'.format(type(value))
+        self._window_vent_opening = value
+
+    @property
     def is_conditioned(self):
         """Boolean to note whether the Room is conditioned."""
         return self._hvac is not None
@@ -169,6 +211,7 @@ class Room2DEnergyProperties(object):
         if 'hvac' in data and data['hvac'] is not None:
             hvac_class = HVAC_TYPES_DICT[data['hvac']['type']]
             new_prop.hvac = hvac_class.from_dict(data['hvac'])
+        cls._deserialize_window_vent(new_prop, data)
 
         return new_prop
 
@@ -193,6 +236,7 @@ class Room2DEnergyProperties(object):
             self.program_type = program_types[abridged_data['program_type']]
         if 'hvac' in abridged_data and abridged_data['hvac'] is not None:
             self.hvac = hvacs[abridged_data['hvac']]
+        self._deserialize_window_vent(self, abridged_data)
 
     def to_dict(self, abridged=False):
         """Return Room2D energy properties as a dictionary.
@@ -222,6 +266,14 @@ class Room2DEnergyProperties(object):
             base['energy']['hvac'] = \
                 self._hvac.identifier if abridged else self._hvac.to_dict()
 
+        # write the window_vent_control and window_vent_opening into the dictionary
+        if self._window_vent_control is not None:
+            base['energy']['window_vent_control'] = \
+                self.window_vent_control.to_dict(abridged=True)
+            base['energy']['window_vent_control']['schedule'] = None
+        if self._window_vent_opening is not None:
+            base['energy']['window_vent_opening'] = self.window_vent_opening.to_dict()
+
         return base
 
     def to_honeybee(self, new_host):
@@ -234,7 +286,15 @@ class Room2DEnergyProperties(object):
         hb_constr = constr_set if constr_set is not generic_construction_set else None
         hvac = self._hvac.duplicate() if self._hvac is not None and \
             self._hvac.is_single_room else self._hvac
-        return RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
+        hb_prop = RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
+        if self._window_vent_control is not None:
+            hb_prop.window_vent_control = self.window_vent_control
+        if self._window_vent_opening is not None:
+            for face in new_host.faces:  # set all apertures to be operable
+                for ap in face.apertures:
+                    ap.is_operable = True
+            hb_prop.assign_ventilation_opening(self.window_vent_opening)
+        return hb_prop
 
     def duplicate(self, new_host=None):
         """Get a copy of this object.
@@ -246,8 +306,26 @@ class Room2DEnergyProperties(object):
         _host = new_host or self._host
         hvac = self._hvac.duplicate() if self._hvac is not None and \
             self._hvac.is_single_room else self._hvac
-        return Room2DEnergyProperties(
+        hb_prop = Room2DEnergyProperties(
             _host, self._program_type, self._construction_set, hvac)
+        hb_prop._window_vent_control = self._window_vent_control
+        hb_prop._window_vent_opening = self._window_vent_opening
+        return hb_prop
+
+    @staticmethod
+    def _deserialize_window_vent(new_prop, data):
+        """Re-serialize window ventilation objects from a dict and apply to new_prop.
+
+        Args:
+            new_prop: A Room2DEnergyProperties to apply the window ventilation to.
+            data: A dictionary representation of Room2DEnergyProperties.
+        """
+        if 'window_vent_control' in data and data['window_vent_control'] is not None:
+            new_prop.window_vent_control = \
+                VentilationControl.from_dict_abridged(data['window_vent_control'], {})
+        if 'window_vent_opening' in data and data['window_vent_opening'] is not None:
+            new_prop.window_vent_opening = \
+                VentilationOpening.from_dict(data['window_vent_opening'])
 
     def ToString(self):
         return self.__repr__()
