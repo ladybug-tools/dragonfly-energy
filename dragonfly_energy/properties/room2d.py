@@ -1,5 +1,6 @@
 # coding=utf-8
 """Room2D Energy Properties."""
+from honeybee.boundarycondition import Outdoors
 from honeybee_energy.properties.room import RoomEnergyProperties
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
@@ -292,7 +293,8 @@ class Room2DEnergyProperties(object):
         if self._window_vent_opening is not None:
             for face in new_host.faces:  # set all apertures to be operable
                 for ap in face.apertures:
-                    ap.is_operable = True
+                    if isinstance(ap.boundary_condition, Outdoors):
+                        ap.is_operable = True
             hb_prop.assign_ventilation_opening(self.window_vent_opening)
         return hb_prop
 
