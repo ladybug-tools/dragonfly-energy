@@ -99,7 +99,7 @@ class StoryEnergyProperties(object):
         for room_2d in self.host.room_2ds:
             room_2d.properties.energy.program_type = program_type
 
-    def set_all_room_2d_hvac(self, hvac):
+    def set_all_room_2d_hvac(self, hvac, conditioned_only=True):
         """Set all children Room2Ds of this Story to have the same HVAC system.
 
         For an HVAC system that is intended to be applied across multiple zones
@@ -113,6 +113,9 @@ class StoryEnergyProperties(object):
         Args:
             hvac: An HVAC system with properties that will be assigned to all
                 children Room2Ds.
+            conditioned_only: Boolean to note whether the input hvac should only
+                be applied to rooms that are already conditioned. If False, the
+                hvac will be applied to all rooms. (Default: True).
         """
         assert isinstance(hvac, _HVACSystem), 'Expected HVACSystem for Story.' \
             'set_all_room_2d_hvac. Got {}'.format(type(hvac))
@@ -121,12 +124,14 @@ class StoryEnergyProperties(object):
             new_hvac = hvac.duplicate()
             new_hvac._identifier = '{}_{}'.format(hvac.identifier, self.host.identifier)
             for room_2d in self.host.room_2ds:
-                room_2d.properties.energy.hvac = new_hvac
+                if not conditioned_only or room_2d.properties.energy.is_conditioned:
+                    room_2d.properties.energy.hvac = new_hvac
         else:  # duplicate the HVAC instance as it is applied to rooms
             for i, room_2d in enumerate(self.host.room_2ds):
-                new_hvac = hvac.duplicate()
-                new_hvac._identifier = '{}_{}'.format(hvac.identifier, i)
-                room_2d.properties.energy.hvac = new_hvac
+                if not conditioned_only or room_2d.properties.energy.is_conditioned:
+                    new_hvac = hvac.duplicate()
+                    new_hvac._identifier = '{}_{}'.format(hvac.identifier, i)
+                    room_2d.properties.energy.hvac = new_hvac
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to all children Room2Ds of this Story.

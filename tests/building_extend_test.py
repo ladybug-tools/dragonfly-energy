@@ -141,7 +141,7 @@ def test_set_all_room_2d_hvac():
     ideal_air_sys = IdealAirSystem('Office Ideal Air', sensible_heat_recovery=sensible,
                                    latent_heat_recovery=latent)
 
-    building.properties.energy.set_all_room_2d_hvac(ideal_air_sys)
+    building.properties.energy.set_all_room_2d_hvac(ideal_air_sys, False)
 
     assert all(isinstance(room.properties.energy.hvac, IdealAirSystem)
                for room in building.unique_room_2ds)
