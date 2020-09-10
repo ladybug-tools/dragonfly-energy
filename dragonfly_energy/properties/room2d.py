@@ -112,17 +112,6 @@ class Room2DEnergyProperties(object):
         if value is not None:
             assert isinstance(value, _HVACSystem), \
                 'Expected HVACSystem for Room2D hvac. Got {}'.format(type(value))
-            if value.is_single_room:
-                if value._parent is None:
-                    value._parent = self.host
-                elif value._parent.identifier != self.host.identifier:
-                    raise ValueError(
-                        '{0} objects can be assigned to a only one Room2D.\n'
-                        '{0} "{1}" cannot be assigned to Room "{2}" since it is '
-                        'already assigned to "{3}".\nTry duplicating the {0}, '
-                        'and then assigning it to this Room.'.format(
-                            value.__class__.__name__, value.identifier,
-                            self.host.identifier, value._parent.identifier))
             value.lock()   # lock in case hvac has multiple references
         self._hvac = value
 
@@ -169,25 +158,12 @@ class Room2DEnergyProperties(object):
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to this Room2D.
 
-        The identifier of this system will be derived from the room identifier.
+        The identifier of this system will be derived from the room identifier
+        and will align with the naming convention that EnergyPlus uses for
+        templates Ideal Air systems.
         """
-        self.hvac = IdealAirSystem('{}_IdealAir'.format(self.host.identifier))
-
-    def add_prefix(self, prefix):
-        """Change the identifier of attributes unique to this object by adding a prefix.
-
-        Notably, this method only adds the prefix to extension attributes that must
-        be unique to the Room (eg. single-room HVAC systems) and does not add the
-        prefix to attributes that are shared across several Rooms (eg. ConstructionSets).
-
-        Args:
-            prefix: Text that will be inserted at the start of extension
-                attribute identifiers.
-        """
-        if self._hvac is not None and self._hvac.is_single_room:
-            new_hvac = self._hvac.duplicate()
-            new_hvac._identifier = '{}_{}'.format(prefix, self._hvac.identifier)
-            self.hvac = new_hvac
+        hvac_id = '{} Ideal Loads Air System'.format(self.host.identifier)
+        self.hvac = IdealAirSystem(hvac_id)
 
     @classmethod
     def from_dict(cls, data, host):
@@ -285,9 +261,7 @@ class Room2DEnergyProperties(object):
         """
         constr_set = self.construction_set  # includes story and building-assigned sets
         hb_constr = constr_set if constr_set is not generic_construction_set else None
-        hvac = self._hvac.duplicate() if self._hvac is not None and \
-            self._hvac.is_single_room else self._hvac
-        hb_prop = RoomEnergyProperties(new_host, self._program_type, hb_constr, hvac)
+        hb_prop = RoomEnergyProperties(new_host, self._program_type, hb_constr, self._hvac)
         if self._window_vent_control is not None:
             hb_prop.window_vent_control = self.window_vent_control
         if self._window_vent_opening is not None:
@@ -306,10 +280,8 @@ class Room2DEnergyProperties(object):
                 If None, the properties will be duplicated with the same host.
         """
         _host = new_host or self._host
-        hvac = self._hvac.duplicate() if self._hvac is not None and \
-            self._hvac.is_single_room else self._hvac
         hb_prop = Room2DEnergyProperties(
-            _host, self._program_type, self._construction_set, hvac)
+            _host, self._program_type, self._construction_set, self._hvac)
         hb_prop._window_vent_control = self._window_vent_control
         hb_prop._window_vent_opening = self._window_vent_opening
         return hb_prop
