@@ -155,6 +155,8 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
     assert folders.urbanopt_gemfile_path, \
         'No URBANopt Gemfile was found in dragonfly_energy.config.folders.\n' \
         'This file must exist to run URBANopt.'
+    assert folders.urbanopt_env_path, \
+        'No URBANopt installation was found in dragonfly_energy.config.folders.'
     uo_folder = os.path.dirname(feature_geojson)
     shutil.copy(folders.urbanopt_gemfile_path, os.path.join(uo_folder, 'Gemfile'))
 
@@ -212,6 +214,8 @@ def run_urbanopt(feature_geojson, scenario_csv):
         -   err -- Array of paths to .err files containing all errors and warnings
             from the simulation.
     """
+    assert folders.urbanopt_env_path, \
+        'No URBANopt installation was found in dragonfly_energy.config.folders.'
     # run the simulation
     if os.name == 'nt':  # we are on Windows
         directory = _run_urbanopt_windows(feature_geojson, scenario_csv)
@@ -234,8 +238,8 @@ def _make_scenario_windows(feature_geojson):
     clean_feature = feature_geojson.replace('\\', '/')
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\nuo create -s {}'.format(
-        working_drive, working_drive, clean_feature)
+    batch = '{}\ncd {}\ncall {}\nuo create -s {}'.format(
+        working_drive, working_drive, folders.urbanopt_env_path, clean_feature)
     batch_file = os.path.join(directory, 'make_scenario.bat')
     write_to_file(batch_file, batch, True)
 
@@ -255,7 +259,8 @@ def _make_scenario_unix(feature_geojson):
     directory, feature_name = os.path.split(feature_geojson)
     clean_feature = feature_geojson.replace('\\', '/')
     # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nuo create -s {}'.format(clean_feature)
+    shell = '#!/usr/bin/env bash\nsource {}\nuo create -s {}'.format(
+        folders.urbanopt_env_path, clean_feature)
     shell_file = os.path.join(directory, 'make_scenario.sh')
     write_to_file(shell_file, shell, True)
 
@@ -285,8 +290,9 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
 
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\nuo run -f {} -s {}'.format(
-        working_drive, working_drive, feature_geojson, scenario_csv)
+    batch = '{}\ncd {}\ncall {}\nuo run -f {} -s {}'.format(
+        working_drive, working_drive, folders.urbanopt_env_path,
+        feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
 
@@ -314,8 +320,8 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
 
     # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nuo -r -f {} -s {}'.format(
-        feature_geojson, scenario_csv)
+    shell = '#!/usr/bin/env bash\nsource {}\nuo -r -f {} -s {}'.format(
+        folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
 

@@ -13,7 +13,9 @@ Usage:
 import honeybee_energy.config as hb_energy_config
 
 import os
+import platform
 import json
+import subprocess
 
 
 class Folders(object):
@@ -30,13 +32,15 @@ class Folders(object):
     Properties:
         * mapper_path
         * urbanopt_gemfile_path
+        * urbanopt_cli_path
+        * urbanopt_env_path
         * config_file
         * mute
     """
 
     def __init__(self, config_file=None, mute=True):
         self.mute = bool(mute)  # set the mute value
-        self.config_file  = config_file  # load paths from the config JSON file
+        self.config_file = config_file  # load paths from the config JSON file
 
     @property
     def mapper_path(self):
@@ -54,14 +58,14 @@ class Folders(object):
         if path:  # check that the mapper file exists in the path
             assert os.path.isfile(path) and path.endswith('.rb'), \
                 '{} is not a valid path to a Ruby mapper file.'.format(path)
-        self._mapper_path = path  #set the mapper_path
+        self._mapper_path = path  # set the mapper_path
         if path and not self.mute:
             print("Path to Mapper is set to: %s" % path)
 
     @property
     def urbanopt_gemfile_path(self):
         """Get or set the path to the Gemfile used in URBANopt workflows.
-        
+
         Setting this can be used to test newer versions of URBANopt with upgraded
         dependencies in the Gemfile.
         """
@@ -74,9 +78,45 @@ class Folders(object):
         if path:  # check that the Gemfile exists at the path
             assert os.path.isfile(path), \
                 '{} is not a valid path to an URBANopt Gemfile.'.format(path)
-        self._urbanopt_gemfile_path = path  #set the urbanopt_gemfile_path
+        self._urbanopt_gemfile_path = path  # set the urbanopt_gemfile_path
         if path and not self.mute:
             print("Path to URBANopt Gemfile is set to: %s" % path)
+
+    @property
+    def urbanopt_cli_path(self):
+        """Get or set the path to the path where URBANopt is installed.
+
+        Setting this can be used to test newer versions of URBANopt.
+        """
+        return self._urbanopt_cli_path
+
+    @urbanopt_cli_path.setter
+    def urbanopt_cli_path(self, path):
+        if not path:  # check the default installation location
+            path = self._find_urbanopt_cli_path()
+        if path:  # check that the installation exists at the path
+            assert os.path.isdir(path), \
+                '{} is not a valid path to an URBANopt installation.'.format(path)
+        self._urbanopt_cli_path = path  # set the urbanopt_cli_path
+        if path and not self.mute:
+            print("Path to URBANopt CLI is set to: %s" % path)
+
+    @property
+    def urbanopt_env_path(self):
+        """Get or set the path to the executable used to set the URBANopt environment.
+        """
+        return self._urbanopt_env_path
+
+    @urbanopt_env_path.setter
+    def urbanopt_env_path(self, path):
+        if not path:  # check the default installation location
+            path = self._find_urbanopt_env_path()
+        if path:  # check that the file exists at the path
+            assert os.path.isfile(path), \
+                '{} is not a valid path to an URBANopt env executable.'.format(path)
+        self._urbanopt_env_path = path  # set the urbanopt_env_path
+        if path and not self.mute:
+            print("Path to URBANopt Environment executable is set to: %s" % path)
 
     @property
     def config_file(self):
@@ -108,7 +148,9 @@ class Folders(object):
         # set the default paths to be all blank
         default_path = {
             "mapper_path": r'',
-            "urbanopt_gemfile_path": r''
+            "urbanopt_gemfile_path": r'',
+            "urbanopt_cli_path": r'',
+            "urbanopt_env_path": r''
         }
 
         with open(file_path, 'r') as cfg:
@@ -124,9 +166,34 @@ class Folders(object):
                         except AttributeError:
                             default_path[key] = p
 
-        # set paths for mapper_path and urbanopt_gemfile_path
+        # set paths for the configuration
         self.mapper_path = default_path["mapper_path"]
         self.urbanopt_gemfile_path = default_path["urbanopt_gemfile_path"]
+        self.urbanopt_cli_path = default_path["urbanopt_cli_path"]
+        self.urbanopt_env_path = default_path["urbanopt_env_path"]
+
+    def _find_urbanopt_env_path(self):
+        """Find the executable that sets the URBANopt environment in its default place.
+        """
+        # search for the file in its default location
+        home_folder = os.getenv('HOME') or os.path.expanduser('~')
+        env_file = os.path.join(home_folder, '.env_uo.bat') if os.name == 'nt' else \
+            os.path.join(home_folder, '.env_uo.sh')
+        if os.path.isfile(env_file):
+            return env_file  # the file already exists; no need to generate it
+
+        if self.urbanopt_cli_path:  # try to generate the env file
+            env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.bat') \
+                if os.name == 'nt' else \
+                os.path.join(self.urbanopt_cli_path, 'setup-env.sh')
+            if os.path.isfile(env_setup):
+                if os.name == 'nt':  # run the batch file on Windows
+                    os.system(env_setup)
+                else:  # run the sell file on Mac or Linux
+                    subprocess.check_call(['chmod', 'u+x', env_setup])
+                    subprocess.call(env_setup)
+            if os.path.isfile(env_file):
+                return env_file  # the file was successfully generated
 
     @staticmethod
     def _find_mapper_path():
@@ -147,6 +214,40 @@ class Folders(object):
             if os.path.isfile(gem_file):
                 return gem_file
         return None
+
+    @staticmethod
+    def _find_urbanopt_cli_path():
+        """Find the most recent URBANopt CLI in its default location."""
+        def getversion(urbanopt_path):
+            """Get digits for the version of OpenStudio."""
+            try:
+                ver = ''.join(s for s in urbanopt_path if (s.isdigit() or s == '.'))
+                return sum(int(d) * (10 ** i)
+                           for i, d in enumerate(reversed(ver.split('.'))))
+            except ValueError:  # folder starting with 'openstudio' and no version
+                return 0
+
+        if os.name == 'nt':  # search the C:/ drive on Windows
+            uo_folders = ['C:\\{}'.format(f) for f in os.listdir('C:\\')
+                          if (f.lower().startswith('urbanopt') and
+                              os.path.isdir('C:\\{}'.format(f)))]
+        elif platform.system() == 'Darwin':  # search the Applications folder on Mac
+            uo_folders = ['/Applications/{}'.format(f) for f in os.listdir('/Applications/')
+                          if (f.lower().startswith('urbanopt') and
+                              os.path.isdir('/Applications/{}'.format(f)))]
+        elif platform.system() == 'Linux':  # search the usr/local folder
+            uo_folders = ['/usr/local/{}'.format(f) for f in os.listdir('/usr/local/')
+                          if (f.lower().startswith('urbanopt') and
+                              os.path.isdir('/usr/local/{}'.format(f)))]
+        else:  # unknown operating system
+            uo_folders = None
+
+        if not uo_folders:  # No Openstudio installations were found
+            return None
+
+        # get the most recent version of OpenStudio that was found
+        uo_path = sorted(uo_folders, key=getversion, reverse=True)[0]
+        return uo_path
 
 
 """Object possesing all key folders within the configuration."""
