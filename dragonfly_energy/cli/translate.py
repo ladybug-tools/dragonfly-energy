@@ -7,14 +7,13 @@ except ImportError:
         'click is not installed. Try `pip install . [cli]` command.'
     )
 
-from dragonfly.model import Model
-
 from ladybug.futil import preparedir
-
+from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, run_osw
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
+from dragonfly.model import Model
 
 import sys
 import os
@@ -30,72 +29,76 @@ def translate():
 
 
 @translate.command('model-to-osm')
-@click.argument('model-json')
-@click.option('--sim-par-json', help='Full path to a honeybee energy SimulationParameter'
-              ' JSON that describes all of the settings for the simulation.',
-              default=None)
-@click.option('--obj-per-model', help='Text to describe how the input Model should '
-              'be divided across the output Models. Choose from: "Building" "District".',
-              default="Building", show_default=True)
-@click.option('--use-multiplier', help='Boolean to note if the multipliers on each '
-              'Building story will be passed along to the generated Honeybee Room '
-              'objects. If False, full geometry objects will be written for each '
-              'story in the building.', default=True, show_default=True)
-@click.option('--add-plenum', help='Boolean to indicate whether ceiling/floor plenums '
-              'should be auto-generated for the Rooms.', default=False, show_default=True)
-@click.option('--shade-dist', help='An optional number to note the distance beyond '
-              'which other buildings shade should not be exported into a given Model. '
+@click.argument('model-json', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
+              'SimulationParameter JSON that describes all of the settings for '
+              'the simulation. If None default parameters will be generated.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
+              'should be divided across the output Models. Choose from: Building, '
+              'District.', type=str, default="Building", show_default=True)
+@click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
+              'multipliers on each Building story will be passed along to the '
+              'generated Honeybee Room objects or if full geometry objects should be '
+              'written for each story in the building.', default=True, show_default=True)
+@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
+              'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
+              ' which other buildings shade should not be exported into a given Model. '
               'If None, all other buildings will be included as context shade in '
               'each and every Model. Set to 0 to exclude all neighboring buildings '
-              'from the resulting models.', default=None, show_default=True)
-@click.option('--folder', help='Folder on this computer, into which the OSM and IDF '
-              'files will be written. If None, the files will be output in the'
-              'same location as the model_json.', default=None, show_default=True)
-@click.option('--log-file', help='Optional log file to output the progress of the'
-              'translation. By default this will be printed out to stdout',
-              type=click.File('w'), default='-')
-def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier, add_plenum,
+              'from the resulting models.', type=float, default=None, show_default=True)
+@click.option('--folder', '-f', help='Folder on this computer, into which the IDF '
+              'and result files will be written. If None, the files will be output '
+              'to the honeybee default simulation folder and placed in a project '
+              'folder with the same name as the model json.',
+              default=None, show_default=True,
+              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--log-file', '-log', help='Optional log file to output a dictionary '
+              'with the paths of the generated files under the following keys: '
+              'osm, idf. By default the list will be printed out to stdout',
+              type=click.File('w'), default='-', show_default=True)
+def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file into an OpenStudio Model.
-    \n
+
+    \b
     Args:
         model_json: Full path to a Dragonfly Model JSON file.
     """
     try:
-        # check that the model JSON is there
-        assert os.path.isfile(model_json), \
-            'No Model JSON file found at {}.'.format(model_json)
-
-        # set the default folder if it's not specified
+        # set the default folder to the default if it's not specified
         if folder is None:
-            folder = os.path.split(os.path.abspath(model_json))[0]
+            proj_name = \
+                os.path.basename(model_json).replace('.json', '').replace('.dfjson', '')
+            folder = os.path.join(
+                hb_folders.default_simulation_folder, proj_name, 'OpenStudio')
+        preparedir(folder, remove_content=False)
 
-        # check that the simulation parameters are there
-        if sim_par_json is not None:
-            assert os.path.isfile(sim_par_json), \
-                'No simulation parameter file found at {}.'.format(sim_par_json)
-        else:
-            log_file.write('Creating default simulation parameters.\n')
+        # generate default simulation parameters
+        if sim_par_json is None:
             sim_par = SimulationParameter()
             sim_par.output.add_zone_energy_use()
-            sim_par_json = os.path.join(folder, 'simulation_parameter.json')
-            with open(sim_par_json, 'w') as fp:
-                json.dump(sim_par.to_dict(), fp)
+            sim_par.output.add_hvac_energy_use()
+            sim_par_dict = sim_par.to_dict()
+            sp_json = os.path.abspath(os.path.join(folder, 'simulation_parameter.json'))
+            with open(sp_json, 'w') as fp:
+                json.dump(sim_par_dict, fp)
 
         # re-serialize the Dragonfly Model
-        log_file.write('Re-serailizing Dragonfly model JSON.\n')
         with open(model_json) as json_file:
             data = json.load(json_file)
         model = Model.from_dict(data)
         model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
-        log_file.write('Converting Dragonfly Models to Honeybee.\n')
-        hb_models = model.to_honeybee(
-            obj_per_model, shade_dist, use_multiplier, add_plenum)
+        add_plenum = not no_plenum
+        hb_models = model.to_honeybee(obj_per_model, shade_dist, multiplier, add_plenum)
 
         # write out the honeybee JSONs
-        log_file.write('Writing Honeybee Models to JSON.\n')
         osms = []
         idfs = []
         for hb_model in hb_models:
@@ -119,8 +122,7 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier, add_pl
                     raise Exception('Running OpenStudio CLI failed.')
             else:
                 raise Exception('Writing OSW file failed.')
-        log_file.write('The following OSMs were generated:\n{}\n'.format('\n'.join(osms)))
-        log_file.write('The following IDFs were generated:\n{}\n'.format('\n'.join(idfs)))
+        log_file.write(json.dumps({'osm': osms, 'idf': idfs}))
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -129,59 +131,66 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, use_multiplier, add_pl
 
 
 @translate.command('model-to-idf')
-@click.argument('model-json')
-@click.option('--sim-par-json', help='Full path to a honeybee energy SimulationParameter'
-              ' JSON that describes all of the settings for the simulation.',
-              default=None)
-@click.option('--obj-per-model', help='Text to describe how the input Model should '
-              'be divided across the output Models. Choose from: "Building" "District".',
-              default="Building", show_default=True)
-@click.option('--use-multiplier', help='Boolean to note if the multipliers on each '
-              'Building story will be passed along to the generated Honeybee Room '
-              'objects. If False, full geometry objects will be written for each '
-              'story in the building.', default=True, show_default=True)
-@click.option('--add-plenum', help='Boolean to indicate whether ceiling/floor plenums '
-              'should be auto-generated for the Rooms.', default=False, show_default=True)
-@click.option('--shade-dist', help='An optional number to note the distance beyond '
-              'which other buildings shade should not be exported into a given Model. '
+@click.argument('model-json', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
+              'SimulationParameter JSON that describes all of the settings for the '
+              'simulation. If None default parameters will be generated.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
+              'should be divided across the output Models. Choose from: Building, '
+              'District.', type=str, default="Building", show_default=True)
+@click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
+              'multipliers on each Building story will be passed along to the '
+              'generated Honeybee Room objects or if full geometry objects should be '
+              'written for each story in the building.', default=True, show_default=True)
+@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
+              'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
+              ' which other buildings shade should not be exported into a given Model. '
               'If None, all other buildings will be included as context shade in '
               'each and every Model. Set to 0 to exclude all neighboring buildings '
-              'from the resulting models.', default=None, show_default=True)
-@click.option('--folder', help='Folder on this computer, into which the OSM and IDF '
-              'files will be written. If None, the files will be output in the'
-              'same location as the model_json.', default=None, show_default=True)
-@click.option('--log-file', help='Optional log file to output the list of IDF files '
-              'generated. By default this will be printed out to stdout',
-              type=click.File('w'), default='-')
-def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier, add_plenum,
+              'from the resulting models.', type=float, default=None, show_default=True)
+@click.option('--folder', '-f', help='Folder on this computer, into which the IDF '
+              'and result files will be written. If None, the files will be output '
+              'to the honeybee default simulation folder and placed in a project '
+              'folder with the same name as the model json.',
+              default=None, show_default=True,
+              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--log-file', '-log', help='Optional log file to output the list of IDFs '
+              'paths. By default the list will be printed out to stdout',
+              type=click.File('w'), default='-', show_default=True)
+def model_to_idf(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file to an IDF using direct-to-idf translators.
-    \n
+
     The resulting IDF should be simulate-able but not all Model properties might
     make it into the IDF given that the direct-to-idf translators are used.
-    \n
+
+    \b
     Args:
         model_json: Full path to a Model JSON file.
     """
     try:
-        # check that the model JSON is there
-        assert os.path.isfile(model_json), \
-            'No Model JSON file found at {}.'.format(model_json)
-
-        # set the default folder if it's not specified
+        # set the default folder to the default if it's not specified
         if folder is None:
-            folder = os.path.split(os.path.abspath(model_json))[0]
+            proj_name = \
+                os.path.basename(model_json).replace('.json', '').replace('.dfjson', '')
+            folder = os.path.join(
+                hb_folders.default_simulation_folder, proj_name, 'EnergyPlus')
+        preparedir(folder, remove_content=False)
 
         # check that the simulation parameters are there and load them
         if sim_par_json is not None:
-            assert os.path.isfile(sim_par_json), \
-                'No simulation parameter file found at {}.'.format(sim_par_json)
             with open(sim_par_json) as json_file:
                 data = json.load(json_file)
             sim_par = SimulationParameter.from_dict(data)
         else:
             sim_par = SimulationParameter()
             sim_par.output.add_zone_energy_use()
+            sim_par.output.add_hvac_energy_use()
 
         # re-serialize the Dragonfly Model
         with open(model_json) as json_file:
@@ -190,8 +199,9 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier, add_pl
         df_model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
+        add_plenum = not no_plenum
         hb_models = df_model.to_honeybee(
-            obj_per_model, shade_dist, use_multiplier, add_plenum)
+            obj_per_model, shade_dist, multiplier, add_plenum)
 
         # set the schedule directory in case it is needed
         sch_path = os.path.abspath(model_json) if 'stdout' in str(log_file) \
@@ -203,12 +213,12 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, use_multiplier, add_pl
         for hb_model in hb_models:
             # create the strings for simulation paramters and model
             ver_str = energyplus_idf_version() if folders.energyplus_version \
-                is not None else energyplus_idf_version((9, 2, 0))
+                is not None else ''
             sim_par_str = sim_par.to_idf()
             model_str = hb_model.to.idf(hb_model, schedule_directory=sch_directory)
             idf_str = '\n\n'.join([ver_str, sim_par_str, model_str])
 
-            # write out the IDF file
+            # write out the IDF files
             idf_path = os.path.join(folder, '{}.idf'.format(hb_model.identifier))
             with open(idf_path, 'w') as idf_file:
                 idf_file.write(idf_str)
