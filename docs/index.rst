@@ -5,7 +5,7 @@ Welcome to dragonfly-energy's documentation!
 
 `EnergyPlus <https://energyplus.net//>`_ extension for `dragonfly <https://github.com/ladybug-tools/dragonfly-core/>`_
 
-Honeybee-energy adds EnergyPlus/OpenStudio functionalities to dragonfly for energy simulation.
+Dragonfly-energy adds EnergyPlus/OpenStudio functionalities to dragonfly for energy simulation.
 
 
 Installation
@@ -13,16 +13,16 @@ Installation
 
 ``pip install -U dragonfly-energy``.
 
-If you want to also include the command line interface try:
+If you want to also include the command line interface use:
 
 ``pip install -U dragonfly-energy[cli]``.
 
-To check if the command line is installed correctly try ``dragonfly energy --help`
-or ``dragonfly-energy --help``
+To check if the command line is installed correctly use ``dragonfly-energy --help``
+or ``dragonfly energy --help``
 
 
-CLI Documentation
-==================
+CLI Docs
+========
 
 For command line interface documentation see `this page <cli.html>`_.
 
