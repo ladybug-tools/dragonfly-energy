@@ -155,6 +155,8 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
     assert folders.urbanopt_gemfile_path, \
         'No URBANopt Gemfile was found in dragonfly_energy.config.folders.\n' \
         'This file must exist to run URBANopt.'
+    if not folders.urbanopt_env_path:
+        folders.generate_urbanopt_env_path()
     assert folders.urbanopt_env_path, \
         'No URBANopt installation was found in dragonfly_energy.config.folders.'
     uo_folder = os.path.dirname(feature_geojson)
@@ -214,6 +216,8 @@ def run_urbanopt(feature_geojson, scenario_csv):
         -   err -- Array of paths to .err files containing all errors and warnings
             from the simulation.
     """
+    if not folders.urbanopt_env_path:
+        folders.generate_urbanopt_env_path()
     assert folders.urbanopt_env_path, \
         'No URBANopt installation was found in dragonfly_energy.config.folders.'
     # run the simulation

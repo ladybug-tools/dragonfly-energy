@@ -109,8 +109,6 @@ class Folders(object):
 
     @urbanopt_env_path.setter
     def urbanopt_env_path(self, path):
-        if not path:  # check the default installation location
-            path = self._find_urbanopt_env_path()
         if path:  # check that the file exists at the path
             assert os.path.isfile(path), \
                 '{} is not a valid path to an URBANopt env executable.'.format(path)
@@ -133,6 +131,26 @@ class Folders(object):
             cfg = os.path.join(os.path.dirname(__file__), 'config.json')
         self._load_from_file(cfg)
         self._config_file = cfg
+
+    def generate_urbanopt_env_path(self):
+        """Run the URBANopt setup-env file to set this object's urbanopt_env_path."""
+        # search for the file in its default location
+        home_folder = os.getenv('HOME') or os.path.expanduser('~')
+        env_file = os.path.join(home_folder, '.env_uo.bat') if os.name == 'nt' else \
+            os.path.join(home_folder, '.env_uo.sh')
+
+        if self.urbanopt_cli_path:  # try to generate the env file
+            env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.bat') \
+                if os.name == 'nt' else \
+                os.path.join(self.urbanopt_cli_path, 'setup-env.sh')
+            if os.path.isfile(env_setup):
+                if os.name == 'nt':  # run the batch file on Windows
+                    os.system(env_setup)
+                else:  # run the sell file on Mac or Linux
+                    subprocess.check_call(['chmod', 'u+x', env_setup])
+                    subprocess.call(env_setup)
+            if os.path.isfile(env_file):
+                self._urbanopt_env_path = env_file  # the file was successfully generated
 
     def _load_from_file(self, file_path):
         """Set all of the the properties of this object from a config JSON file.
@@ -171,29 +189,6 @@ class Folders(object):
         self.urbanopt_gemfile_path = default_path["urbanopt_gemfile_path"]
         self.urbanopt_cli_path = default_path["urbanopt_cli_path"]
         self.urbanopt_env_path = default_path["urbanopt_env_path"]
-
-    def _find_urbanopt_env_path(self):
-        """Find the executable that sets the URBANopt environment in its default place.
-        """
-        # search for the file in its default location
-        home_folder = os.getenv('HOME') or os.path.expanduser('~')
-        env_file = os.path.join(home_folder, '.env_uo.bat') if os.name == 'nt' else \
-            os.path.join(home_folder, '.env_uo.sh')
-        if os.path.isfile(env_file):
-            return env_file  # the file already exists; no need to generate it
-
-        if self.urbanopt_cli_path:  # try to generate the env file
-            env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.bat') \
-                if os.name == 'nt' else \
-                os.path.join(self.urbanopt_cli_path, 'setup-env.sh')
-            if os.path.isfile(env_setup):
-                if os.name == 'nt':  # run the batch file on Windows
-                    os.system(env_setup)
-                else:  # run the sell file on Mac or Linux
-                    subprocess.check_call(['chmod', 'u+x', env_setup])
-                    subprocess.call(env_setup)
-            if os.path.isfile(env_file):
-                return env_file  # the file was successfully generated
 
     @staticmethod
     def _find_mapper_path():
