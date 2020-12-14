@@ -38,14 +38,17 @@ def simulate():
               'the simulation.',default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
-              'should be divided across the output Models. Choose from: Building, '
-              'District.', type=str, default="Building", show_default=True)
+              'should be divided across the output Models. Choose from: District, '
+              'Building, Story.', type=str, default="Building", show_default=True)
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
 @click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
               'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
+              'buildings should be capped with a top face.',
               default=True, show_default=True)
 @click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
               ' which other buildings shade should not be exported into a given Model. '
@@ -67,7 +70,7 @@ def simulate():
               'osm, idf, sql. By default the list will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier,
-                   no_plenum, shade_dist, base_osw, folder, log_file):
+                   no_plenum, no_cap, shade_dist, base_osw, folder, log_file):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
 
     \b
@@ -129,7 +132,9 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
 
         # convert Dragonfly Model to Honeybee
         add_plenum = not no_plenum
-        hb_models = model.to_honeybee(obj_per_model, shade_dist, multiplier, add_plenum)
+        cap = not no_cap
+        hb_models = model.to_honeybee(
+            obj_per_model, shade_dist, multiplier, add_plenum, cap)
 
         # write out the honeybee JSONs
         osms = []
