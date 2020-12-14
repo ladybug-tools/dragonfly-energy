@@ -37,14 +37,17 @@ def translate():
               default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
-              'should be divided across the output Models. Choose from: Building, '
-              'District.', type=str, default="Building", show_default=True)
+              'should be divided across the output Models. Choose from: District, '
+              'Building, Story.', type=str, default="Building", show_default=True)
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
 @click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
               'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
+              'buildings should be capped with a top face.',
               default=True, show_default=True)
 @click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
               ' which other buildings shade should not be exported into a given Model. '
@@ -61,7 +64,7 @@ def translate():
               'with the paths of the generated files under the following keys: '
               'osm, idf. By default the list will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
+def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum, no_cap,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file into an OpenStudio Model.
 
@@ -96,7 +99,9 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
 
         # convert Dragonfly Model to Honeybee
         add_plenum = not no_plenum
-        hb_models = model.to_honeybee(obj_per_model, shade_dist, multiplier, add_plenum)
+        cap = not no_cap
+        hb_models = model.to_honeybee(
+            obj_per_model, shade_dist, multiplier, add_plenum, cap)
 
         # write out the honeybee JSONs
         osms = []
@@ -139,14 +144,17 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
               default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
-              'should be divided across the output Models. Choose from: Building, '
-              'District.', type=str, default="Building", show_default=True)
+              'should be divided across the output Models. Choose from: District, '
+              'Building, Story.', type=str, default="Building", show_default=True)
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
 @click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
               'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
+              'buildings should be capped with a top face.',
               default=True, show_default=True)
 @click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
               ' which other buildings shade should not be exported into a given Model. '
@@ -162,7 +170,7 @@ def model_to_osm(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
 @click.option('--log-file', '-log', help='Optional log file to output the list of IDFs '
               'paths. By default the list will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_idf(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
+def model_to_idf(model_json, sim_par_json, obj_per_model, multiplier, no_plenum, no_cap,
                  shade_dist, folder, log_file):
     """Translate a Model JSON file to an IDF using direct-to-idf translators.
 
@@ -171,7 +179,7 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
 
     \b
     Args:
-        model_json: Full path to a Model JSON file.
+        model_json: Full path to a Dragonfly Model JSON file.
     """
     try:
         # set the default folder to the default if it's not specified
@@ -200,8 +208,9 @@ def model_to_idf(model_json, sim_par_json, obj_per_model, multiplier, no_plenum,
 
         # convert Dragonfly Model to Honeybee
         add_plenum = not no_plenum
+        cap = not no_cap
         hb_models = df_model.to_honeybee(
-            obj_per_model, shade_dist, multiplier, add_plenum)
+            obj_per_model, shade_dist, multiplier, add_plenum, cap)
 
         # set the schedule directory in case it is needed
         sch_path = os.path.abspath(model_json) if 'stdout' in str(log_file) \
