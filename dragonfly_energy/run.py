@@ -105,7 +105,8 @@ def base_honeybee_osw(
             'arguments': {
                 'feature_id': None,
                 'feature_name': None,
-                'feature_type': None
+                'feature_type': None,
+                'feature_location': None
             },
             'measure_dir_name': 'default_feature_reports'
         }
