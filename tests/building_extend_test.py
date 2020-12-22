@@ -33,7 +33,7 @@ import pytest
 
 
 def test_building_init():
-    """Test the initalization of Building objects and basic properties."""
+    """Test the initialization of Building objects and basic properties."""
     pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
     pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
     pts_3 = (Point3D(0, 10, 3), Point3D(0, 20, 3), Point3D(10, 20, 3), Point3D(10, 10, 3))
@@ -180,7 +180,7 @@ def test_averaged_program_type():
     ventilation = Ventilation('Office Ventilation', 0.005, 0.0003)
     setpoint = Setpoint('Office Setpoints', heat_setpt, cool_setpt)
     office_program = ProgramType('Open Office Program', people, lighting, equipment,
-                                 None, infiltration, ventilation, setpoint)
+                                 None, None, infiltration, ventilation, setpoint)
     plenum_program = ProgramType('Plenum Program')
 
     room2d_1.properties.energy.program_type = office_program
