@@ -373,7 +373,7 @@ class GeneratorParameter(_SourceParameter):
 
     Args:
         max_kw: A number for the maximum installed kilowatts. (Default: 0).
-        dollars_per_kw: A number for installation cost in US dollars. (Default: 840).
+        dollars_per_kw: A number for installation cost in US dollars. (Default: 500).
 
     Properties:
         * max_kw
