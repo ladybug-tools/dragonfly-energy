@@ -34,6 +34,7 @@ class Folders(object):
         * urbanopt_gemfile_path
         * urbanopt_cli_path
         * urbanopt_env_path
+        * reopt_assumptions_path
         * config_file
         * mute
     """
@@ -117,6 +118,23 @@ class Folders(object):
             print("Path to URBANopt Environment executable is set to: %s" % path)
 
     @property
+    def reopt_assumptions_path(self):
+        """Get or set the path to the JSON file that contains base REopt assumptions.
+        """
+        return self._reopt_assumptions_path
+
+    @reopt_assumptions_path.setter
+    def reopt_assumptions_path(self, path):
+        if not path:  # check the default installation location
+            path = self._find_reopt_assumptions_path()
+        if path:  # check that the file exists at the path
+            assert os.path.isfile(path), \
+                '{} is not a valid path to a REopt assumptions JSON.'.format(path)
+        self._reopt_assumptions_path = path  # set the reopt_assumptions_path
+        if path and not self.mute:
+            print("Path to REopt assumptions is set to: %s" % path)
+
+    @property
     def config_file(self):
         """Get or set the path to the config.json file from which folders are loaded.
 
@@ -168,7 +186,8 @@ class Folders(object):
             "mapper_path": r'',
             "urbanopt_gemfile_path": r'',
             "urbanopt_cli_path": r'',
-            "urbanopt_env_path": r''
+            "urbanopt_env_path": r'',
+            "reopt_assumptions_path": r''
         }
 
         with open(file_path, 'r') as cfg:
@@ -189,6 +208,7 @@ class Folders(object):
         self.urbanopt_gemfile_path = default_path["urbanopt_gemfile_path"]
         self.urbanopt_cli_path = default_path["urbanopt_cli_path"]
         self.urbanopt_env_path = default_path["urbanopt_env_path"]
+        self.reopt_assumptions_path = default_path["reopt_assumptions_path"]
 
     @staticmethod
     def _find_mapper_path():
@@ -208,6 +228,16 @@ class Folders(object):
             gem_file = os.path.join(measure_install, 'files', 'urbanopt_Gemfile')
             if os.path.isfile(gem_file):
                 return gem_file
+        return None
+
+    @staticmethod
+    def _find_reopt_assumptions_path():
+        """Find the REopt assumptions that's distributed with honeybee-openstudio-gem."""
+        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
+        if measure_install:
+            reopt_file = os.path.join(measure_install, 'files', 'reopt_assumptions.json')
+            if os.path.isfile(reopt_file):
+                return reopt_file
         return None
 
     @staticmethod

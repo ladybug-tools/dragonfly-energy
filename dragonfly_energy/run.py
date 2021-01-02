@@ -3,6 +3,7 @@
 from __future__ import division
 
 from .config import folders
+from .reopt import REoptParameter
 from honeybee_energy.config import folders as hb_energy_folders
 
 import os
@@ -231,6 +232,78 @@ def run_urbanopt(feature_geojson, scenario_csv):
     return _output_urbanopt_files(directory)
 
 
+def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
+              developer_key=None):
+    """Run a feature and scenario file through REopt post processing.
+
+    Note that the URBANopt simulation must already be run with the input feature_geojson
+    and scenario_csv in order for the post-processing to be successful.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+        urdb_label: Text string for the Utility Rate Database (URDB) label for the
+            particular electrical utility rate for the optimization. The label is
+            the last term of the URL of a utility rate detail page (eg. the label for
+            the rate at https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305
+            is 5b0d83af5457a3f276733305). Utility rates for specific locations
+            can be looked up in the REopt Lite tool (https://reopt.nrel.gov/tool)
+            and the label can be obtained by clicking on "Rate Details" link
+            for a particular selected rate.
+        reopt_parameters: A REoptParameter object to describe the major assumptions
+            of the REopt analysis. If None some default parameters will be
+            generated for a typical analysis. (Default: None).
+        developer_key: Text string for the NREL developer key. You can get a developer
+            key at (https://developer.nrel.gov/). (Default: None).
+
+    Returns:
+        A series of file paths to the simulation output files
+
+        -   csv -- Path to a CSV file containing scenario optimization results.
+
+        -   report_json -- Path to a JSON file containing scenario optimization results.
+    """
+    # run checks on the inputs
+    if not folders.urbanopt_env_path:
+        folders.generate_urbanopt_env_path()
+    assert folders.urbanopt_env_path, \
+        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    assert folders.reopt_assumptions_path, \
+        'No REopt assumptions were found in dragonfly_energy.config.folders.'
+    assert os.path.isfile(feature_geojson), \
+        'No feature_geojson as found at the specified path: {}.'.format(feature_geojson)
+    assert os.path.isfile(scenario_csv), \
+        'No scenario_csv as found at the specified path: {}.'.format(scenario_csv)
+    developer_key = developer_key if developer_key is not None \
+        else 'bo8jGuFfk7DBDpTlzShuxWuAGletBq1j5AhcUhCD'
+    project_folder = os.path.dirname(feature_geojson)
+
+    # write the parameter file
+    if reopt_parameters is None:  # genrate some defaults
+        reopt_parameters = REoptParameter()
+        reopt_parameters.pv_parameter.max_kw = 1000000000
+        reopt_parameters.storage_parameter.max_kw = 1000000
+        reopt_parameters.generator_parameter.max_kw = 1000000000
+    else:
+        assert isinstance(per_obj, REoptParameter), \
+            'Expected REoptParameter. Got {}.'.format(type(par_ojb))
+    reopt_par_json = os.path.join(project_folder, 'reopt', 'reopt_assumptions.json')
+    reopt_dict = reopt_parameters.to_assumptions_dict(
+        folders.reopt_assumptions_path, urdb_label)
+    with open(reopt_par_json, 'w') as fp:
+        json.dump(reopt_dict, fp, indent=4)
+
+    # run the simulation
+    if os.name == 'nt':  # we are on Windows
+        directory = _run_reopt_windows(feature_geojson, scenario_csv, developer_key)
+    else:  # we are on Mac, Linux, or some other unix-based system
+        directory = _run_reopt_unix(feature_geojson, scenario_csv, developer_key)
+
+    # output the simulation files
+    return _output_reopt_files(directory)
+
+
 def _make_scenario_windows(feature_geojson):
     """Generate a scenario file using URBANopt CLI on a Windows-based os.
 
@@ -292,7 +365,6 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
-
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
     batch = '{}\ncd {}\ncall {}\nuo run -f {} -s {}'.format(
@@ -300,10 +372,8 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
         feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
-
     # run the batch file
     os.system(batch_file)
-
     return directory
 
 
@@ -323,20 +393,16 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
-
     # Write the shell script to call OpenStudio CLI
     shell = '#!/usr/bin/env bash\nsource {}\nuo -r -f {} -s {}'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
-
     # make the shell script executable using subprocess.check_call
     # this is more reliable than native Python chmod on Mac
     subprocess.check_call(['chmod', 'u+x', shell_file])
-
     # run the shell script
     subprocess.call(shell_file)
-
     return directory
 
 
@@ -424,3 +490,86 @@ def _output_urbanopt_files(directory):
             err.append(err_file)
 
     return osm, idf, sql, zsz, rdd, html, err
+
+
+def _run_reopt_windows(feature_geojson, scenario_csv, developer_key):
+    """Run a feature and scenario file through REopt on a Windows-based os.
+
+    A batch file will be used to run the simulation.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        developer_key: Text string for the NREL developer key.
+
+    Returns:
+        Path to the folder in which results should be contained.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the batch file to call URBANopt CLI
+    working_drive = directory[:2]
+    batch = '{}\ncd {}\ncall {}\nSET GEM_DEVELOPER_KEY={}\n' \
+        'uo process --reopt-scenario -f {} -s {}'.format(
+            working_drive, working_drive, folders.urbanopt_env_path, developer_key,
+            feature_geojson, scenario_csv)
+    batch_file = os.path.join(directory, 'run_reopt.bat')
+    write_to_file(batch_file, batch, True)
+    # run the batch file
+    os.system(batch_file)
+    result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
+    return os.path.join(directory, 'run', result_folder)
+
+
+def _run_reopt_unix(feature_geojson, scenario_csv, developer_key):
+    """Run a feature and scenario file through REopt on a Unix-based os.
+
+    This includes both Mac OS and Linux since a shell will be used to run
+    the simulation.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        developer_key: Text string for the NREL developer key.
+
+    Returns:
+        Path to the folder in which results should be contained.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the shell script to call OpenStudio CLI
+    shell = '#!/usr/bin/env bash\nsource {}\nGEM_DEVELOPER_KEY={}\n' \
+        'uo process --reopt-scenario -f {} -s {}'.format(
+            folders.urbanopt_env_path, developer_key, feature_geojson, scenario_csv)
+    shell_file = os.path.join(directory, 'run_reopt.sh')
+    write_to_file(shell_file, shell, True)
+    # make the shell script executable using subprocess.check_call
+    # this is more reliable than native Python chmod on Mac
+    subprocess.check_call(['chmod', 'u+x', shell_file])
+    # run the shell script
+    subprocess.call(shell_file)
+    return directory
+
+
+def _output_reopt_files(directory):
+    """Get the paths to the simulation output files given the reopt directory.
+
+    Args:
+        directory: The path to the folder in which results should be contained.
+
+    Returns:
+        A series of file paths to the simulation output files
+
+        -   csv -- Path to a CSV file containing scenario optimization results.
+
+        -   report_json -- Path to a JSON file containing scenario optimization results.
+    """
+    # generate paths to the simulation files
+    csv_file = os.path.join(directory, 'scenario_optimization.csv')
+    report_json_file = os.path.join(directory, 'scenario_optimization.json')
+    # check that the simulation files exist
+    csv = csv_file if os.path.isfile(csv_file) else None
+    report_json = report_json_file if os.path.isfile(report_json_file) else None
+    return csv, report_json

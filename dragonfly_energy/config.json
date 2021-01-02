@@ -3,5 +3,6 @@
     "mapper_path": "",
     "urbanopt_gemfile_path": "",
     "urbanopt_cli_path": "",
-    "urbanopt_env_path": ""
+    "urbanopt_env_path": "",
+    "reopt_assumptions_path": ""
 }
