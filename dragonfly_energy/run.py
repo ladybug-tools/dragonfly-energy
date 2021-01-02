@@ -286,7 +286,7 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
         reopt_parameters.storage_parameter.max_kw = 1000000
         reopt_parameters.generator_parameter.max_kw = 1000000000
     else:
-        assert isinstance(per_obj, REoptParameter), \
+        assert isinstance(reopt_parameters, REoptParameter), \
             'Expected REoptParameter. Got {}.'.format(type(par_ojb))
     reopt_par_json = os.path.join(project_folder, 'reopt', 'reopt_assumptions.json')
     reopt_dict = reopt_parameters.to_assumptions_dict(
