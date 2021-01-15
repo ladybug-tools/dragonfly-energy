@@ -9,11 +9,12 @@ except ImportError:
 
 from dragonfly.model import Model
 
-from ladybug.futil import preparedir
 from honeybee.config import folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
     output_energyplus_files
+from ladybug.futil import preparedir
+from ladybug.epw import EPW
 
 import sys
 import os
