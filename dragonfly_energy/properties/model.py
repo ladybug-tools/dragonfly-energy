@@ -4,6 +4,7 @@ from dragonfly.extensionutil import model_extension_dicts
 
 from honeybee_energy.construction.air import AirBoundaryConstruction
 import honeybee_energy.properties.model as hb_model_properties
+from honeybee.checkdup import check_duplicate_identifiers
 
 
 try:
@@ -176,60 +177,23 @@ class ModelEnergyProperties(object):
 
     def check_duplicate_construction_set_identifiers(self, raise_exception=True):
         """Check that there are no duplicate ConstructionSet identifiers in the model."""
-        con_set_identifiers = set()
-        duplicate_identifiers = set()
-        for con_set in self.construction_sets:
-            if con_set.identifier not in con_set_identifiers:
-                con_set_identifiers.add(con_set.identifier)
-            else:
-                duplicate_identifiers.add(con_set.identifier)
-        if len(duplicate_identifiers) != 0:
-            if raise_exception:
-                raise ValueError(
-                    'The model has the following duplicated ConstructionSet '
-                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
-            return False
-        return True
+        return check_duplicate_identifiers(
+            self.construction_sets, raise_exception, 'ConstructionSet')
 
     def check_duplicate_program_type_identifiers(self, raise_exception=True):
         """Check that there are no duplicate ProgramType identifiers in the model."""
-        p_type_identifiers = set()
-        duplicate_identifiers = set()
-        for p_type in self.program_types:
-            if p_type.identifier not in p_type_identifiers:
-                p_type_identifiers.add(p_type.identifier)
-            else:
-                duplicate_identifiers.add(p_type.identifier)
-        if len(duplicate_identifiers) != 0:
-            if raise_exception:
-                raise ValueError(
-                    'The model has the following duplicated ProgramType '
-                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
-            return False
-        return True
+        return check_duplicate_identifiers(
+            self.program_types, raise_exception, 'ProgramType')
 
     def check_duplicate_hvac_identifiers(self, raise_exception=True):
         """Check that there are no duplicate HVAC identifiers in the model."""
-        hvac_identifiers = set()
-        duplicate_identifiers = set()
-        for hvac in self.hvacs:
-            if hvac.identifier not in hvac_identifiers:
-                hvac_identifiers.add(hvac.identifier)
-            else:
-                duplicate_identifiers.add(hvac.identifier)
-        if len(duplicate_identifiers) != 0:
-            if raise_exception:
-                raise ValueError(
-                    'The model has the following duplicated HVAC system '
-                    'identifiers:\n{}'.format('\n'.join(duplicate_identifiers)))
-            return False
-        return True
+        return check_duplicate_identifiers(self.hvacs, raise_exception, 'HVAC')
 
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
 
         Args:
-            data: A dictionary representation of an entire honeybee-core Model.
+            data: A dictionary representation of an entire dragonfly-core Model.
                 Note that this dictionary must have ModelEnergyProperties in order
                 for this method to successfully apply the energy properties.
         """

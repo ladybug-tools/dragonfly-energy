@@ -1,13 +1,16 @@
+![Dragonfly](https://www.ladybug.tools/assets/img/dragonfly.png)
+
 [![Build Status](https://github.com/ladybug-tools/dragonfly-energy/workflows/CI/badge.svg)](https://github.com/ladybug-tools/dragonfly-energy/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ladybug-tools/dragonfly-energy/badge.svg?branch=master)](https://coveralls.io/github/ladybug-tools/dragonfly-energy)
 
-[![Python 2.7](https://img.shields.io/badge/python-2.7-green.svg)](https://www.python.org/downloads/release/python-270/) [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 2.7](https://img.shields.io/badge/python-2.7-green.svg)](https://www.python.org/downloads/release/python-270/) [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/) [![IronPython](https://img.shields.io/badge/ironpython-2.7-red.svg)](https://github.com/IronLanguages/ironpython2/releases/tag/ipy-2.7.8/)
 
 # dragonfly-energy
 
 Dragonfly extension for energy simulation.
 
 ## Installation
+
 `pip install dragonfly-energy`
 
 If you want to also include the command line interface try:
@@ -15,6 +18,7 @@ If you want to also include the command line interface try:
 `pip install -U dragonfly-energy[cli]`
 
 ## QuickStart
+
 ```
 import dragonfly_energy
 ```
@@ -82,6 +86,7 @@ geojson, hb_model_jsons, hb_models = model.to.urbanopt(model, location, folder=s
 ```
 
 ## Local Development
+
 1. Clone this repo locally
 ```
 git clone git@github.com:ladybug-tools/dragonfly-energy
