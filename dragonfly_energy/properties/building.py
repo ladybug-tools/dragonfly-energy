@@ -134,6 +134,66 @@ class BuildingEnergyProperties(object):
         for room_2d in self.host.unique_room_2ds:
             room_2d.properties.energy.add_default_ideal_air()
 
+    def diversify(self, occupancy_stdev=20, lighting_stdev=20,
+                  electric_equip_stdev=20, gas_equip_stdev=20, hot_water_stdev=20,
+                  infiltration_stdev=20, schedule_offset=1, timestep=1):
+        """Diversify the ProgramTypes assigned to this Building's Room2Ds.
+
+        This method uses a random number generator and gaussian distribution to
+        generate loads that vary about the original "mean" programs. Note that the
+        randomly generated values can be set to something predictable by using the
+        native Python random.seed() method before running this method.
+        
+        In addition to diversifying load values, approximately 2/3 of the schedules
+        in the resulting Room2Ds will be offset from the mean by the input
+        schedule_offset (1/3 ahead and another 1/3 behind).
+
+        Args:
+            occupancy_stdev: A number between 0 and 100 for the percent of the
+                occupancy people_per_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            lighting_stdev: A number between 0 and 100 for the percent of the
+                lighting watts_per_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            electric_equip_stdev: A number between 0 and 100 for the percent of the
+                electric equipment watts_per_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            gas_equip_stdev: A number between 0 and 100 for the percent of the
+                gas equipment watts_per_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            hot_water_stdev: A number between 0 and 100 for the percent of the
+                service hot water flow_per_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            infiltration_stdev: A number between 0 and 100 for the percent of the
+                infiltration flow_per_exterior_area representing one standard deviation
+                of diversification from the mean. (Default 20 percent).
+            schedule_offset: A positive integer for the number of timesteps at which all
+                schedules of the resulting programs will be shifted - roughly 1/3 of
+                the programs ahead and another 1/3 behind. (Default: 1).
+            timestep: An integer for the number of timesteps per hour at which the
+                shifting is occurring. This must be a value between 1 and 60, which
+                is evenly divisible by 60. 1 indicates that each step is an hour
+                while 60 indicates that each step is a minute. (Default: 1).
+        """
+        # build a dictionary with the unique ProgramTypes and their assigned rooms
+        program_dict = {}
+        for room_2d in self.host.unique_room_2ds:
+            p_type = room_2d.properties.energy.program_type
+            try:  # see if we have already found the program
+                program_dict[p_type.identifier][1].append(room_2d)
+            except KeyError:  # this is the firs time encountering the program
+                program_dict[p_type.identifier] = [p_type, [room_2d]]
+        
+        # loop through the dictionary and generate + assign diversified programs
+        for prog_list in program_dict.values():
+            prog, rooms = prog_list[0], prog_list[1]
+            div_programs = prog.diversify(
+                len(rooms), occupancy_stdev, lighting_stdev, electric_equip_stdev,
+                gas_equip_stdev, hot_water_stdev, infiltration_stdev,
+                schedule_offset, timestep)
+            for room, d_prog in zip(rooms, div_programs):
+                room.properties.energy.program_type = d_prog
+
     @classmethod
     def from_dict(cls, data, host):
         """Create BuildingEnergyProperties from a dictionary.
