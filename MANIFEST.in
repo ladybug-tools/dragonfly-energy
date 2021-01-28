@@ -1,1 +1,2 @@
 include dragonfly_energy/config.json
+include dragonfly_energy/opendss/lib/electrical_database.json
