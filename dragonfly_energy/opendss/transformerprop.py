@@ -1,5 +1,5 @@
 # coding=utf-8
-"""Wire and properties in OpenDSS."""
+"""Transformer properties in OpenDSS."""
 from __future__ import division
 
 from honeybee._lockable import lockable
@@ -102,7 +102,7 @@ class TransformerProperties(object):
         return wire
 
     @classmethod
-    def from_urbanopt_dict(cls, data):
+    def from_electrical_database_dict(cls, data):
         """Create from a dictionary as it appears in electrical_database.json.
 
         Args:
@@ -130,7 +130,7 @@ class TransformerProperties(object):
 
     @property
     def identifier(self):
-        """Get or set a text string for the unique object identifer."""
+        """Get or set a text string for the unique object identifier."""
         return self._identifier
 
     @identifier.setter
@@ -254,7 +254,7 @@ class TransformerProperties(object):
             base['display_name'] = self._display_name
         return base
 
-    def to_urbanopt_dict(self):
+    def to_electrical_database_dict(self):
         """Get Wire as it should appear in the URBANopt electrical_database.json."""
         return {
             'nameclass': self.identifier,

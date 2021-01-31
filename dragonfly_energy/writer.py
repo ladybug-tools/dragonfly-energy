@@ -10,7 +10,8 @@ import json
 
 
 def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
-                      use_multiplier=True, add_plenum=False, folder=None, tolerance=0.01):
+                      use_multiplier=True, add_plenum=False, electrical_network=None,
+                      folder=None, tolerance=0.01):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
     Args:
@@ -35,13 +36,15 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
             multipliers and all resulting multipliers will be 1. (Default: True).
         add_plenum: Boolean to indicate whether ceiling/floor plenums should
             be auto-generated for the Rooms. (Default: False).
+        electrical_network: An optional OpenDSS ElectricalNetwork that's associated
+            with the dragonfly Model. (Default: None).
         folder: An optional folder to be used as the root of the model's
             URBANopt folder. If None, the files will be written into a sub-directory
             of the honeybee-core default_simulation_folder. This sub-directory
             is specifically: default_simulation_folder/[MODEL IDENTIFIER]
         tolerance: The minimum distance between points at which they are
-            not considered touching. Default: 0.01, suitable for objects
-            in meters.
+            not considered touching. (Default: 0.01, suitable for objects
+            in meters).
 
     Returns:
         A tuple with three values.
@@ -61,8 +64,11 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
         point = point.scale(conversion_factor)
         if shade_distance is not None:
             shade_distance = shade_distance * conversion_factor
+        tolerance = tolerance * conversion_factor
         model = model.duplicate()  # duplicate the model to avoid mutating the input
         model.convert_to_units('Meters')
+        if electrical_network is not None:
+            electrical_network = electrical_network.scale(conversion_factor)
 
     # prepare the folder for simulation
     if folder is None:  # use the default simulation folder
@@ -74,13 +80,24 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
     hb_model_folder = os.path.join(folder, 'hb_json')  # folder for honeybee JSONs
     preparedir(hb_model_folder)
 
-    # write out the geoJSON file from the model
+    # create geoJSON dictionary
     geojson_dict = model.to_geojson_dict(location, point, tolerance=tolerance)
     for feature_dict in geojson_dict['features']:  # add the detailed model filename
         if feature_dict['properties']['type'] == 'Building':
             bldg_id = feature_dict['properties']['id']
             feature_dict['properties']['detailed_model_filename'] = \
                 os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
+    
+    # add the electrical network to the geoJSOn dictionary
+    if electrical_network is not None:
+        electric_features = electrical_network.to_geojson_dict(
+            model.buildings, location, point, tolerance=tolerance)
+        geojson_dict['features'].extend(electric_features)
+        electric_json = os.path.join(folder, 'electrical_database.json')
+        with open(electric_json, 'w') as fp:
+            json.dump(electrical_network.to_electrical_database_dict(), fp, indent=4)
+
+    # write out the geoJSON file
     feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
     with open(feature_geojson, 'w') as fp:
         json.dump(geojson_dict, fp, indent=4)

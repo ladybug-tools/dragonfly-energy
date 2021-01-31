@@ -1,6 +1,7 @@
 # coding=utf-8
 import pytest
 import os
+import json
 
 from dragonfly.model import Model
 from dragonfly.building import Building
@@ -10,6 +11,7 @@ from dragonfly.context import ContextShade
 from dragonfly.windowparameter import SimpleWindowRatio
 
 from dragonfly_energy.properties.model import ModelEnergyProperties
+from dragonfly_energy.opendss.network import ElectricalNetwork
 
 import honeybee.model as hb_model
 
@@ -375,6 +377,36 @@ def test_to_urbanopt():
         assert os.path.isfile(model_json)
     for h_model in hb_models:
         assert isinstance(h_model, hb_model.Model)
+
+    # clean up the files
+    nukedir(sim_folder, True)
+
+
+def test_to_urbanopt_electric_network():
+    """Test the Model.to.urbanopt method with an ElectricNetwork."""
+    model_json = './tests/json/buffalo_test_district.dfjson'
+    with open(model_json) as json_file:
+        data = json.load(json_file)
+    model = Model.from_dict(data)
+
+    network_json = './tests/json/buffalo_electric_grid.json'
+    with open(network_json) as json_file:
+        data = json.load(json_file)
+    network = ElectricalNetwork.from_dict(data)
+
+    # create the urbanopt folder
+    location = Location('Buffalo', 'NY', 'USA', 42.813153, -78.852466)
+    sim_folder = './tests/urbanopt_model_buffalo'
+    geojson, hb_model_jsons, hb_models = \
+        model.to.urbanopt(model, location, electrical_network=network, folder=sim_folder)
+
+    # check that the appropriate files were generated
+    assert os.path.isfile(geojson)
+    for model_json in hb_model_jsons:
+        assert os.path.isfile(model_json)
+    for h_model in hb_models:
+        assert isinstance(h_model, hb_model.Model)
+    assert os.path.isfile(os.path.join(sim_folder, 'electrical_database.json'))
 
     # clean up the files
     nukedir(sim_folder, True)

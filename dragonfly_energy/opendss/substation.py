@@ -1,3 +1,5 @@
+# coding=utf-8
+"""Electrical substation in OpenDSS."""
 from ._base import _GeometryBase
 
 from ladybug_geometry.geometry2d.polygon import Polygon2D
@@ -28,7 +30,7 @@ class Substation(_GeometryBase):
         self._geometry = geometry
 
     @classmethod
-    def from_dict(cls, data, abridged=False):
+    def from_dict(cls, data):
         """Initialize an Substation from a dictionary.
 
         Args:
@@ -57,7 +59,7 @@ class Substation(_GeometryBase):
             base['display_name'] = self.display_name
         return base
 
-    def to_geojson_dict(self, start_id, end_id, origin_lon_lat, conversion_factors):
+    def to_geojson_dict(self, origin_lon_lat, conversion_factors):
         """Get Substation dictionary as it appears in an URBANopt geoJSON.
 
         Args:
