@@ -1,14 +1,11 @@
 """dragonfly energy simulation running commands."""
-
-try:
-    import click
-except ImportError:
-    raise ImportError(
-        'click is not installed. Try `pip install . [cli]` command.'
-    )
+import click
+import sys
+import os
+import logging
+import json
 
 from dragonfly.model import Model
-
 from honeybee.config import folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
@@ -16,10 +13,6 @@ from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
 from ladybug.futil import preparedir
 from ladybug.epw import EPW
 
-import sys
-import os
-import logging
-import json
 
 _logger = logging.getLogger(__name__)
 

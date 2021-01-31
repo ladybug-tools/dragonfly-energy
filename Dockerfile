@@ -13,7 +13,7 @@ RUN mkdir ladybug_tools && touch ladybug_tools/config.json
 ENV PATH="/home/ladybugbot/.local/bin:${PATH}"
 COPY . dragonfly-energy
 RUN pip3 install setuptools wheel\
-    && pip3 install ./dragonfly-energy[cli]
+    && pip3 install ./dragonfly-energy
 
 # Set up working directory
 RUN mkdir -p /home/ladybugbot/run/simulation
