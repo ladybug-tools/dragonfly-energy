@@ -1,11 +1,9 @@
 """dragonfly energy translation commands."""
-
-try:
-    import click
-except ImportError:
-    raise ImportError(
-        'click is not installed. Try `pip install . [cli]` command.'
-    )
+import click
+import sys
+import os
+import logging
+import json
 
 from ladybug.futil import preparedir
 from honeybee.config import folders as hb_folders
@@ -15,10 +13,6 @@ from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
 from dragonfly.model import Model
 
-import sys
-import os
-import logging
-import json
 
 _logger = logging.getLogger(__name__)
 

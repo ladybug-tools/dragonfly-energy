@@ -1,11 +1,5 @@
 """dragonfly-energy commands which will be added to dragonfly command line interface."""
-
-try:
-    import click
-except ImportError:
-    raise ImportError(
-        'click is not installed. Try `pip install . [cli]` command.'
-    )
+import click
 
 from dragonfly.cli import main
 from .simulate import simulate
@@ -17,7 +11,7 @@ def energy():
     pass
 
 
-# add sub-commands to energy
+# add sub-commands for energy
 energy.add_command(simulate)
 energy.add_command(translate)
 

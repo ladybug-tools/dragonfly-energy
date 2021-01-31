@@ -13,13 +13,7 @@ Installation
 
 ``pip install -U dragonfly-energy``.
 
-If you want to also include the command line interface use:
-
-``pip install -U dragonfly-energy[cli]``.
-
 To check if the command line is installed correctly use ``dragonfly-energy --help``
-or ``dragonfly energy --help``
-
 
 CLI Docs
 ========

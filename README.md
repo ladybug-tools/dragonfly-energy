@@ -13,10 +13,6 @@ Dragonfly extension for energy simulation.
 
 `pip install dragonfly-energy`
 
-If you want to also include the command line interface try:
-
-`pip install -U dragonfly-energy[cli]`
-
 ## QuickStart
 
 ```
