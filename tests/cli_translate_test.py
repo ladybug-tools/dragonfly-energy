@@ -8,7 +8,7 @@ import os
 
 def test_model_to_idf():
     runner = CliRunner()
-    input_df_model = './tests/json/model_complete_simple.json'
+    input_df_model = './tests/json/model_complete_simple.dfjson'
 
     output_df_folder = './tests/json/'
     output_df_model = os.path.join(output_df_folder, 'OfficeBuilding.idf')

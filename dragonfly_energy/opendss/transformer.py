@@ -37,16 +37,36 @@ class Transformer(_GeometryBase):
         self.properties = properties
 
     @classmethod
-    def from_dict(cls, data, abridged=False):
+    def from_dict(cls, data):
         """Initialize an Transformer from a dictionary.
 
         Args:
             data: A dictionary representation of an Transformer object.
         """
-        # check the type of dictionary
         assert data['type'] == 'Transformer', 'Expected Transformer ' \
             'dictionary. Got {}.'.format(data['type'])
         props = TransformerProperties.from_dict(data['properties'])
+        geo = Polygon2D.from_dict(data['geometry'])
+        trans = cls(data['identifier'], geo, props)
+        if 'display_name' in data and data['display_name'] is not None:
+            trans.display_name = data['display_name']
+        return trans
+
+    @classmethod
+    def from_dict_abridged(cls, data, properties):
+        """Initialize a Transformer from an abridged dictionary.
+
+        Args:
+            data: A TransformerAbridged dictionary.
+            properties: A dictionary with identifiers of TransformerProperties
+                as keys and Python TransformerProperties objects as values.
+        """
+        assert data['type'] == 'TransformerAbridged', \
+            'Expected TransformerAbridged. Got {}.'.format(data['type'])
+        try:
+            props = properties[data['properties']]
+        except KeyError as e:
+            raise ValueError('Failed to find "{}" in properties.'.format(e))
         geo = Polygon2D.from_dict(data['geometry'])
         trans = cls(data['identifier'], geo, props)
         if 'display_name' in data and data['display_name'] is not None:
@@ -83,7 +103,8 @@ class Transformer(_GeometryBase):
             abridged else {'type': 'TransformerAbridged'}
         base['identifier'] = self.identifier
         base['geometry'] = self.geometry.to_dict()
-        base['properties'] = self.properties.to_dict()
+        base['properties'] = self.properties.to_dict() if not abridged \
+            else self.properties.identifier
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -113,7 +134,7 @@ class Transformer(_GeometryBase):
                 'footprint_perimeter': self.geometry.perimeter,
                 'district_system_type': 'Transformer',
                 'equipment': [
-                    self.properties.identifer
+                    self.properties.identifier
                 ]
             },
             'geometry': {

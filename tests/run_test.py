@@ -80,7 +80,7 @@ def test_base_honeybee_osw():
     sim_folder = './tests/simulation'
     geojson, hb_model_jsons, hb_models = \
         model.to.urbanopt(model, location, folder=sim_folder)
-    
+
     # create the simulation parameters
     sim_par = SimulationParameter()
     sim_par.output.add_zone_energy_use()

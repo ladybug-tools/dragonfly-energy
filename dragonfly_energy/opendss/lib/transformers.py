@@ -1,4 +1,4 @@
-"""Load all transformers from the JSON libraries."""
+"""Library of transformer properties that come standard with dragonfly."""
 from ..transformerprop import TransformerProperties
 
 import os
@@ -10,7 +10,7 @@ _data_path = os.path.join(os.path.dirname(__file__), 'electrical_database.json')
 with open(_data_path) as json_file:
     _default_data = json.load(json_file)['transformer_properties']
 for _t_dict in _default_data:
-    _t_obj = TransformerProperties.from_urbanopt_dict(_t_dict)
+    _t_obj = TransformerProperties.from_electrical_database_dict(_t_dict)
     _t_obj.lock()
     _transformers[_t_dict['nameclass']] = _t_obj
 

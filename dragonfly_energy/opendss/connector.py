@@ -39,7 +39,7 @@ class ElectricalConnector(_GeometryBase):
         self.wires = wires
 
     @classmethod
-    def from_dict(cls, data, abridged=False):
+    def from_dict(cls, data):
         """Initialize an ElectricalConnector from a dictionary.
 
         Args:
@@ -49,6 +49,29 @@ class ElectricalConnector(_GeometryBase):
         assert data['type'] == 'ElectricalConnector', 'Expected ElectricalConnector ' \
             'dictionary. Got {}.'.format(data['type'])
         wires = [Wire.from_dict(wire) for wire in data['wires']]
+        geo = LineSegment2D.from_dict(data['geometry']) \
+            if data['geometry']['type'] == 'LineSegment2D' \
+            else Polyline2D.from_dict(data['geometry'])
+        con = cls(data['identifier'], geo, wires)
+        if 'display_name' in data and data['display_name'] is not None:
+            con.display_name = data['display_name']
+        return con
+
+    @classmethod
+    def from_dict_abridged(cls, data, wires):
+        """Initialize an ElectricalConnector from an abridged dictionary.
+
+        Args:
+            data: A ElectricalConnectorAbridged dictionary.
+            wires: A dictionary with identifiers of Wires as keys and Python
+                Wire objects as values.
+        """
+        assert data['type'] == 'ElectricalConnectorAbridged', \
+            'Expected ElectricalConnectorAbridged. Got {}.'.format(data['type'])
+        try:
+            wires = [wires[wire_id] for wire_id in data['wires']]
+        except KeyError as e:
+            raise ValueError('Failed to find "{}" in wires.'.format(e))
         geo = LineSegment2D.from_dict(data['geometry']) \
             if data['geometry']['type'] == 'LineSegment2D' \
             else Polyline2D.from_dict(data['geometry'])
@@ -122,7 +145,7 @@ class ElectricalConnector(_GeometryBase):
             pts = [(pt.x, pt.y) for pt in (self.geometry.p1, self.geometry.p2)]
         else:  # it's a polyline
             pts = [(pt.x, pt.y) for pt in self.geometry.vertices]
-        coords = [polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)]
+        coords = polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)
         return {
             'type': 'Feature',
             'properties': {
@@ -131,7 +154,7 @@ class ElectricalConnector(_GeometryBase):
                 'startJunctionId': start_id,
                 'endJunctionId': end_id,
                 'total_length': self.geometry.length,
-                'connector_type': 'Line',
+                'connector_type': 'Wire',
                 'wires': self.wire_ids,
                 'name': self.display_name
             },
