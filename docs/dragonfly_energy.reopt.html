@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.reopt module &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dragonfly_energy.run module" href="dragonfly_energy.run.html" />
+    <link rel="prev" title="dragonfly_energy.config module" href="dragonfly_energy.config.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dragonfly_energy.config.html" title="Previous Chapter: dragonfly_energy.config module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dragonfly_ene...</span>
+    </a>
+  </li>
+  <li>
+    <a href="dragonfly_energy.run.html" title="Next Chapter: dragonfly_energy.run module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dragonfly_ene... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/dragonfly_energy.reopt.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-dragonfly_energy.reopt">
+<span id="dragonfly-energy-reopt-module"></span><h1>dragonfly_energy.reopt module<a class="headerlink" href="#module-dragonfly_energy.reopt" title="Permalink to this headline">¶</a></h1>
+<p>Complete set of REopt Simulation Settings.</p>
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.FinancialParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">FinancialParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">analysis_years</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">escalation_rate</span><span class="o">=</span><span class="default_value">0.023</span></em>, <em class="sig-param"><span class="n">tax_rate</span><span class="o">=</span><span class="default_value">0.26</span></em>, <em class="sig-param"><span class="n">discount_rate</span><span class="o">=</span><span class="default_value">0.083</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#FinancialParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Complete set of Financial settings for REopt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>analysis_years</strong> – An integer for the number of years over which cost will
+be optimized. (Default: 25).</p></li>
+<li><p><strong>escalation_rate</strong> – A number between 0 and 1 for the escalation rate over
+the analysis. (Default: 0.023).</p></li>
+<li><p><strong>tax_rate</strong> – A number between 0 and 1 for the rate at which the owner/host
+of the system is taxed. (Default: 0.26).</p></li>
+<li><p><strong>discount_rate</strong> – A number between 0 and 1 for the discount rate for the
+owner/host of the system. (Default: 0.083).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>analysis_years</p></li>
+<li><p>escalation_rate</p></li>
+<li><p>tax_rate</p></li>
+<li><p>discount_rate</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#FinancialParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.apply_to_dict">
+<code class="sig-name descname">apply_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#FinancialParameter.apply_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.apply_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this object’s properties to a ‘Financial’ object of REopt schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#FinancialParameter.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.analysis_years">
+<em class="property">property </em><code class="sig-name descname">analysis_years</code><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.analysis_years" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a integer for the number of years to run the analysis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.discount_rate">
+<em class="property">property </em><code class="sig-name descname">discount_rate</code><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.discount_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a fractional number for the discount rate.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.escalation_rate">
+<em class="property">property </em><code class="sig-name descname">escalation_rate</code><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.escalation_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a fractional number for the escalation rate.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.FinancialParameter.tax_rate">
+<em class="property">property </em><code class="sig-name descname">tax_rate</code><a class="headerlink" href="#dragonfly_energy.reopt.FinancialParameter.tax_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a fractional number for the tax rate.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.GeneratorParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">GeneratorParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_kw</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dollars_per_kw</span><span class="o">=</span><span class="default_value">500</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#GeneratorParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dragonfly_energy.reopt._SourceParameter</span></code></p>
+<p>Generator settings for REopt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_kw</strong> – A number for the maximum installed kilowatts. (Default: 0).</p></li>
+<li><p><strong>dollars_per_kw</strong> – A number for installation cost in US dollars. (Default: 500).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>max_kw</p></li>
+<li><p>dollars_per_kw</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.GeneratorParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#GeneratorParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.GeneratorParameter.apply_to_dict">
+<code class="sig-name descname">apply_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter.apply_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this object’s properties to an object of REopt schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.GeneratorParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.GeneratorParameter.dollars_per_kw">
+<em class="property">property </em><code class="sig-name descname">dollars_per_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter.dollars_per_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the installation cost in US dollars.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.GeneratorParameter.max_kw">
+<em class="property">property </em><code class="sig-name descname">max_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.GeneratorParameter.max_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the maximum installed kilowatts.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.PVParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">PVParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_kw</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dollars_per_kw</span><span class="o">=</span><span class="default_value">1600</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#PVParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dragonfly_energy.reopt._SourceParameter</span></code></p>
+<p>Photovoltaic settings for REopt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_kw</strong> – A number for the maximum installed kilowatts. (Default: 0).</p></li>
+<li><p><strong>dollars_per_kw</strong> – A number for installation cost in US dollars. (Default: 1600).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>max_kw</p></li>
+<li><p>dollars_per_kw</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.PVParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#PVParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.PVParameter.apply_to_dict">
+<code class="sig-name descname">apply_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter.apply_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this object’s properties to an object of REopt schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.PVParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.PVParameter.dollars_per_kw">
+<em class="property">property </em><code class="sig-name descname">dollars_per_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter.dollars_per_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the installation cost in US dollars.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.PVParameter.max_kw">
+<em class="property">property </em><code class="sig-name descname">max_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.PVParameter.max_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the maximum installed kilowatts.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.REoptParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">REoptParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">financial_parameter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wind_parameter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pv_parameter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storage_parameter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">generator_parameter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#REoptParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Complete set of REopt Simulation Settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>financial_parameter</strong> – A FinancialParameter object to describe the parameters
+of the financial analysis. If None, a set of defaults will be
+generated. (Default: None).</p></li>
+<li><p><strong>wind_parameter</strong> – A WindParameter object to set the cost and max amount of
+wind to include in the analysis. If None, no wind will be included
+in the analysis. (Default: None).</p></li>
+<li><p><strong>pv_parameter</strong> – A PVParameter object to set the cost and max amount of
+photovoltaic to include in the analysis. If None, no PV will be included
+in the analysis. (Default: None).</p></li>
+<li><p><strong>storage_parameter</strong> – A StorageParameter object to set the cost and max amount of
+electricity storage to include in the analysis. If None, no storage
+will be included in the analysis. (Default: None).</p></li>
+<li><p><strong>generator_parameter</strong> – A GeneratorParameter object to set the cost and max amount
+of generators to include in the analysis. If None, no generators
+will be included in the analysis. (Default: None).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>financial_parameter</p></li>
+<li><p>wind_parameter</p></li>
+<li><p>pv_parameter</p></li>
+<li><p>storage_parameter</p></li>
+<li><p>generator_parameter</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#REoptParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#REoptParameter.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.to_assumptions_dict">
+<code class="sig-name descname">to_assumptions_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_file</span></em>, <em class="sig-param"><span class="n">urdb_label</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#REoptParameter.to_assumptions_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.to_assumptions_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get REoptParameter as a dictionary representation in the REopt Lite schema.</p>
+<p>Full documentation of the REopt Lite schema can be found at.
+<a class="reference external" href="https://developer.nrel.gov/docs/energy-optimization/reopt-v1/">https://developer.nrel.gov/docs/energy-optimization/reopt-v1/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_file</strong> – A JSON file in the REopt Lite schema containing a base set
+of assumptions that will be modified based on the properties of
+this object.</p></li>
+<li><p><strong>urdb_label</strong> – Text string for the Utility Rate Database (URDB) label
+for the particular electrical utility rate for the
+optimization. The label is the last term of the URL of a
+utility rate detail page (eg. the label for the rate at
+<a class="reference external" href="https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305">https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305</a>
+is 5b0d83af5457a3f276733305).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.financial_parameter">
+<em class="property">property </em><code class="sig-name descname">financial_parameter</code><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.financial_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a FinancialParameter object for financial settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.generator_parameter">
+<em class="property">property </em><code class="sig-name descname">generator_parameter</code><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.generator_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a GeneratorParameter object for electricity storage settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.pv_parameter">
+<em class="property">property </em><code class="sig-name descname">pv_parameter</code><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.pv_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a PVParameter object for photovoltaic settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.storage_parameter">
+<em class="property">property </em><code class="sig-name descname">storage_parameter</code><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.storage_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a StorageParameter object for electricity storage settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.REoptParameter.wind_parameter">
+<em class="property">property </em><code class="sig-name descname">wind_parameter</code><a class="headerlink" href="#dragonfly_energy.reopt.REoptParameter.wind_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a WindParameter object for wind settings.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.StorageParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">StorageParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_kw</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dollars_per_kw</span><span class="o">=</span><span class="default_value">840</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#StorageParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dragonfly_energy.reopt._SourceParameter</span></code></p>
+<p>Electrical storage settings for REopt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_kw</strong> – A number for the maximum installed kilowatts. (Default: 0).</p></li>
+<li><p><strong>dollars_per_kw</strong> – A number for installation cost in US dollars. (Default: 840).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>max_kw</p></li>
+<li><p>dollars_per_kw</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.StorageParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#StorageParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.StorageParameter.apply_to_dict">
+<code class="sig-name descname">apply_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter.apply_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this object’s properties to an object of REopt schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.StorageParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.StorageParameter.dollars_per_kw">
+<em class="property">property </em><code class="sig-name descname">dollars_per_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter.dollars_per_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the installation cost in US dollars.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.StorageParameter.max_kw">
+<em class="property">property </em><code class="sig-name descname">max_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.StorageParameter.max_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the maximum installed kilowatts.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dragonfly_energy.reopt.WindParameter">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.reopt.</code><code class="sig-name descname">WindParameter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_kw</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dollars_per_kw</span><span class="o">=</span><span class="default_value">3013</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#WindParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dragonfly_energy.reopt._SourceParameter</span></code></p>
+<p>Wind settings for REopt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_kw</strong> – A number for the maximum installed kilowatts. (Default: 0).</p></li>
+<li><p><strong>dollars_per_kw</strong> – A number for installation cost in US dollars. (Default: 3013).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>max_kw</p></li>
+<li><p>dollars_per_kw</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.WindParameter.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/reopt.html#WindParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.WindParameter.apply_to_dict">
+<code class="sig-name descname">apply_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter.apply_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this object’s properties to an object of REopt schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.WindParameter.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.WindParameter.dollars_per_kw">
+<em class="property">property </em><code class="sig-name descname">dollars_per_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter.dollars_per_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the installation cost in US dollars.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.reopt.WindParameter.max_kw">
+<em class="property">property </em><code class="sig-name descname">max_kw</code><a class="headerlink" href="#dragonfly_energy.reopt.WindParameter.max_kw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set a number for the maximum installed kilowatts.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

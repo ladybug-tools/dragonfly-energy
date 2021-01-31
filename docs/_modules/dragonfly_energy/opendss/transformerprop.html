@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.opendss.transformerprop &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for dragonfly_energy.opendss.transformerprop</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Wire and properties in OpenDSS.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">from</span> <span class="nn">honeybee._lockable</span> <span class="kn">import</span> <span class="n">lockable</span>
+<span class="kn">from</span> <span class="nn">honeybee.typing</span> <span class="kn">import</span> <span class="n">float_positive</span><span class="p">,</span> <span class="n">valid_ep_string</span>
+
+
+<div class="viewcode-block" id="TransformerProperties"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties">[docs]</a><span class="nd">@lockable</span>
+<span class="k">class</span> <span class="nc">TransformerProperties</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents the properties of a Transformer in OpenDSS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        identifier: Text string for a unique wire property ID. Must contain only</span>
+<span class="sd">            characters that are acceptable in OpenDSS. This will be used to</span>
+<span class="sd">            identify the object across the exported geoJSON and OpenDSS files.</span>
+<span class="sd">        kva:  Base kVA rating of the transformer in kiloVolt-Amps.</span>
+<span class="sd">        resistance: A number for the electrical resistance of the transformer</span>
+<span class="sd">            in ohms. (Default: 0.1).</span>
+<span class="sd">        reactance: A number for the electrical reactance of the transformer</span>
+<span class="sd">            in ohms. (Default: 0.1).</span>
+<span class="sd">        phases: A list or tuple of letters (A, B or C) for the phases of the</span>
+<span class="sd">            transformer. (Default: (&#39;A&#39;, &#39;B&#39;, &#39;C&#39;)).</span>
+<span class="sd">        high_voltage: A number for the high voltage of the transformer in</span>
+<span class="sd">            kiloVolts. (Default: 13.2).</span>
+<span class="sd">        low_voltage: A number for the low voltage of the transformer in</span>
+<span class="sd">            kiloVolts. (Default: 0.48).</span>
+<span class="sd">        is_center_tap: Boolean for whether the transformer is center-tapped</span>
+<span class="sd">            (True) or not (False). (Default: False).</span>
+<span class="sd">        connection: Text for the type of internal connection in the transformer, either</span>
+<span class="sd">            &quot;Wye-Wye&quot;, &quot;Wye-Delta&quot;, &quot;Delta-Wye&quot; or &quot;Delta-Delta&quot;. (Default: &quot;Wye-Wye&quot;).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * identifier</span>
+<span class="sd">        * display_name</span>
+<span class="sd">        * kva</span>
+<span class="sd">        * resistance</span>
+<span class="sd">        * reactance</span>
+<span class="sd">        * phases</span>
+<span class="sd">        * high_voltage</span>
+<span class="sd">        * low_voltage</span>
+<span class="sd">        * is_center_tap</span>
+<span class="sd">        * connection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;_locked&#39;</span><span class="p">,</span> <span class="s1">&#39;_display_name&#39;</span><span class="p">,</span> <span class="s1">&#39;_identifier&#39;</span><span class="p">,</span> <span class="s1">&#39;_kva&#39;</span><span class="p">,</span> <span class="s1">&#39;_resistance&#39;</span><span class="p">,</span> <span class="s1">&#39;_reactance&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;_phases&#39;</span><span class="p">,</span> <span class="s1">&#39;_high_voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;_low_voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;_is_center_tap&#39;</span><span class="p">,</span> <span class="s1">&#39;_connection&#39;</span><span class="p">)</span>
+
+    <span class="n">VALID_PHASES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
+    <span class="n">VALID_CONNECTIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Wye-Wye&#39;</span><span class="p">,</span> <span class="s1">&#39;Wye-Delta&#39;</span><span class="p">,</span> <span class="s1">&#39;Delta-Wye&#39;</span><span class="p">,</span> <span class="s1">&#39;Delta-Delta&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">kva</span><span class="p">,</span> <span class="n">resistance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">reactance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">phases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">),</span> <span class="n">high_voltage</span><span class="o">=</span><span class="mf">13.2</span><span class="p">,</span> <span class="n">low_voltage</span><span class="o">=</span><span class="mf">0.48</span><span class="p">,</span>
+                 <span class="n">is_center_tap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="s1">&#39;Wye-Wye&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize TransformerProperties&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># unlocked by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kva</span> <span class="o">=</span> <span class="n">kva</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">=</span> <span class="n">resistance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactance</span> <span class="o">=</span> <span class="n">reactance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span> <span class="o">=</span> <span class="n">phases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_voltage</span> <span class="o">=</span> <span class="n">high_voltage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_voltage</span> <span class="o">=</span> <span class="n">low_voltage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_center_tap</span> <span class="o">=</span> <span class="n">is_center_tap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connection</span>
+
+<div class="viewcode-block" id="TransformerProperties.from_dict"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a TransformerProperties object from a dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A dictionary representation of a TransformerProperties object</span>
+<span class="sd">                in the format below.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            {</span>
+<span class="sd">            &#39;type&#39;: &#39;TransformerProperties&#39;,</span>
+<span class="sd">            &#39;identifier&#39;: &#39;Transformer--50KVA PM&#39;,  # unique identifier</span>
+<span class="sd">            &#39;kva&#39;: 50,  # kVA rating of the transformer</span>
+<span class="sd">            &#39;resistance&#39;: 0.1,  # transformer resistance in ohms</span>
+<span class="sd">            &#39;reactance&#39;: 0.1,  # transformer reactance in ohms</span>
+<span class="sd">            &#39;phases&#39;: (&#39;A&#39;, &#39;B&#39;, &#39;C&#39;),  # transformer phases</span>
+<span class="sd">            &#39;high_voltage&#39;: 13.2,  # transformer high voltage in kV</span>
+<span class="sd">            &#39;low_voltage&#39;: 0.48,  # transformer low voltage in kV</span>
+<span class="sd">            &#39;is_center_tap&#39;: False,  # boolean for if the transformer is center-tapped</span>
+<span class="sd">            &#39;connection&#39;: &#39;Wye-Wye&#39;  # text for the type of connection</span>
+<span class="sd">            }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resistance</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;resistance&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="mf">0.1</span>
+        <span class="n">reactance</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;reactance&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;reactance&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="mf">0.1</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;phases&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
+        <span class="n">hv</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;high_voltage&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;high_voltage&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="mf">13.2</span>
+        <span class="n">lv</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;low_voltage&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;low_voltage&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="mf">0.48</span>
+        <span class="n">icp</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_center_tap&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;is_center_tap&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;connection&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;connection&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="s1">&#39;Wye-Wye&#39;</span>
+        <span class="n">wire</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;identifier&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;kva&#39;</span><span class="p">],</span> <span class="n">resistance</span><span class="p">,</span> <span class="n">reactance</span><span class="p">,</span>
+                   <span class="n">phases</span><span class="p">,</span> <span class="n">hv</span><span class="p">,</span> <span class="n">lv</span><span class="p">,</span> <span class="n">icp</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;display_name&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;display_name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">wire</span><span class="o">.</span><span class="n">display_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;display_name&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">wire</span></div>
+
+<div class="viewcode-block" id="TransformerProperties.from_urbanopt_dict"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.from_urbanopt_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_urbanopt_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create from a dictionary as it appears in electrical_database.json.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A dictionary representation of an TransformerProperties object</span>
+<span class="sd">                in the format below.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            {</span>
+<span class="sd">            &#39;nameclass&#39;: &#39;Transformer--50KVA PM&#39;,  # unique identifier</span>
+<span class="sd">            &#39;kva&#39;: 50,  # kVA rating of the transformer</span>
+<span class="sd">            &#39;resistance&#39;: 0.1,  # transformer resistance in ohms</span>
+<span class="sd">            &#39;reactance&#39;: 0.1,  # transformer reactance in ohms</span>
+<span class="sd">            &#39;phases&#39;: (&#39;A&#39;, &#39;B&#39;, &#39;C&#39;),  # transformer phases</span>
+<span class="sd">            &#39;high_voltage&#39;: 13.2,  # transformer high voltage in kV</span>
+<span class="sd">            &#39;low_voltage&#39;: 0.48,  # transformer low voltage in kV</span>
+<span class="sd">            &#39;is_center_tap&#39;: False,  # boolean for if the transformer is center-tapped</span>
+<span class="sd">            &#39;connection&#39;: &#39;Wye-Wye&#39;  # text for the type of connection</span>
+<span class="sd">            }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;nameclass&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;kva&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;reactance&#39;</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;phases&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;high_voltage&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;low_voltage&#39;</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_center_tap&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;connection&#39;</span><span class="p">])</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a text string for the unique object identifer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identifier</span>
+
+    <span class="nd">@identifier</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_identifier</span> <span class="o">=</span> <span class="n">valid_ep_string</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;transformer properties identifier&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a string for the object name without any character restrictions.</span>
+
+<span class="sd">        If not set, this will be equal to the identifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identifier</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span>
+
+    <span class="nd">@display_name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">display_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnicodeEncodeError</span><span class="p">:</span>  <span class="c1"># Python 2 machine lacking the character set</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="n">value</span>  <span class="c1"># keep it as unicode</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">kva</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the base kVA rating of the transformer in kVA.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kva</span>
+
+    <span class="nd">@kva</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">kva</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kva</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;kva&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the resistance of the tranformer in ohms.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resistance</span>
+
+    <span class="nd">@resistance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resistance</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;resistance&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">reactance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the reactance of the tranformer in ohms.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reactance</span>
+
+    <span class="nd">@reactance</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">reactance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reactance</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;reactance&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a list or tuple of letters for the phases of the transformer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span>
+
+    <span class="nd">@phases</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">phases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Expected list or tuple for phases. &#39;</span>
+                            <span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALID_PHASES</span><span class="p">,</span> <span class="s1">&#39;Phase &quot;</span><span class="si">{}</span><span class="s1">&quot; is not acceptable. Choose from &#39;</span> \
+                <span class="s1">&#39;the following:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">VALID_PHASES</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phases</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">high_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the high voltage of the tranformer in kiloVolts.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_voltage</span>
+
+    <span class="nd">@high_voltage</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">high_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high_voltage</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;high voltage&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">low_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the low voltage of the tranformer in kiloVolts.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_voltage</span>
+
+    <span class="nd">@low_voltage</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">low_voltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_voltage</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;low voltage&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_center_tap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a boolean for whether the transformer is center-tapped.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_center_tap</span>
+
+    <span class="nd">@is_center_tap</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">is_center_tap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_center_tap</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set text for the type of internal connection in the transformer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
+
+    <span class="nd">@connection</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALID_CONNECTIONS</span><span class="p">,</span> <span class="s1">&#39;Phase &quot;</span><span class="si">{}</span><span class="s1">&quot; is not acceptable. &#39;</span> \
+            <span class="s1">&#39;Choose from the following:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">VALID_CONNECTIONS</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="TransformerProperties.to_dict"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get TransformerProperties dictionary.&quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TransformerProperties&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;identifier&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="s1">&#39;kva&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kva</span><span class="p">,</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span>
+            <span class="s1">&#39;reactance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactance</span><span class="p">,</span>
+            <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span>
+            <span class="s1">&#39;high_voltage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">high_voltage</span><span class="p">,</span>
+            <span class="s1">&#39;low_voltage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">low_voltage</span><span class="p">,</span>
+            <span class="s1">&#39;is_center_tap&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_center_tap</span><span class="p">,</span>
+            <span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;display_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span>
+        <span class="k">return</span> <span class="n">base</span></div>
+
+<div class="viewcode-block" id="TransformerProperties.to_urbanopt_dict"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.to_urbanopt_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_urbanopt_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get Wire as it should appear in the URBANopt electrical_database.json.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;nameclass&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="s1">&#39;kva&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kva</span><span class="p">,</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span>
+            <span class="s1">&#39;reactance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactance</span><span class="p">,</span>
+            <span class="s1">&#39;phases&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span>
+            <span class="s1">&#39;high_voltage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">high_voltage</span><span class="p">,</span>
+            <span class="s1">&#39;low_voltage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">low_voltage</span><span class="p">,</span>
+            <span class="s1">&#39;is_center_tap&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_center_tap</span><span class="p">,</span>
+            <span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="TransformerProperties.duplicate"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="n">TransformerProperties</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kva</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">high_voltage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">low_voltage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_center_tap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">_display_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_name</span>
+        <span class="k">return</span> <span class="n">new_obj</span>
+
+    <span class="k">def</span> <span class="nf">__key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A tuple based on the object properties, useful for hashing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kva</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reactance</span><span class="p">,</span>
+            <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">high_voltage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">low_voltage</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_center_tap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TransformerProperties</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">__key</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TransformerProperties.ToString"><a class="viewcode-back" href="../../../dragonfly_energy.opendss.transformerprop.html#dragonfly_energy.opendss.transformerprop.TransformerProperties.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Represent TransformerProperties.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;TransformerProperties: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

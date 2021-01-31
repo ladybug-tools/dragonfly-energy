@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly energy command line interface &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/cli.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="dragonfly-energy-command-line-interface">
+<h1>dragonfly energy command line interface<a class="headerlink" href="#dragonfly-energy-command-line-interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dragonfly-energy">
+<h2>dragonfly_energy<a class="headerlink" href="#dragonfly-energy" title="Permalink to this headline">¶</a></h2>
+<p>dragonfly energy commands.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy <span class="o">[</span>OPTIONS<span class="o">]</span> COMMAND <span class="o">[</span>ARGS<span class="o">]</span>...
+</pre></div>
+</div>
+<div class="section" id="dragonfly-energy-simulate">
+<h3>simulate<a class="headerlink" href="#dragonfly-energy-simulate" title="Permalink to this headline">¶</a></h3>
+<p>Commands for simulating Dragonfly JSON files in EnergyPlus.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy simulate <span class="o">[</span>OPTIONS<span class="o">]</span> COMMAND <span class="o">[</span>ARGS<span class="o">]</span>...
+</pre></div>
+</div>
+<div class="section" id="dragonfly-energy-simulate-model">
+<h4>model<a class="headerlink" href="#dragonfly-energy-simulate-model" title="Permalink to this headline">¶</a></h4>
+<p>Simulate a Dragonfly Model JSON file in EnergyPlus.</p>
+<div class="line-block">
+<div class="line">Args:</div>
+<div class="line-block">
+<div class="line">model_json: Full path to a Dragonfly Model JSON file.</div>
+<div class="line">epw_file: Full path to an .epw file.</div>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy simulate model <span class="o">[</span>OPTIONS<span class="o">]</span> MODEL_JSON EPW_FILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-sp">
+<span id="cmdoption-dragonfly-energy-simulate-model-sp"></span><span id="cmdoption-dragonfly_energy-simulate-model-sim-par-json"></span><span id="cmdoption-dragonfly-energy-simulate-model-sim-par-json"></span><code class="sig-name descname">-sp</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--sim-par-json</code><code class="sig-prename descclassname"> &lt;sim_par_json&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-sp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to a honeybee energy SimulationParameter JSON that describes all of the settings for the simulation.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-o">
+<span id="cmdoption-dragonfly-energy-simulate-model-o"></span><span id="cmdoption-dragonfly_energy-simulate-model-obj-per-model"></span><span id="cmdoption-dragonfly-energy-simulate-model-obj-per-model"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--obj-per-model</code><code class="sig-prename descclassname"> &lt;obj_per_model&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text to describe how the input Model should be divided across the output Models. Choose from: District, Building, Story.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>Building</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-multiplier">
+<span id="cmdoption-dragonfly-energy-simulate-model-multiplier"></span><span id="cmdoption-dragonfly_energy-simulate-model-fg"></span><span id="cmdoption-dragonfly-energy-simulate-model-fg"></span><span id="cmdoption-dragonfly_energy-simulate-model-full-geometry"></span><span id="cmdoption-dragonfly-energy-simulate-model-full-geometry"></span><code class="sig-name descname">--multiplier</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-fg</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--full-geometry</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to note if the multipliers on each Building story will be passed along to the generated Honeybee Room objects or if full geometry objects should be written for each story in the building.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-no-plenum">
+<span id="cmdoption-dragonfly-energy-simulate-model-no-plenum"></span><span id="cmdoption-dragonfly_energy-simulate-model-p"></span><span id="cmdoption-dragonfly-energy-simulate-model-p"></span><span id="cmdoption-dragonfly_energy-simulate-model-plenum"></span><span id="cmdoption-dragonfly-energy-simulate-model-plenum"></span><code class="sig-name descname">--no-plenum</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--plenum</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-no-plenum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether ceiling/floor plenums should be auto-generated for the Rooms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-no-cap">
+<span id="cmdoption-dragonfly-energy-simulate-model-no-cap"></span><span id="cmdoption-dragonfly_energy-simulate-model-c"></span><span id="cmdoption-dragonfly-energy-simulate-model-c"></span><span id="cmdoption-dragonfly_energy-simulate-model-cap"></span><span id="cmdoption-dragonfly-energy-simulate-model-cap"></span><code class="sig-name descname">--no-cap</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--cap</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-no-cap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether context shade buildings should be capped with a top face.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-sd">
+<span id="cmdoption-dragonfly-energy-simulate-model-sd"></span><span id="cmdoption-dragonfly_energy-simulate-model-shade-dist"></span><span id="cmdoption-dragonfly-energy-simulate-model-shade-dist"></span><code class="sig-name descname">-sd</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--shade-dist</code><code class="sig-prename descclassname"> &lt;shade_dist&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-sd" title="Permalink to this definition">¶</a></dt>
+<dd><p>An optional number to note the distance beyond which other buildings shade should not be exported into a given Model. If None, all other buildings will be included as context shade in each and every Model. Set to 0 to exclude all neighboring buildings from the resulting models.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-osw">
+<span id="cmdoption-dragonfly-energy-simulate-model-osw"></span><span id="cmdoption-dragonfly_energy-simulate-model-base-osw"></span><span id="cmdoption-dragonfly-energy-simulate-model-base-osw"></span><code class="sig-name descname">-osw</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--base-osw</code><code class="sig-prename descclassname"> &lt;base_osw&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-osw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to an OSW JSON be used as the base for the execution of the OpenStuduo CLI. This can be used to add measures in the workflow.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-f">
+<span id="cmdoption-dragonfly-energy-simulate-model-f"></span><span id="cmdoption-dragonfly_energy-simulate-model-folder"></span><span id="cmdoption-dragonfly-energy-simulate-model-folder"></span><code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--folder</code><code class="sig-prename descclassname"> &lt;folder&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder on this computer, into which the IDF and result files will be written. If None, the files will be output to the honeybee default simulation folder and placed in a project folder with the same name as the model json.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-log">
+<span id="cmdoption-dragonfly-energy-simulate-model-log"></span><span id="cmdoption-dragonfly_energy-simulate-model-log-file"></span><span id="cmdoption-dragonfly-energy-simulate-model-log-file"></span><code class="sig-name descname">-log</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--log-file</code><code class="sig-prename descclassname"> &lt;log_file&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional log file to output a dictionary with the paths of the generated files under the following keys: osm, idf, sql. By default the list will be printed out to stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><ul class="simple">
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-arg-MODEL_JSON">
+<span id="cmdoption-dragonfly-energy-simulate-model-arg-model-json"></span><code class="sig-name descname">MODEL_JSON</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-arg-MODEL_JSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-simulate-model-arg-EPW_FILE">
+<span id="cmdoption-dragonfly-energy-simulate-model-arg-epw-file"></span><code class="sig-name descname">EPW_FILE</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-simulate-model-arg-EPW_FILE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="dragonfly-energy-translate">
+<h3>translate<a class="headerlink" href="#dragonfly-energy-translate" title="Permalink to this headline">¶</a></h3>
+<p>Commands for translating Dragonfly JSON files to/from OSM/IDF.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy translate <span class="o">[</span>OPTIONS<span class="o">]</span> COMMAND <span class="o">[</span>ARGS<span class="o">]</span>...
+</pre></div>
+</div>
+<div class="section" id="dragonfly-energy-translate-model-to-idf">
+<h4>model-to-idf<a class="headerlink" href="#dragonfly-energy-translate-model-to-idf" title="Permalink to this headline">¶</a></h4>
+<p>Translate a Model JSON file to an IDF using direct-to-idf translators.</p>
+<p>The resulting IDF should be simulate-able but not all Model properties might
+make it into the IDF given that the direct-to-idf translators are used.</p>
+<div class="line-block">
+<div class="line">Args:</div>
+<div class="line-block">
+<div class="line">model_json: Full path to a Dragonfly Model JSON file.</div>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy translate model-to-idf <span class="o">[</span>OPTIONS<span class="o">]</span> MODEL_JSON
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-sp">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-sp"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-sim-par-json"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-sim-par-json"></span><code class="sig-name descname">-sp</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--sim-par-json</code><code class="sig-prename descclassname"> &lt;sim_par_json&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-sp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to a honeybee energy SimulationParameter JSON that describes all of the settings for the simulation. If None default parameters will be generated.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-o">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-o"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-obj-per-model"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-obj-per-model"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--obj-per-model</code><code class="sig-prename descclassname"> &lt;obj_per_model&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text to describe how the input Model should be divided across the output Models. Choose from: District, Building, Story.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>Building</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-multiplier">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-multiplier"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-fg"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-fg"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-full-geometry"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-full-geometry"></span><code class="sig-name descname">--multiplier</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-fg</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--full-geometry</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to note if the multipliers on each Building story will be passed along to the generated Honeybee Room objects or if full geometry objects should be written for each story in the building.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-no-plenum">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-no-plenum"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-p"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-p"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-plenum"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-plenum"></span><code class="sig-name descname">--no-plenum</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--plenum</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-no-plenum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether ceiling/floor plenums should be auto-generated for the Rooms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-no-cap">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-no-cap"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-c"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-c"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-cap"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-cap"></span><code class="sig-name descname">--no-cap</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--cap</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-no-cap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether context shade buildings should be capped with a top face.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-sd">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-sd"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-shade-dist"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-shade-dist"></span><code class="sig-name descname">-sd</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--shade-dist</code><code class="sig-prename descclassname"> &lt;shade_dist&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-sd" title="Permalink to this definition">¶</a></dt>
+<dd><p>An optional number to note the distance beyond which other buildings shade should not be exported into a given Model. If None, all other buildings will be included as context shade in each and every Model. Set to 0 to exclude all neighboring buildings from the resulting models.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-f">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-f"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-folder"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-folder"></span><code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--folder</code><code class="sig-prename descclassname"> &lt;folder&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder on this computer, into which the IDF and result files will be written. If None, the files will be output to the honeybee default simulation folder and placed in a project folder with the same name as the model json.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-log">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-log"></span><span id="cmdoption-dragonfly_energy-translate-model-to-idf-log-file"></span><span id="cmdoption-dragonfly-energy-translate-model-to-idf-log-file"></span><code class="sig-name descname">-log</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--log-file</code><code class="sig-prename descclassname"> &lt;log_file&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional log file to output the list of IDFs paths. By default the list will be printed out to stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><ul class="simple">
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-idf-arg-MODEL_JSON">
+<span id="cmdoption-dragonfly-energy-translate-model-to-idf-arg-model-json"></span><code class="sig-name descname">MODEL_JSON</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-idf-arg-MODEL_JSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
+<div class="section" id="dragonfly-energy-translate-model-to-osm">
+<h4>model-to-osm<a class="headerlink" href="#dragonfly-energy-translate-model-to-osm" title="Permalink to this headline">¶</a></h4>
+<p>Translate a Model JSON file into an OpenStudio Model.</p>
+<div class="line-block">
+<div class="line">Args:</div>
+<div class="line-block">
+<div class="line">model_json: Full path to a Dragonfly Model JSON file.</div>
+</div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dragonfly_energy translate model-to-osm <span class="o">[</span>OPTIONS<span class="o">]</span> MODEL_JSON
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-sp">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-sp"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-sim-par-json"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-sim-par-json"></span><code class="sig-name descname">-sp</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--sim-par-json</code><code class="sig-prename descclassname"> &lt;sim_par_json&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-sp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to a honeybee energy SimulationParameter JSON that describes all of the settings for the simulation. If None default parameters will be generated.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-o">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-o"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-obj-per-model"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-obj-per-model"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--obj-per-model</code><code class="sig-prename descclassname"> &lt;obj_per_model&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text to describe how the input Model should be divided across the output Models. Choose from: District, Building, Story.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>Building</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-multiplier">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-multiplier"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-fg"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-fg"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-full-geometry"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-full-geometry"></span><code class="sig-name descname">--multiplier</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-fg</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--full-geometry</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to note if the multipliers on each Building story will be passed along to the generated Honeybee Room objects or if full geometry objects should be written for each story in the building.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-no-plenum">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-no-plenum"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-p"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-p"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-plenum"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-plenum"></span><code class="sig-name descname">--no-plenum</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--plenum</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-no-plenum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether ceiling/floor plenums should be auto-generated for the Rooms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-no-cap">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-no-cap"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-c"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-c"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-cap"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-cap"></span><code class="sig-name descname">--no-cap</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--cap</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-no-cap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to indicate whether context shade buildings should be capped with a top face.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-sd">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-sd"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-shade-dist"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-shade-dist"></span><code class="sig-name descname">-sd</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--shade-dist</code><code class="sig-prename descclassname"> &lt;shade_dist&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-sd" title="Permalink to this definition">¶</a></dt>
+<dd><p>An optional number to note the distance beyond which other buildings shade should not be exported into a given Model. If None, all other buildings will be included as context shade in each and every Model. Set to 0 to exclude all neighboring buildings from the resulting models.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-f">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-f"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-folder"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-folder"></span><code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--folder</code><code class="sig-prename descclassname"> &lt;folder&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder on this computer, into which the IDF and result files will be written. If None, the files will be output to the honeybee default simulation folder and placed in a project folder with the same name as the model json.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-log">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-log"></span><span id="cmdoption-dragonfly_energy-translate-model-to-osm-log-file"></span><span id="cmdoption-dragonfly-energy-translate-model-to-osm-log-file"></span><code class="sig-name descname">-log</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--log-file</code><code class="sig-prename descclassname"> &lt;log_file&gt;</code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional log file to output a dictionary with the paths of the generated files under the following keys: osm, idf. By default the list will be printed out to stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><ul class="simple">
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt id="cmdoption-dragonfly_energy-translate-model-to-osm-arg-MODEL_JSON">
+<span id="cmdoption-dragonfly-energy-translate-model-to-osm-arg-model-json"></span><code class="sig-name descname">MODEL_JSON</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-dragonfly_energy-translate-model-to-osm-arg-MODEL_JSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

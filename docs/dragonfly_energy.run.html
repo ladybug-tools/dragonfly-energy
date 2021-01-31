@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.run module &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dragonfly_energy.writer module" href="dragonfly_energy.writer.html" />
+    <link rel="prev" title="dragonfly_energy.reopt module" href="dragonfly_energy.reopt.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dragonfly_energy.reopt.html" title="Previous Chapter: dragonfly_energy.reopt module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dragonfly_ene...</span>
+    </a>
+  </li>
+  <li>
+    <a href="dragonfly_energy.writer.html" title="Next Chapter: dragonfly_energy.writer module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dragonfly_ene... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/dragonfly_energy.run.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-dragonfly_energy.run">
+<span id="dragonfly-energy-run-module"></span><h1>dragonfly_energy.run module<a class="headerlink" href="#module-dragonfly_energy.run" title="Permalink to this headline">¶</a></h1>
+<p>Module for running geoJSON and OpenStudio files through URBANopt.</p>
+<dl class="py function">
+<dt id="dragonfly_energy.run.base_honeybee_osw">
+<code class="sig-prename descclassname">dragonfly_energy.run.</code><code class="sig-name descname">base_honeybee_osw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project_directory</span></em>, <em class="sig-param"><span class="n">sim_par_json</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">additional_measures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">base_osw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">epw_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skip_report</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/run.html#base_honeybee_osw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.run.base_honeybee_osw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a honeybee_workflow.osw to be used as a base in URBANopt simulations.</p>
+<p>This method will also copy the Honeybee.rb mapper to this folder if it is
+available in the config of this library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_directory</strong> – Full path to a folder out of which the URBANopt simulation
+will be run. This is the folder that contains the feature geoJSON.</p></li>
+<li><p><strong>sim_par_json</strong> – Optional file path to the SimulationParameter JSON.
+If None, the OpenStudio models generated in the URBANopt run will
+not have everything they need to be simulate-able unless such parameters
+are supplied from one of the additional_measures or the base_osw.</p></li>
+<li><p><strong>additional_measures</strong> – An optional array of honeybee-energy Measure objects
+to be included in the output osw. These Measure objects must have
+values for all required input arguments or an exception will be
+raised while running this function.</p></li>
+<li><p><strong>base_osw</strong> – Optional file path to an existing OSW JSON be used as the base
+for the honeybee_workflow.osw. This is another way that outside measures
+can be incorporated into the workflow.</p></li>
+<li><p><strong>epw_file</strong> – Optional file path to an EPW that should be associated with the
+output energy model.</p></li>
+<li><p><strong>skip_report</strong> – Set to True to have the URBANopt default feature reporting
+measure skipped as part of the workflow. If False, the measure will
+be run after all simulations are complete. Note that this input
+has no effect if the default_feature_reports measure is already
+in the base_osw or additional_measures (Default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The file path to the honeybee_workflow.osw written out by this method.
+This is used as the base for translating all features in the geoJSON.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dragonfly_energy.run.prepare_urbanopt_folder">
+<code class="sig-prename descclassname">dragonfly_energy.run.</code><code class="sig-name descname">prepare_urbanopt_folder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_geojson</span></em>, <em class="sig-param"><span class="n">cpu_count</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/run.html#prepare_urbanopt_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.run.prepare_urbanopt_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a directory with a feature geoJSON for URBANopt simulation.</p>
+<p>This includes copying the Gemfile to the folder and generating the runner.conf
+to specify the number of CPUs to be used in the simulation. Lastly, the
+uo -m command is run to generate the scenario .csv file from the exported
+geoJSON and mapper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_geojson</strong> – An URBANopt feature geoJSON to be prepared for URBANopt
+simulation.</p></li>
+<li><p><strong>cpu_count</strong> – A positive integer for the number of CPUs to use in the
+simulation. (Default: 2).</p></li>
+<li><p><strong>verbose</strong> – Boolean to note if the simulation should be run with verbose
+reporting of progress.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to the .csv file for the URBANopt scenario.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dragonfly_energy.run.run_reopt">
+<code class="sig-prename descclassname">dragonfly_energy.run.</code><code class="sig-name descname">run_reopt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_geojson</span></em>, <em class="sig-param"><span class="n">scenario_csv</span></em>, <em class="sig-param"><span class="n">urdb_label</span></em>, <em class="sig-param"><span class="n">reopt_parameters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">developer_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/run.html#run_reopt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.run.run_reopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a feature and scenario file through REopt post processing.</p>
+<p>Note that the URBANopt simulation must already be run with the input feature_geojson
+and scenario_csv in order for the post-processing to be successful.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_geojson</strong> – The full path to a .geojson file containing the
+footprints of buildings to be simulated.</p></li>
+<li><p><strong>scenario_csv</strong> – The full path to a .csv file for the URBANopt scenario.</p></li>
+<li><p><strong>urdb_label</strong> – Text string for the Utility Rate Database (URDB) label for the
+particular electrical utility rate for the optimization. The label is
+the last term of the URL of a utility rate detail page (eg. the label for
+the rate at <a class="reference external" href="https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305">https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305</a>
+is 5b0d83af5457a3f276733305). Utility rates for specific locations
+can be looked up in the REopt Lite tool (<a class="reference external" href="https://reopt.nrel.gov/tool">https://reopt.nrel.gov/tool</a>)
+and the label can be obtained by clicking on “Rate Details” link
+for a particular selected rate.</p></li>
+<li><p><strong>reopt_parameters</strong> – A REoptParameter object to describe the major assumptions
+of the REopt analysis. If None some default parameters will be
+generated for a typical analysis. (Default: None).</p></li>
+<li><p><strong>developer_key</strong> – Text string for the NREL developer key. You can get a developer
+key at (<a class="reference external" href="https://developer.nrel.gov/">https://developer.nrel.gov/</a>). (Default: None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A series of file paths to the simulation output files</p>
+<ul class="simple">
+<li><p>csv – Path to a CSV file containing scenario optimization results.</p></li>
+<li><p>report_json – Path to a JSON file containing scenario optimization results.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dragonfly_energy.run.run_urbanopt">
+<code class="sig-prename descclassname">dragonfly_energy.run.</code><code class="sig-name descname">run_urbanopt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_geojson</span></em>, <em class="sig-param"><span class="n">scenario_csv</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/run.html#run_urbanopt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.run.run_urbanopt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a feature and scenario file through URBANopt on any operating system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_geojson</strong> – The full path to a .geojson file containing the
+footprints of buildings to be simulated.</p></li>
+<li><p><strong>scenario_csv</strong> – The full path to  a .csv file for the URBANopt scenario.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A series of file paths to the simulation output files</p>
+<ul class="simple">
+<li><p>osm – Array of paths to .osm files for all generated OpenStudio models.</p></li>
+<li><p>idf – Array of paths to .idf files containing the input for the
+EnergyPlus simulation.</p></li>
+<li><p>sql – Array of paths to .sqlite files containing all simulation results.</p></li>
+<li><p>zsz – Array of paths to .csv files containing detailed zone load
+information recorded over the course of the design days.</p></li>
+<li><p>rdd – Array of paths to .rdd files containing all possible outputs
+that can be requested from the simulation.</p></li>
+<li><p>html – Array of paths to .html files containing all summary reports.</p></li>
+<li><p>err – Array of paths to .err files containing all errors and warnings
+from the simulation.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

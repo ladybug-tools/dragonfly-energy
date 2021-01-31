@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.reopt &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for dragonfly_energy.reopt</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Complete set of REopt Simulation Settings.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">honeybee.typing</span> <span class="kn">import</span> <span class="n">float_positive</span><span class="p">,</span> <span class="n">float_in_range</span><span class="p">,</span> <span class="n">int_positive</span>
+
+
+<div class="viewcode-block" id="REoptParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.REoptParameter">[docs]</a><span class="k">class</span> <span class="nc">REoptParameter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Complete set of REopt Simulation Settings.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        financial_parameter: A FinancialParameter object to describe the parameters</span>
+<span class="sd">            of the financial analysis. If None, a set of defaults will be</span>
+<span class="sd">            generated. (Default: None).</span>
+<span class="sd">        wind_parameter: A WindParameter object to set the cost and max amount of</span>
+<span class="sd">            wind to include in the analysis. If None, no wind will be included</span>
+<span class="sd">            in the analysis. (Default: None).</span>
+<span class="sd">        pv_parameter: A PVParameter object to set the cost and max amount of</span>
+<span class="sd">            photovoltaic to include in the analysis. If None, no PV will be included</span>
+<span class="sd">            in the analysis. (Default: None).</span>
+<span class="sd">        storage_parameter: A StorageParameter object to set the cost and max amount of</span>
+<span class="sd">            electricity storage to include in the analysis. If None, no storage</span>
+<span class="sd">            will be included in the analysis. (Default: None).</span>
+<span class="sd">        generator_parameter: A GeneratorParameter object to set the cost and max amount</span>
+<span class="sd">            of generators to include in the analysis. If None, no generators</span>
+<span class="sd">            will be included in the analysis. (Default: None).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * financial_parameter</span>
+<span class="sd">        * wind_parameter</span>
+<span class="sd">        * pv_parameter</span>
+<span class="sd">        * storage_parameter</span>
+<span class="sd">        * generator_parameter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">financial_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wind_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pv_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">storage_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize SimulationParameter.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">financial_parameter</span> <span class="o">=</span> <span class="n">financial_parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_parameter</span> <span class="o">=</span> <span class="n">wind_parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_parameter</span> <span class="o">=</span> <span class="n">pv_parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_parameter</span> <span class="o">=</span> <span class="n">storage_parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_parameter</span> <span class="o">=</span> <span class="n">generator_parameter</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">financial_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a FinancialParameter object for financial settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_financial_parameter</span>
+
+    <span class="nd">@financial_parameter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">financial_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">FinancialParameter</span><span class="p">),</span> <span class="s1">&#39;Expected &#39;</span> \
+                <span class="s1">&#39;FinancialParameter. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_financial_parameter</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_financial_parameter</span> <span class="o">=</span> <span class="n">FinancialParameter</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wind_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a WindParameter object for wind settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wind_parameter</span>
+
+    <span class="nd">@wind_parameter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">wind_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">WindParameter</span><span class="p">),</span> <span class="s1">&#39;Expected &#39;</span> \
+                <span class="s1">&#39;WindParameter. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wind_parameter</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wind_parameter</span> <span class="o">=</span> <span class="n">WindParameter</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pv_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a PVParameter object for photovoltaic settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_parameter</span>
+
+    <span class="nd">@pv_parameter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pv_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PVParameter</span><span class="p">),</span> <span class="s1">&#39;Expected &#39;</span> \
+                <span class="s1">&#39;PVParameter. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pv_parameter</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pv_parameter</span> <span class="o">=</span> <span class="n">PVParameter</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">storage_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a StorageParameter object for electricity storage settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage_parameter</span>
+
+    <span class="nd">@storage_parameter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">storage_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">StorageParameter</span><span class="p">),</span> <span class="s1">&#39;Expected &#39;</span> \
+                <span class="s1">&#39;StorageParameter. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_parameter</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_storage_parameter</span> <span class="o">=</span> <span class="n">StorageParameter</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">generator_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a GeneratorParameter object for electricity storage settings.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_parameter</span>
+
+    <span class="nd">@generator_parameter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">generator_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">GeneratorParameter</span><span class="p">),</span> <span class="s1">&#39;Expected &#39;</span> \
+                <span class="s1">&#39;GeneratorParameter. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generator_parameter</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generator_parameter</span> <span class="o">=</span> <span class="n">GeneratorParameter</span><span class="p">()</span>
+
+<div class="viewcode-block" id="REoptParameter.to_assumptions_dict"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.REoptParameter.to_assumptions_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_assumptions_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_file</span><span class="p">,</span> <span class="n">urdb_label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get REoptParameter as a dictionary representation in the REopt Lite schema.</span>
+
+<span class="sd">        Full documentation of the REopt Lite schema can be found at.</span>
+<span class="sd">        https://developer.nrel.gov/docs/energy-optimization/reopt-v1/</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            base_file: A JSON file in the REopt Lite schema containing a base set</span>
+<span class="sd">                of assumptions that will be modified based on the properties of</span>
+<span class="sd">                this object.</span>
+<span class="sd">            urdb_label: Text string for the Utility Rate Database (URDB) label</span>
+<span class="sd">                for the particular electrical utility rate for the</span>
+<span class="sd">                optimization. The label is the last term of the URL of a</span>
+<span class="sd">                utility rate detail page (eg. the label for the rate at</span>
+<span class="sd">                https://openei.org/apps/IURDB/rate/view/5b0d83af5457a3f276733305</span>
+<span class="sd">                is 5b0d83af5457a3f276733305).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load up the base dictionary</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">base_file</span><span class="p">),</span> \
+            <span class="s1">&#39;No base JSON file found at </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_file</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">base_f</span><span class="p">:</span>
+            <span class="n">base_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">base_f</span><span class="p">)</span>
+        <span class="c1"># apply this object&#39;s properties</span>
+        <span class="n">site_dict</span> <span class="o">=</span> <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;Scenario&#39;</span><span class="p">][</span><span class="s1">&#39;Site&#39;</span><span class="p">]</span>
+        <span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;ElectricTariff&#39;</span><span class="p">][</span><span class="s1">&#39;urdb_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">urdb_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">financial_parameter</span><span class="o">.</span><span class="n">apply_to_dict</span><span class="p">(</span><span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;Financial&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wind_parameter</span><span class="o">.</span><span class="n">apply_to_dict</span><span class="p">(</span><span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;Wind&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_parameter</span><span class="o">.</span><span class="n">apply_to_dict</span><span class="p">(</span><span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;PV&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_parameter</span><span class="o">.</span><span class="n">apply_to_dict</span><span class="p">(</span><span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;Storage&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator_parameter</span><span class="o">.</span><span class="n">apply_to_dict</span><span class="p">(</span><span class="n">site_dict</span><span class="p">[</span><span class="s1">&#39;Generator&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">base_dict</span></div>
+
+<div class="viewcode-block" id="REoptParameter.duplicate"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.REoptParameter.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="REoptParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.REoptParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">REoptParameter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">financial_parameter</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_parameter</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pv_parameter</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_parameter</span><span class="o">.</span><span class="n">duplicate</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator_parameter</span><span class="o">.</span><span class="n">duplicate</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REoptParameter:&#39;</span></div>
+
+
+<div class="viewcode-block" id="FinancialParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.FinancialParameter">[docs]</a><span class="k">class</span> <span class="nc">FinancialParameter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Complete set of Financial settings for REopt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        analysis_years: An integer for the number of years over which cost will</span>
+<span class="sd">            be optimized. (Default: 25).</span>
+<span class="sd">        escalation_rate: A number between 0 and 1 for the escalation rate over</span>
+<span class="sd">            the analysis. (Default: 0.023).</span>
+<span class="sd">        tax_rate: A number between 0 and 1 for the rate at which the owner/host</span>
+<span class="sd">            of the system is taxed. (Default: 0.26).</span>
+<span class="sd">        discount_rate: A number between 0 and 1 for the discount rate for the</span>
+<span class="sd">            owner/host of the system. (Default: 0.083).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * analysis_years</span>
+<span class="sd">        * escalation_rate</span>
+<span class="sd">        * tax_rate</span>
+<span class="sd">        * discount_rate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analysis_years</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">escalation_rate</span><span class="o">=</span><span class="mf">0.023</span><span class="p">,</span>
+                 <span class="n">tax_rate</span><span class="o">=</span><span class="mf">0.26</span><span class="p">,</span> <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.083</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize FinancialParameter.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis_years</span> <span class="o">=</span> <span class="n">analysis_years</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">escalation_rate</span> <span class="o">=</span> <span class="n">escalation_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tax_rate</span> <span class="o">=</span> <span class="n">tax_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discount_rate</span> <span class="o">=</span> <span class="n">discount_rate</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">analysis_years</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a integer for the number of years to run the analysis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analysis_years</span>
+
+    <span class="nd">@analysis_years</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">analysis_years</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analysis_years</span> <span class="o">=</span> <span class="n">int_positive</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;financial parameter analysis years&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">escalation_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a fractional number for the escalation rate.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_escalation_rate</span>
+
+    <span class="nd">@escalation_rate</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">escalation_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_escalation_rate</span> <span class="o">=</span> <span class="n">float_in_range</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;financial parameter escalation rate&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tax_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a fractional number for the tax rate.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tax_rate</span>
+
+    <span class="nd">@tax_rate</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">tax_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tax_rate</span> <span class="o">=</span> <span class="n">float_in_range</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;financial parameter tax rate&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">discount_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a fractional number for the discount rate.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discount_rate</span>
+
+    <span class="nd">@discount_rate</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">discount_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discount_rate</span> <span class="o">=</span> <span class="n">float_in_range</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;financial parameter discount rate&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FinancialParameter.apply_to_dict"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.FinancialParameter.apply_to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">apply_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply this object&#39;s properties to a &#39;Financial&#39; object of REopt schema.&quot;&quot;&quot;</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;analysis_years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_years</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;escalation_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">escalation_rate</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;offtaker_tax_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tax_rate</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;offtaker_discount_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discount_rate</span></div>
+
+<div class="viewcode-block" id="FinancialParameter.duplicate"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.FinancialParameter.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FinancialParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.FinancialParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">FinancialParameter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analysis_years</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">escalation_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tax_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discount_rate</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REopt FinancialParameter:&#39;</span></div>
+
+
+<span class="k">class</span> <span class="nc">_SourceParameter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all REopt energy sources.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_kw: A number for the maximum installed kilowatts of the energy</span>
+<span class="sd">            source. (Default: 0).</span>
+<span class="sd">        dollars_per_kw: A number for the installation cost of the energy source in</span>
+<span class="sd">            US dollars. (Default: 500).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * max_kw</span>
+<span class="sd">        * dollars_per_kw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span> <span class="o">=</span> <span class="n">max_kw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dollars_per_kw</span> <span class="o">=</span> <span class="n">dollars_per_kw</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_kw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the maximum installed kilowatts.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_kw</span>
+
+    <span class="nd">@max_kw</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">max_kw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_kw</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;reopt max kw&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dollars_per_kw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a number for the installation cost in US dollars.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dollars_per_kw</span>
+
+    <span class="nd">@dollars_per_kw</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dollars_per_kw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dollars_per_kw</span> <span class="o">=</span> <span class="n">float_positive</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;reopt dollars per kw&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply this object&#39;s properties to an object of REopt schema.&quot;&quot;&quot;</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;max_kw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span>
+        <span class="n">base_dict</span><span class="p">[</span><span class="s1">&#39;installed_cost_us_dollars_per_kw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dollars_per_kw</span>
+
+    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dollars_per_kw</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WindParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.WindParameter">[docs]</a><span class="k">class</span> <span class="nc">WindParameter</span><span class="p">(</span><span class="n">_SourceParameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wind settings for REopt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_kw: A number for the maximum installed kilowatts. (Default: 0).</span>
+<span class="sd">        dollars_per_kw: A number for installation cost in US dollars. (Default: 3013).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * max_kw</span>
+<span class="sd">        * dollars_per_kw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="o">=</span><span class="mi">3013</span><span class="p">):</span>
+        <span class="n">_SourceParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WindParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.WindParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REopt WindParameter: </span><span class="si">{}</span><span class="s1"> kW&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PVParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.PVParameter">[docs]</a><span class="k">class</span> <span class="nc">PVParameter</span><span class="p">(</span><span class="n">_SourceParameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Photovoltaic settings for REopt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_kw: A number for the maximum installed kilowatts. (Default: 0).</span>
+<span class="sd">        dollars_per_kw: A number for installation cost in US dollars. (Default: 1600).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * max_kw</span>
+<span class="sd">        * dollars_per_kw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="o">=</span><span class="mi">1600</span><span class="p">):</span>
+        <span class="n">_SourceParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PVParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.PVParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REopt PVParameter: </span><span class="si">{}</span><span class="s1"> kW&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StorageParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.StorageParameter">[docs]</a><span class="k">class</span> <span class="nc">StorageParameter</span><span class="p">(</span><span class="n">_SourceParameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Electrical storage settings for REopt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_kw: A number for the maximum installed kilowatts. (Default: 0).</span>
+<span class="sd">        dollars_per_kw: A number for installation cost in US dollars. (Default: 840).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * max_kw</span>
+<span class="sd">        * dollars_per_kw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="o">=</span><span class="mi">840</span><span class="p">):</span>
+        <span class="n">_SourceParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StorageParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.StorageParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REopt StorageParameter: </span><span class="si">{}</span><span class="s1"> kW&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GeneratorParameter"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.GeneratorParameter">[docs]</a><span class="k">class</span> <span class="nc">GeneratorParameter</span><span class="p">(</span><span class="n">_SourceParameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generator settings for REopt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_kw: A number for the maximum installed kilowatts. (Default: 0).</span>
+<span class="sd">        dollars_per_kw: A number for installation cost in US dollars. (Default: 500).</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * max_kw</span>
+<span class="sd">        * dollars_per_kw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="n">_SourceParameter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_kw</span><span class="p">,</span> <span class="n">dollars_per_kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GeneratorParameter.ToString"><a class="viewcode-back" href="../../dragonfly_energy.reopt.html#dragonfly_energy.reopt.GeneratorParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;REopt GeneratorParameter: </span><span class="si">{}</span><span class="s1"> kW&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_kw</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

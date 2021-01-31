@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.writer &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for dragonfly_energy.writer</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Methods to write files for URBANopt simulation from a Model.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">ladybug_geometry.geometry2d</span> <span class="kn">import</span> <span class="n">Point2D</span>
+<span class="kn">from</span> <span class="nn">ladybug.futil</span> <span class="kn">import</span> <span class="n">nukedir</span><span class="p">,</span> <span class="n">preparedir</span>
+<span class="kn">from</span> <span class="nn">honeybee.config</span> <span class="kn">import</span> <span class="n">folders</span>
+<span class="kn">from</span> <span class="nn">honeybee.model</span> <span class="kn">import</span> <span class="n">Model</span> <span class="k">as</span> <span class="n">hb_model</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<div class="viewcode-block" id="model_to_urbanopt"><a class="viewcode-back" href="../../dragonfly_energy.writer.html#dragonfly_energy.writer.model_to_urbanopt">[docs]</a><span class="k">def</span> <span class="nf">model_to_urbanopt</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">point</span><span class="o">=</span><span class="n">Point2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">shade_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">use_multiplier</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_plenum</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: A dragonfly Model for which an URBANopt feature geoJSON and</span>
+<span class="sd">            corresponding honeybee Model JSONs will be returned.</span>
+<span class="sd">        location: A ladybug Location object possessing longitude and latitude data.</span>
+<span class="sd">        point: A ladybug_geometry Point2D for where the location object exists</span>
+<span class="sd">            within the space of a scene. The coordinates of this point are</span>
+<span class="sd">            expected to be in the units of this Model. (Default: (0, 0)).</span>
+<span class="sd">        shade_distance: An optional number to note the distance beyond which other</span>
+<span class="sd">            objects&#39; shade should not be exported into a given honeybee Model. This</span>
+<span class="sd">            is helpful for reducing the simulation run time of each Model when other</span>
+<span class="sd">            connected buildings are too far away to have a meaningful impact on</span>
+<span class="sd">            the results. If None, all other buildings will be included as context</span>
+<span class="sd">            shade in each and every Model. Set to 0 to exclude all neighboring</span>
+<span class="sd">            buildings from the resulting models. (Default: None).</span>
+<span class="sd">        use_multiplier: If True, the multipliers on the Model&#39;s Stories will be</span>
+<span class="sd">            passed along to the generated Honeybee Room objects, indicating the</span>
+<span class="sd">            simulation will be run once for each unique room and then results</span>
+<span class="sd">            will be multiplied. If False, full geometry objects will be written</span>
+<span class="sd">            for each and every floor in the building that are represented through</span>
+<span class="sd">            multipliers and all resulting multipliers will be 1. (Default: True).</span>
+<span class="sd">        add_plenum: Boolean to indicate whether ceiling/floor plenums should</span>
+<span class="sd">            be auto-generated for the Rooms. (Default: False).</span>
+<span class="sd">        folder: An optional folder to be used as the root of the model&#39;s</span>
+<span class="sd">            URBANopt folder. If None, the files will be written into a sub-directory</span>
+<span class="sd">            of the honeybee-core default_simulation_folder. This sub-directory</span>
+<span class="sd">            is specifically: default_simulation_folder/[MODEL IDENTIFIER]</span>
+<span class="sd">        tolerance: The minimum distance between points at which they are</span>
+<span class="sd">            not considered touching. Default: 0.01, suitable for objects</span>
+<span class="sd">            in meters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple with three values.</span>
+
+<span class="sd">        feature_geojson -- The path to an URBANopt feature geoJSON that has</span>
+<span class="sd">            been written by this method.</span>
+
+<span class="sd">        hb_model_jsons -- An array of file paths to honeybee Model JSONS that</span>
+<span class="sd">            correspond to the detailed_model_filename keys in the feature_geojson.</span>
+
+<span class="sd">        hb_models -- An array of honeybee Model objects that were generated in</span>
+<span class="sd">            process of writing the URBANopt files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make sure the model is in meters and, if it&#39;s not, duplicate and scale it</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="s1">&#39;Meters&#39;</span><span class="p">:</span>
+        <span class="n">conversion_factor</span> <span class="o">=</span> <span class="n">hb_model</span><span class="o">.</span><span class="n">conversion_factor_to_meters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">conversion_factor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shade_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">shade_distance</span> <span class="o">=</span> <span class="n">shade_distance</span> <span class="o">*</span> <span class="n">conversion_factor</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">duplicate</span><span class="p">()</span>  <span class="c1"># duplicate the model to avoid mutating the input</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">convert_to_units</span><span class="p">(</span><span class="s1">&#39;Meters&#39;</span><span class="p">)</span>
+
+    <span class="c1"># prepare the folder for simulation</span>
+    <span class="k">if</span> <span class="n">folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># use the default simulation folder</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folders</span><span class="o">.</span><span class="n">default_simulation_folder</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+    <span class="n">nukedir</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># get rid of anything that exists in the folder already</span>
+    <span class="n">preparedir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>  <span class="c1"># create the directory if it&#39;s not there</span>
+
+    <span class="c1"># prepare the folder into which honeybee Model JSONs will be written</span>
+    <span class="n">hb_model_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;hb_json&#39;</span><span class="p">)</span>  <span class="c1"># folder for honeybee JSONs</span>
+    <span class="n">preparedir</span><span class="p">(</span><span class="n">hb_model_folder</span><span class="p">)</span>
+
+    <span class="c1"># write out the geoJSON file from the model</span>
+    <span class="n">geojson_dict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_geojson_dict</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">feature_dict</span> <span class="ow">in</span> <span class="n">geojson_dict</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]:</span>  <span class="c1"># add the detailed model filename</span>
+        <span class="k">if</span> <span class="n">feature_dict</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Building&#39;</span><span class="p">:</span>
+            <span class="n">bldg_id</span> <span class="o">=</span> <span class="n">feature_dict</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">feature_dict</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;detailed_model_filename&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hb_model_folder</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bldg_id</span><span class="p">))</span>
+    <span class="n">feature_geojson</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.geojson&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">identifier</span><span class="p">))</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">feature_geojson</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">geojson_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># write out the honeybee Model JSONS from the model</span>
+    <span class="n">hb_model_jsons</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">hb_models</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to_honeybee</span><span class="p">(</span>
+        <span class="s1">&#39;Building&#39;</span><span class="p">,</span> <span class="n">shade_distance</span><span class="p">,</span> <span class="n">use_multiplier</span><span class="p">,</span> <span class="n">add_plenum</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">bldg_model</span> <span class="ow">in</span> <span class="n">hb_models</span><span class="p">:</span>
+        <span class="n">bld_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hb_model_folder</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bldg_model</span><span class="o">.</span><span class="n">identifier</span><span class="p">))</span>
+        <span class="n">model_dict</span> <span class="o">=</span> <span class="n">bldg_model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">triangulate_sub_faces</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bld_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model_dict</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+        <span class="n">hb_model_jsons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bld_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">feature_geojson</span><span class="p">,</span> <span class="n">hb_model_jsons</span><span class="p">,</span> <span class="n">hb_models</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

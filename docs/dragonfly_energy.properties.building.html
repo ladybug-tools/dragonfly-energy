@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.properties.building module &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dragonfly_energy.properties.context module" href="dragonfly_energy.properties.context.html" />
+    <link rel="prev" title="dragonfly_energy.properties package" href="dragonfly_energy.properties.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dragonfly_energy.properties.html" title="Previous Chapter: dragonfly_energy.properties package"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dragonfly_ene...</span>
+    </a>
+  </li>
+  <li>
+    <a href="dragonfly_energy.properties.context.html" title="Next Chapter: dragonfly_energy.properties.context module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dragonfly_ene... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/dragonfly_energy.properties.building.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dragonfly_energy.html">dragonfly_energy package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dragonfly_energy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.cli.html">dragonfly_energy.cli package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dragonfly_energy.properties.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-dragonfly_energy.properties.building">
+<span id="dragonfly-energy-properties-building-module"></span><h1>dragonfly_energy.properties.building module<a class="headerlink" href="#module-dragonfly_energy.properties.building" title="Permalink to this headline">¶</a></h1>
+<p>Building Energy Properties.</p>
+<dl class="py class">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties">
+<em class="property">class </em><code class="sig-prename descclassname">dragonfly_energy.properties.building.</code><code class="sig-name descname">BuildingEnergyProperties</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">construction_set</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Energy Properties for Dragonfly Building.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – A dragonfly_core Building object that hosts these properties.</p></li>
+<li><p><strong>construction_set</strong> – A honeybee ConstructionSet object to specify all
+default constructions for the Faces of the Building. If None, the
+Building will use the honeybee default construction set, which is not
+representative of a particular building code or climate zone.
+Default: None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Properties:</dt><dd><ul class="simple">
+<li><p>host</p></li>
+<li><p>construction_set</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.ToString">
+<code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.ToString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.add_default_ideal_air">
+<code class="sig-name descname">add_default_ideal_air</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.add_default_ideal_air"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.add_default_ideal_air" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a default IdealAirSystem to all children Room2Ds of this Story.</p>
+<p>The identifier of the systems will be derived from the room identifiers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.apply_properties_from_dict">
+<code class="sig-name descname">apply_properties_from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">abridged_data</span></em>, <em class="sig-param"><span class="n">construction_sets</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.apply_properties_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.apply_properties_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply properties from a BuildingEnergyPropertiesAbridged dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abridged_data</strong> – A BuildingEnergyPropertiesAbridged dictionary (typically
+coming from a Model).</p></li>
+<li><p><strong>construction_sets</strong> – A dictionary of ConstructionSets with identifiers
+of the sets as keys, which will be used to re-assign construction_sets.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.averaged_program_type">
+<code class="sig-name descname">averaged_program_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timestep_resolution</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.averaged_program_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.averaged_program_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a ProgramType that is averaged across all of the children Room2Ds.</p>
+<p>The weights used in the averaging process are the floor area weights and they
+account for the multipliers on the child Story objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> – A unique ID text string for the new averaged ProgramType.
+Must be &lt; 100 characters and not contain any EnergyPlus special
+characters. This will be used to identify the object across a model
+and in the exported IDF. If None, the resulting ProgramType will
+use the identifier of the host Building. (Default: None)</p></li>
+<li><p><strong>timestep_resolution</strong> – An optional integer for the timestep resolution
+at which the schedules will be averaged. Any schedule details
+smaller than this timestep will be lost in the averaging process.
+Default: 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.diversify">
+<code class="sig-name descname">diversify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">occupancy_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">lighting_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">electric_equip_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">gas_equip_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">hot_water_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">infiltration_stdev</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">schedule_offset</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">timestep</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.diversify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.diversify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diversify the ProgramTypes assigned to this Building’s Room2Ds.</p>
+<p>This method uses a random number generator and gaussian distribution to
+generate loads that vary about the original “mean” programs. Note that the
+randomly generated values can be set to something predictable by using the
+native Python random.seed() method before running this method.</p>
+<p>In addition to diversifying load values, approximately 2/3 of the schedules
+in the resulting Room2Ds will be offset from the mean by the input
+schedule_offset (1/3 ahead and another 1/3 behind).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>occupancy_stdev</strong> – A number between 0 and 100 for the percent of the
+occupancy people_per_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>lighting_stdev</strong> – A number between 0 and 100 for the percent of the
+lighting watts_per_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>electric_equip_stdev</strong> – A number between 0 and 100 for the percent of the
+electric equipment watts_per_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>gas_equip_stdev</strong> – A number between 0 and 100 for the percent of the
+gas equipment watts_per_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>hot_water_stdev</strong> – A number between 0 and 100 for the percent of the
+service hot water flow_per_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>infiltration_stdev</strong> – A number between 0 and 100 for the percent of the
+infiltration flow_per_exterior_area representing one standard deviation
+of diversification from the mean. (Default 20 percent).</p></li>
+<li><p><strong>schedule_offset</strong> – A positive integer for the number of timesteps at which all
+schedules of the resulting programs will be shifted - roughly 1/3 of
+the programs ahead and another 1/3 behind. (Default: 1).</p></li>
+<li><p><strong>timestep</strong> – An integer for the number of timesteps per hour at which the
+shifting is occurring. This must be a value between 1 and 60, which
+is evenly divisible by 60. 1 indicates that each step is an hour
+while 60 indicates that each step is a minute. (Default: 1).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.duplicate">
+<code class="sig-name descname">duplicate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_host</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of this object.</p>
+<dl class="simple">
+<dt>new_host: A new Building object that hosts these properties.</dt><dd><p>If None, the properties will be duplicated with the same host.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.from_dict">
+<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">host</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create BuildingEnergyProperties from a dictionary.</p>
+<p>Note that the dictionary must be a non-abridged version for this
+classmethod to work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – A dictionary representation of BuildingEnergyProperties.</p></li>
+<li><p><strong>host</strong> – A Building object that hosts these properties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.set_all_room_2d_hvac">
+<code class="sig-name descname">set_all_room_2d_hvac</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hvac</span></em>, <em class="sig-param"><span class="n">conditioned_only</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.set_all_room_2d_hvac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.set_all_room_2d_hvac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all children Room2Ds of this Building to have the same HVAC system.</p>
+<p>For an HVAC system that is intended to be applied across multiple zones
+(such as a VAVSystem), all Room2Ds will receive the same HVAC instance
+as their HVAC system. In the case of an HVAC that can only be assigned
+to individual zones (such as an IdealAirSystem), the input hvac will be
+duplicated and identified (with an integer appended to the end) for each
+Room2D to which is it applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hvac</strong> – An HVAC system with properties that will be assigned to all
+children Room2Ds.</p></li>
+<li><p><strong>conditioned_only</strong> – Boolean to note whether the input hvac should only
+be applied to rooms that are already conditioned. If False, the
+hvac will be applied to all rooms. (Default: True).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.set_all_room_2d_program_type">
+<code class="sig-name descname">set_all_room_2d_program_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.set_all_room_2d_program_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.set_all_room_2d_program_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all of the children Room2Ds of this Building to have the same ProgramType.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program_type</strong> – A ProgramType to assign to all children Room2Ds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.to_dict">
+<code class="sig-name descname">to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">abridged</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dragonfly_energy/properties/building.html#BuildingEnergyProperties.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return Building energy properties as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>abridged</strong> – Boolean for whether the full dictionary of the Building should
+be written (False) or just the identifier of the the individual
+properties (True). Default: False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.construction_set">
+<em class="property">property </em><code class="sig-name descname">construction_set</code><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.construction_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set the Building ConstructionSet object.</p>
+<p>If not set, it will be the Honeybee default generic ConstructionSet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dragonfly_energy.properties.building.BuildingEnergyProperties.host">
+<em class="property">property </em><code class="sig-name descname">host</code><a class="headerlink" href="#dragonfly_energy.properties.building.BuildingEnergyProperties.host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Building object hosting these properties.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

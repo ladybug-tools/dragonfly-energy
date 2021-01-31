@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dragonfly_energy.properties.room2d &#8212; dragonfly-energy  documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          dragonfly-energy</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.cli.html">dragonfly_energy.cli package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.cli.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.cli.simulate.html">dragonfly_energy.cli.simulate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.cli.translate.html">dragonfly_energy.cli.translate module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.cli.html#module-dragonfly_energy.cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.opendss.html">dragonfly_energy.opendss package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html">dragonfly_energy.opendss.lib package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.transformers.html">dragonfly_energy.opendss.lib.transformers module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.wires.html">dragonfly_energy.opendss.lib.wires module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../dragonfly_energy.opendss.lib.html#module-dragonfly_energy.opendss.lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.connector.html">dragonfly_energy.opendss.connector module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.substation.html">dragonfly_energy.opendss.substation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.transformer.html">dragonfly_energy.opendss.transformer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.transformerprop.html">dragonfly_energy.opendss.transformerprop module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.opendss.wire.html">dragonfly_energy.opendss.wire module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.opendss.html#module-dragonfly_energy.opendss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.properties.html">dragonfly_energy.properties package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.properties.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.building.html">dragonfly_energy.properties.building module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.context.html">dragonfly_energy.properties.context module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.model.html">dragonfly_energy.properties.model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.room2d.html">dragonfly_energy.properties.room2d module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../dragonfly_energy.properties.story.html">dragonfly_energy.properties.story module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../dragonfly_energy.properties.html#module-dragonfly_energy.properties">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.config.html">dragonfly_energy.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.reopt.html">dragonfly_energy.reopt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.run.html">dragonfly_energy.run module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../dragonfly_energy.writer.html">dragonfly_energy.writer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dragonfly_energy.html#module-dragonfly_energy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dragonfly_energy.html">dragonfly_energy package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for dragonfly_energy.properties.room2d</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Room2D Energy Properties.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">honeybee.boundarycondition</span> <span class="kn">import</span> <span class="n">Outdoors</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.properties.room</span> <span class="kn">import</span> <span class="n">RoomEnergyProperties</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.programtype</span> <span class="kn">import</span> <span class="n">ProgramType</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.constructionset</span> <span class="kn">import</span> <span class="n">ConstructionSet</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.hvac</span> <span class="kn">import</span> <span class="n">HVAC_TYPES_DICT</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.hvac._base</span> <span class="kn">import</span> <span class="n">_HVACSystem</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.hvac.idealair</span> <span class="kn">import</span> <span class="n">IdealAirSystem</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.ventcool.control</span> <span class="kn">import</span> <span class="n">VentilationControl</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.ventcool.opening</span> <span class="kn">import</span> <span class="n">VentilationOpening</span>
+
+<span class="kn">from</span> <span class="nn">honeybee_energy.lib.constructionsets</span> <span class="kn">import</span> <span class="n">generic_construction_set</span>
+<span class="kn">from</span> <span class="nn">honeybee_energy.lib.programtypes</span> <span class="kn">import</span> <span class="n">plenum_program</span>
+
+
+<div class="viewcode-block" id="Room2DEnergyProperties"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties">[docs]</a><span class="k">class</span> <span class="nc">Room2DEnergyProperties</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Energy Properties for Dragonfly Room2D.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        host: A dragonfly_core Room2D object that hosts these properties.</span>
+<span class="sd">        program_type: A honeybee ProgramType object to specify all default</span>
+<span class="sd">            schedules and loads for the Room2D. If None, the Room2D will have a</span>
+<span class="sd">            Plenum program (with no loads or setpoints). Default: None.</span>
+<span class="sd">        construction_set: A honeybee ConstructionSet object to specify all</span>
+<span class="sd">            default constructions for the Faces of the Room2D. If None, the</span>
+<span class="sd">            Room2D will use the honeybee default construction set, which is not</span>
+<span class="sd">            representative of a particular building code or climate zone.</span>
+<span class="sd">            Default: None.</span>
+<span class="sd">        hvac: A honeybee HVAC object (such as an IdealAirSystem) that specifies</span>
+<span class="sd">            how the Room2D is conditioned. If None, it will be assumed that the</span>
+<span class="sd">            Room2D is not conditioned. Default: None.</span>
+
+<span class="sd">    Properties:</span>
+<span class="sd">        * host</span>
+<span class="sd">        * program_type</span>
+<span class="sd">        * construction_set</span>
+<span class="sd">        * hvac</span>
+<span class="sd">        * window_vent_control</span>
+<span class="sd">        * window_vent_opening</span>
+<span class="sd">        * is_conditioned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_host&#39;</span><span class="p">,</span> <span class="s1">&#39;_program_type&#39;</span><span class="p">,</span> <span class="s1">&#39;_construction_set&#39;</span><span class="p">,</span> <span class="s1">&#39;_hvac&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;_window_vent_control&#39;</span><span class="p">,</span> <span class="s1">&#39;_window_vent_opening&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">program_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">construction_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hvac</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize Room2D energy properties.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program_type</span> <span class="o">=</span> <span class="n">program_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">construction_set</span> <span class="o">=</span> <span class="n">construction_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hvac</span> <span class="o">=</span> <span class="n">hvac</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set to None by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set to None by default</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the Room2D object hosting these properties.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">program_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set the ProgramType object for the Room2D.</span>
+
+<span class="sd">        If not set, it will default to a plenum ProgramType (with no loads assigned).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># set by the user</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">plenum_program</span>
+
+    <span class="nd">@program_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">program_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ProgramType</span><span class="p">),</span> <span class="s1">&#39;Expected ProgramType for Room2D &#39;</span> \
+                <span class="s1">&#39;program_type. Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>   <span class="c1"># lock in case program type has multiple references</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">construction_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set the Room2D ConstructionSet object.</span>
+
+<span class="sd">        If not set, it will be set by the parent Story or will be the Honeybee</span>
+<span class="sd">        default generic ConstructionSet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># set by the user</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="o">.</span><span class="n">has_parent</span><span class="p">:</span>  <span class="c1"># set by parent story</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">construction_set</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">generic_construction_set</span>
+
+    <span class="nd">@construction_set</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">construction_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ConstructionSet</span><span class="p">),</span> \
+                <span class="s1">&#39;Expected ConstructionSet. Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>   <span class="c1"># lock in case construction set has multiple references</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hvac</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set the HVAC object for the Room2D.</span>
+
+<span class="sd">        If None, it will be assumed that the Room2D is not conditioned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span>
+
+    <span class="nd">@hvac</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">hvac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_HVACSystem</span><span class="p">),</span> \
+                <span class="s1">&#39;Expected HVACSystem for Room2D hvac. Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>   <span class="c1"># lock in case hvac has multiple references</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">window_vent_control</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a VentilationControl object to dictate the opening of windows.</span>
+
+<span class="sd">        If None or no window_vent_opening object is assigned to this Room2D,</span>
+<span class="sd">        the windows will never open.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span>
+
+    <span class="nd">@window_vent_control</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">window_vent_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VentilationControl</span><span class="p">),</span> <span class="s1">&#39;Expected VentilationControl &#39;</span> \
+                <span class="s1">&#39;object for Room2D window_vent_control. Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="s1">&#39;Always On&#39;</span><span class="p">,</span> <span class="s1">&#39;VentilationControl &#39;</span> \
+                <span class="s1">&#39;schedule must be default in order to apply it to dragonfly Room2D.&#39;</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>   <span class="c1"># lock because we don&#39;t duplicate the object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">window_vent_opening</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set a VentilationOpening object for the operability of all windows.</span>
+
+<span class="sd">        If None or no window_vent_control object is assigned to this Room2D,</span>
+<span class="sd">        the windows will never open.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span>
+
+    <span class="nd">@window_vent_opening</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">window_vent_opening</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VentilationOpening</span><span class="p">),</span> <span class="s1">&#39;Expected VentilationOpening &#39;</span> \
+                <span class="s1">&#39;for Room2D window_vent_opening. Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_conditioned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Boolean to note whether the Room is conditioned.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.add_default_ideal_air"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.add_default_ideal_air">[docs]</a>    <span class="k">def</span> <span class="nf">add_default_ideal_air</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a default IdealAirSystem to this Room2D.</span>
+
+<span class="sd">        The identifier of this system will be derived from the room identifier</span>
+<span class="sd">        and will align with the naming convention that EnergyPlus uses for</span>
+<span class="sd">        templates Ideal Air systems.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hvac_id</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> Ideal Loads Air System&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hvac</span> <span class="o">=</span> <span class="n">IdealAirSystem</span><span class="p">(</span><span class="n">hvac_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.from_dict"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Room2DEnergyProperties from a dictionary.</span>
+
+<span class="sd">        Note that the dictionary must be a non-abridged version for this</span>
+<span class="sd">        classmethod to work.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: A dictionary representation of Room2DEnergyProperties.</span>
+<span class="sd">            host: A Room2D object that hosts these properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Room2DEnergyProperties&#39;</span><span class="p">,</span> \
+            <span class="s1">&#39;Expected Room2DEnergyProperties. Got </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+
+        <span class="n">new_prop</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;construction_set&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;construction_set&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_prop</span><span class="o">.</span><span class="n">construction_set</span> <span class="o">=</span> \
+                <span class="n">ConstructionSet</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;construction_set&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;program_type&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;program_type&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_prop</span><span class="o">.</span><span class="n">program_type</span> <span class="o">=</span> <span class="n">ProgramType</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;program_type&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;hvac&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;hvac&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hvac_class</span> <span class="o">=</span> <span class="n">HVAC_TYPES_DICT</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;hvac&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+            <span class="n">new_prop</span><span class="o">.</span><span class="n">hvac</span> <span class="o">=</span> <span class="n">hvac_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;hvac&#39;</span><span class="p">])</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_deserialize_window_vent</span><span class="p">(</span><span class="n">new_prop</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_prop</span></div>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.apply_properties_from_dict"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.apply_properties_from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">apply_properties_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abridged_data</span><span class="p">,</span> <span class="n">construction_sets</span><span class="p">,</span>
+                                   <span class="n">program_types</span><span class="p">,</span> <span class="n">hvacs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply properties from a Room2DEnergyPropertiesAbridged dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            abridged_data: A Room2DEnergyPropertiesAbridged dictionary (typically</span>
+<span class="sd">                coming from a Model).</span>
+<span class="sd">            construction_sets: A dictionary of ConstructionSets with identifiers</span>
+<span class="sd">                of the sets as keys, which will be used to re-assign construction_sets.</span>
+<span class="sd">            program_types: A dictionary of ProgramTypes with identifiers of the</span>
+<span class="sd">                types ask keys, which will be used to re-assign program_types.</span>
+<span class="sd">            hvacs: A dictionary of HVACSystems with the identifiers of the</span>
+<span class="sd">                systems as keys, which will be used to re-assign hvac to the Room.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;construction_set&#39;</span> <span class="ow">in</span> <span class="n">abridged_data</span> <span class="ow">and</span> \
+                <span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;construction_set&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">construction_set</span> <span class="o">=</span> <span class="n">construction_sets</span><span class="p">[</span><span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;construction_set&#39;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="s1">&#39;program_type&#39;</span> <span class="ow">in</span> <span class="n">abridged_data</span> <span class="ow">and</span> <span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;program_type&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">program_type</span> <span class="o">=</span> <span class="n">program_types</span><span class="p">[</span><span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;program_type&#39;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="s1">&#39;hvac&#39;</span> <span class="ow">in</span> <span class="n">abridged_data</span> <span class="ow">and</span> <span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;hvac&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hvac</span> <span class="o">=</span> <span class="n">hvacs</span><span class="p">[</span><span class="n">abridged_data</span><span class="p">[</span><span class="s1">&#39;hvac&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deserialize_window_vent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abridged_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.to_dict"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abridged</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return Room2D energy properties as a dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            abridged: Boolean for whether the full dictionary of the Room2D should</span>
+<span class="sd">                be written (False) or just the identifier of the the individual</span>
+<span class="sd">                properties (True). Default: False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;energy&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Room2DEnergyProperties&#39;</span> <span class="k">if</span> <span class="ow">not</span> \
+            <span class="n">abridged</span> <span class="k">else</span> <span class="s1">&#39;Room2DEnergyPropertiesAbridged&#39;</span>
+
+        <span class="c1"># write the ProgramType into the dictionary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;program_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span><span class="o">.</span><span class="n">identifier</span> <span class="k">if</span> <span class="n">abridged</span> \
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="c1"># write the ConstructionSet into the dictionary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;construction_set&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span><span class="o">.</span><span class="n">identifier</span> <span class="k">if</span> <span class="n">abridged</span> <span class="k">else</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="c1"># write the hvac into the dictionary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;hvac&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span><span class="o">.</span><span class="n">identifier</span> <span class="k">if</span> <span class="n">abridged</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="c1"># write the window_vent_control and window_vent_opening into the dictionary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;window_vent_control&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">window_vent_control</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">abridged</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;window_vent_control&#39;</span><span class="p">][</span><span class="s1">&#39;schedule&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="s1">&#39;window_vent_opening&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_vent_opening</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">base</span></div>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.to_honeybee"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.to_honeybee">[docs]</a>    <span class="k">def</span> <span class="nf">to_honeybee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_host</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a honeybee version of this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_host: A honeybee-core Room object that will host these properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constr_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">construction_set</span>  <span class="c1"># includes story and building-assigned sets</span>
+        <span class="n">hb_constr</span> <span class="o">=</span> <span class="n">constr_set</span> <span class="k">if</span> <span class="n">constr_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">generic_construction_set</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">hb_prop</span> <span class="o">=</span> <span class="n">RoomEnergyProperties</span><span class="p">(</span><span class="n">new_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span><span class="p">,</span> <span class="n">hb_constr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hb_prop</span><span class="o">.</span><span class="n">window_vent_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_vent_control</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">new_host</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>  <span class="c1"># set all apertures to be operable</span>
+                <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">face</span><span class="o">.</span><span class="n">apertures</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ap</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">,</span> <span class="n">Outdoors</span><span class="p">):</span>
+                        <span class="n">ap</span><span class="o">.</span><span class="n">is_operable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">hb_prop</span><span class="o">.</span><span class="n">assign_ventilation_opening</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_vent_opening</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hb_prop</span></div>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.duplicate"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_host</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a copy of this object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_host: A new Room2D object that hosts these properties.</span>
+<span class="sd">                If None, the properties will be duplicated with the same host.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_host</span> <span class="o">=</span> <span class="n">new_host</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_host</span>
+        <span class="n">hb_prop</span> <span class="o">=</span> <span class="n">Room2DEnergyProperties</span><span class="p">(</span>
+            <span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construction_set</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hvac</span><span class="p">)</span>
+        <span class="n">hb_prop</span><span class="o">.</span><span class="n">_window_vent_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_control</span>
+        <span class="n">hb_prop</span><span class="o">.</span><span class="n">_window_vent_opening</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_vent_opening</span>
+        <span class="k">return</span> <span class="n">hb_prop</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_deserialize_window_vent</span><span class="p">(</span><span class="n">new_prop</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Re-serialize window ventilation objects from a dict and apply to new_prop.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_prop: A Room2DEnergyProperties to apply the window ventilation to.</span>
+<span class="sd">            data: A dictionary representation of Room2DEnergyProperties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;window_vent_control&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;window_vent_control&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_prop</span><span class="o">.</span><span class="n">window_vent_control</span> <span class="o">=</span> \
+                <span class="n">VentilationControl</span><span class="o">.</span><span class="n">from_dict_abridged</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;window_vent_control&#39;</span><span class="p">],</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="s1">&#39;window_vent_opening&#39;</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;window_vent_opening&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_prop</span><span class="o">.</span><span class="n">window_vent_opening</span> <span class="o">=</span> \
+                <span class="n">VentilationOpening</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;window_vent_opening&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Room2DEnergyProperties.ToString"><a class="viewcode-back" href="../../../dragonfly_energy.properties.room2d.html#dragonfly_energy.properties.room2d.Room2DEnergyProperties.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Room2D Energy Properties: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2021, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
