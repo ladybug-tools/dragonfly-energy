@@ -337,8 +337,8 @@ class ElectricalNetwork(object):
         """Get ElectricalNetwork as it should appear in the electrical_database.json."""
         base = {}
         base['transformer_properties'] = \
-            [tp.to_dict() for tp in self.transformer_properties]
-        base['wires'] = [wire.to_dict() for wire in self.wires]
+            [tp.to_electrical_database_dict() for tp in self.transformer_properties]
+        base['wires'] = [wire.to_electrical_database_dict() for wire in self.wires]
         base['capacitor_properties'] = [{
             'nameclass': 'Capacitor--150KVAR',
             'kvar': 150,
