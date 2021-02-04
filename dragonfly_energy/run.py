@@ -232,6 +232,36 @@ def run_urbanopt(feature_geojson, scenario_csv):
     return _output_urbanopt_files(directory)
 
 
+def run_default_report(feature_geojson, scenario_csv):
+    """Generate default reports after an URBANopt simulation is run.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        A series of file paths to the report output files
+
+        -   csv -- Path to a CSV file containing default scenario results.
+
+        -   report_json -- Path to a JSON file containing default scenario results.
+    """
+    if not folders.urbanopt_env_path:
+        folders.generate_urbanopt_env_path()
+    assert folders.urbanopt_env_path, \
+        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    assert os.path.isfile(feature_geojson), \
+        'No feature_geojson as found at the specified path: {}.'.format(feature_geojson)
+    assert os.path.isfile(scenario_csv), \
+        'No scenario_csv as found at the specified path: {}.'.format(scenario_csv)
+    # run the report command
+    if os.name == 'nt':  # we are on Windows
+        return _run_default_report_windows(feature_geojson, scenario_csv)
+    else:  # we are on Mac, Linux, or some other unix-based system
+        return _run_default_report_unix(feature_geojson, scenario_csv)
+
+
 def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
               developer_key=None):
     """Run a feature and scenario file through REopt post processing.
@@ -492,6 +522,64 @@ def _output_urbanopt_files(directory):
     return osm, idf, sql, zsz, rdd, html, err
 
 
+def _run_default_report_windows(feature_geojson, scenario_csv):
+    """Generate default reports on a Windows-based os.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        Paths to the scenario CSV and JSON reports.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the batch file to call URBANopt CLI
+    working_drive = directory[:2]
+    batch = '{}\ncd {}\ncall {}\nuo process --default -f {} -s {}'.format(
+        working_drive, working_drive, folders.urbanopt_env_path,
+        feature_geojson, scenario_csv)
+    batch_file = os.path.join(directory, 'run_default_report.bat')
+    write_to_file(batch_file, batch, True)
+    # run the batch file and return output files
+    os.system(batch_file)
+    result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
+    run_folder = os.path.join(directory, 'run', result_folder)
+    return os.path.join(run_folder, 'default_scenario_report.csv'), \
+        os.path.join(run_folder, 'default_scenario_report.json')
+
+
+def _run_default_report_unix(feature_geojson, scenario_csv):
+    """Generate default reports on a Unix-based os.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        Paths to the scenario CSV and JSON reports.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the shell script to call OpenStudio CLI
+    shell = '#!/usr/bin/env bash\nsource {}\n' \
+        'uo process --default -f {} -s {}'.format(
+            folders.urbanopt_env_path, feature_geojson, scenario_csv)
+    shell_file = os.path.join(directory, 'run_default_report.sh')
+    write_to_file(shell_file, shell, True)
+    # make the shell script executable using subprocess.check_call
+    # this is more reliable than native Python chmod on Mac
+    subprocess.check_call(['chmod', 'u+x', shell_file])
+    # run the shell script
+    subprocess.call(shell_file)
+    result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
+    run_folder = os.path.join(directory, 'run', result_folder)
+    return os.path.join(run_folder, 'default_scenario_report.csv'), \
+        os.path.join(run_folder, 'default_scenario_report.json')
+
+
 def _run_reopt_windows(feature_geojson, scenario_csv, developer_key):
     """Run a feature and scenario file through REopt on a Windows-based os.
 
@@ -550,7 +638,8 @@ def _run_reopt_unix(feature_geojson, scenario_csv, developer_key):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     subprocess.call(shell_file)
-    return directory
+    result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
+    return os.path.join(directory, 'run', result_folder)
 
 
 def _output_reopt_files(directory):
