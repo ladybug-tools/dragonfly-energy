@@ -2,21 +2,22 @@
 """Module for running geoJSON and OpenStudio files through URBANopt."""
 from __future__ import division
 
-from .config import folders
-from .reopt import REoptParameter
-from honeybee_energy.config import folders as hb_energy_folders
-
 import os
 import json
 import shutil
 import subprocess
 
+from .config import folders
+from .measure import MapperMeasure
+from .reopt import REoptParameter
+
+from honeybee_energy.config import folders as hb_energy_folders
 from ladybug.futil import preparedir, write_to_file
 
 
 def base_honeybee_osw(
-        project_directory, sim_par_json=None, additional_measures=None, base_osw=None,
-        epw_file=None, skip_report=True):
+        project_directory, sim_par_json=None, additional_measures=None,
+        additional_mapper_measures=None, base_osw=None, epw_file=None, skip_report=True):
     """Create a honeybee_workflow.osw to be used as a base in URBANopt simulations.
 
     This method will also copy the Honeybee.rb mapper to this folder if it is
@@ -27,17 +28,22 @@ def base_honeybee_osw(
             will be run. This is the folder that contains the feature geoJSON.
         sim_par_json: Optional file path to the SimulationParameter JSON.
             If None, the OpenStudio models generated in the URBANopt run will
-            not have everything they need to be simulate-able unless such parameters
-            are supplied from one of the additional_measures or the base_osw.
+            not have everything they need to be simulate-able unless such
+            parameters are supplied from one of the additional_measures or the
+            base_osw. (Default: None).
         additional_measures: An optional array of honeybee-energy Measure objects
             to be included in the output osw. These Measure objects must have
             values for all required input arguments or an exception will be
-            raised while running this function.
+            raised while running this function. (Default: None).
+        additional_mapper_measures: An optional array of dragonfly-energy MapperMeasure
+            objects to be included in the output osw. These MapperMeasure objects
+            must have values for all required input arguments or an exception will
+            be raised while running this function. (Default: None).
         base_osw: Optional file path to an existing OSW JSON be used as the base
             for the honeybee_workflow.osw. This is another way that outside measures
-            can be incorporated into the workflow.
+            can be incorporated into the workflow. (Default: None).
         epw_file: Optional file path to an EPW that should be associated with the
-            output energy model.
+            output energy model. (Default: None).
         skip_report: Set to True to have the URBANopt default feature reporting
             measure skipped as part of the workflow. If False, the measure will
             be run after all simulations are complete. Note that this input
@@ -84,11 +90,16 @@ def base_honeybee_osw(
         osw_dict['measure_paths'].append(m_dir)
 
     # add any additional measures to the osw_dict
-    if additional_measures:
+    if additional_measures or additional_mapper_measures:
+        measures = []
+        if additional_measures is not None:
+            measures.extend(additional_measures)
+        if additional_mapper_measures is not None:
+            measures.extend(additional_mapper_measures)
         measure_paths = set()  # set of all unique measure paths
         # ensure measures are correctly ordered
         m_dict = {'ModelMeasure': [], 'EnergyPlusMeasure': [], 'ReportingMeasure': []}
-        for measure in additional_measures:
+        for measure in measures:
             m_dict[measure.type].append(measure)
         sorted_measures = m_dict['ModelMeasure'] + m_dict['EnergyPlusMeasure'] + \
             m_dict['ReportingMeasure']
@@ -96,6 +107,8 @@ def base_honeybee_osw(
             measure.validate()  # ensure that all required arguments have values
             measure_paths.add(os.path.dirname(measure.folder))
             osw_dict['steps'].append(measure.to_osw_dict())  # add measure to workflow
+            if isinstance(measure, MapperMeasure):
+                _add_mapper_measure(project_directory, measure)
         for m_path in measure_paths:  # add outside measure paths
             osw_dict['measure_paths'].append(m_path)
 
@@ -139,8 +152,7 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
 
     This includes copying the Gemfile to the folder and generating the runner.conf
     to specify the number of CPUs to be used in the simulation. Lastly, the
-    uo -m command is run to generate the scenario .csv file from the exported
-    geoJSON and mapper.
+    the scenario .csv file will be generated from the feature_geojson.
 
     Args:
         feature_geojson: An URBANopt feature geoJSON to be prepared for URBANopt
@@ -148,7 +160,7 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
         cpu_count: A positive integer for the number of CPUs to use in the
             simulation. (Default: 2).
         verbose: Boolean to note if the simulation should be run with verbose
-            reporting of progress.
+            reporting of progress. (Default: False).
 
     Returns:
         Path to the .csv file for the URBANopt scenario.
@@ -176,17 +188,8 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
     with open(runner_conf, 'w') as fp:
         json.dump(runner_dict, fp, indent=2)
 
-    # run the command to generate the scenario csv file
-    if os.name == 'nt':  # we are on Windows
-        _make_scenario_windows(feature_geojson)
-    else:  # we are on Mac, Linux, or some other unix-based system
-        _make_scenario_unix(feature_geojson)
-    scenario = os.path.join(uo_folder, 'honeybee_scenario.csv')
-    assert os.path.isfile(scenario), \
-        'URBANopt scenario CSV creation creation failed.\n' \
-        'Be sure that you have installed the URBANopt CLI correctly.'
-
-    return scenario
+    # generate the scenario csv file
+    return _make_scenario(feature_geojson)
 
 
 def run_urbanopt(feature_geojson, scenario_csv):
@@ -317,7 +320,7 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
         reopt_parameters.generator_parameter.max_kw = 1000000000
     else:
         assert isinstance(reopt_parameters, REoptParameter), \
-            'Expected REoptParameter. Got {}.'.format(type(par_ojb))
+            'Expected REoptParameter. Got {}.'.format(type(reopt_parameters))
     reopt_par_json = os.path.join(project_folder, 'reopt', 'reopt_assumptions.json')
     reopt_dict = reopt_parameters.to_assumptions_dict(
         folders.reopt_assumptions_path, urdb_label)
@@ -334,50 +337,88 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
     return _output_reopt_files(directory)
 
 
-def _make_scenario_windows(feature_geojson):
-    """Generate a scenario file using URBANopt CLI on a Windows-based os.
+def _add_mapper_measure(project_directory, mapper_measure):
+    """Add mapper measure arguments to a geoJSON and the mapper_measures.json.
 
-    A batch file will be used to run the URBANopt CLI.
+    Args:
+        project_directory: Full path to a folder out of which the URBANopt simulation
+            will be run. This is the folder that contains the feature geoJSON.
+        mapper_measure: A MapperMeasure object to add.
+    """
+    # find the feature geoJSON and parse in the dictionary
+    for proj_file in os.listdir(project_directory):
+        if proj_file.endswith('geojson'):
+            geojson_file = os.path.join(project_directory, proj_file)
+            break
+    with open(geojson_file, 'r') as base_file:
+        geojson_dict = json.load(base_file)
+
+    # find or start the mapper_measures.json
+    mapper_dir = os.path.join(project_directory, 'mappers')
+    map_meas_file = os.path.join(mapper_dir, 'mapper_measures.json')
+    if os.path.isfile(map_meas_file):
+        with open(map_meas_file, 'r') as base_file:
+            map_meas_list = json.load(base_file)
+    else:
+        map_meas_list = []
+
+    # loop through the mapper measure and assign any mapper arguments
+    for m_arg in mapper_measure.arguments:
+        if isinstance(m_arg.value, tuple):  # argument to map to buildings
+            for i, feat in enumerate(geojson_dict['features']):
+                try:
+                    if feat['properties']['type'] == 'Building':
+                        feat['properties'][m_arg.identifier] = m_arg.value[i]
+                except IndexError:
+                    raise ValueError(
+                        'Number of MapperMeasure arguments ({}) does not equal the '
+                        'number of buildings in the model ({}).'.format(
+                            len(m_arg.value), len(geojson_dict['features'])))
+                except KeyError:  # definitely not a building
+                    pass
+            m_arg_info = [
+                os.path.basename(mapper_measure.folder),
+                m_arg.identifier, m_arg.identifier]
+            map_meas_list.append(m_arg_info)
+
+    # write the geoJSON and the mapper_measures.json
+    if not os.path.isdir(mapper_dir):
+        os.mkdir(mapper_dir)
+    with open(geojson_file, 'w') as fp:
+        json.dump(geojson_dict, fp, indent=4)
+    with open(map_meas_file, 'w') as fp:
+        json.dump(map_meas_list, fp, indent=4)
+
+
+def _make_scenario(feature_geojson):
+    """Generate a scenario CSV file for URBANopt simulation.
 
     Args:
         feature_geojson: The full path to a .geojson file.
     """
-    directory, feature_name = os.path.split(feature_geojson)
-    clean_feature = feature_geojson.replace('\\', '/')
-    # Write the batch file to call URBANopt CLI
-    working_drive = directory[:2]
-    batch = '{}\ncd {}\ncall {}\nuo create -s {}'.format(
-        working_drive, working_drive, folders.urbanopt_env_path, clean_feature)
-    batch_file = os.path.join(directory, 'make_scenario.bat')
-    write_to_file(batch_file, batch, True)
+    # load the geoJSON to a dictionary
+    with open(feature_geojson, 'r') as base_file:
+        geo_dict = json.load(base_file)
 
-    # run the batch file
-    os.system(batch_file)
+    # loop through the building features and add them to the CSV
+    scenario_matrix = [['Feature Id', 'Feature Name', 'Mapper Class']]
+    hb_mapper = 'URBANopt::Scenario::HoneybeeMapper'
+    for feature in geo_dict['features']:
+        try:
+            if feature['properties']['type'] == 'Building':
+                props = feature['properties']
+                f_row = [props['id'], props['name'], hb_mapper]
+                scenario_matrix.append(f_row)
+        except KeyError:  # definitely not a building
+            pass
 
-
-def _make_scenario_unix(feature_geojson):
-    """Generate a scenario file using URBANopt CLI on a Unix-based os.
-
-    This includes both Mac OS and Linux since a shell will be used to run
-    the URBANopt CLI.
-
-    Args:
-        feature_geojson: The full path to a .geojson file.
-    """
-    directory, feature_name = os.path.split(feature_geojson)
-    clean_feature = feature_geojson.replace('\\', '/')
-    # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nsource {}\nuo create -s {}'.format(
-        folders.urbanopt_env_path, clean_feature)
-    shell_file = os.path.join(directory, 'make_scenario.sh')
-    write_to_file(shell_file, shell, True)
-
-    # make the shell script executable using subprocess.check_call
-    # this is more reliable than native Python chmod on Mac
-    subprocess.check_call(['chmod', 'u+x', shell_file])
-
-    # run the shell script
-    subprocess.call(shell_file)
+    # write the scenario CSV file
+    uo_folder = os.path.dirname(feature_geojson)
+    scenario = os.path.join(uo_folder, 'honeybee_scenario.csv')
+    with open(scenario, 'w') as fp:
+        for row in scenario_matrix:
+            fp.write('{}\n'.format(','.join(row)))
+    return scenario
 
 
 def _run_urbanopt_windows(feature_geojson, scenario_csv):
