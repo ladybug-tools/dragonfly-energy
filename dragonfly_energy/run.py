@@ -321,7 +321,10 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
     else:
         assert isinstance(reopt_parameters, REoptParameter), \
             'Expected REoptParameter. Got {}.'.format(type(reopt_parameters))
-    reopt_par_json = os.path.join(project_folder, 'reopt', 'reopt_assumptions.json')
+    reopt_folder =  os.path.join(project_folder, 'reopt')
+    if not os.path.isdir(reopt_folder):
+        os.mkdir(reopt_folder)
+    reopt_par_json = os.path.join(reopt_folder, 'reopt_assumptions.json')
     reopt_dict = reopt_parameters.to_assumptions_dict(
         folders.reopt_assumptions_path, urdb_label)
     with open(reopt_par_json, 'w') as fp:
