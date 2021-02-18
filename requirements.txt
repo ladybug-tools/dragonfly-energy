@@ -1,2 +1,2 @@
 dragonfly-core==1.28.13
-honeybee-energy==1.67.2
+honeybee-energy==1.67.3
