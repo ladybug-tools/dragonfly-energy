@@ -1,10 +1,20 @@
 # coding=utf-8
 """Building Energy Properties."""
+import os
+import json
+
+from honeybee_energy.config import folders
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
+from honeybee_energy.hvac.idealair import IdealAirSystem
+from honeybee_energy.hvac.allair import EQUIPMENT_TYPES_DICT as AIR_EQUIP_TYPES
+from honeybee_energy.hvac.doas import EQUIPMENT_TYPES_DICT as DOAS_EQUIP_TYPES
+from honeybee_energy.hvac.heatcool import EQUIPMENT_TYPES_DICT as HEAT_COOL_EQUIP_TYPES
 
-from honeybee_energy.lib.constructionsets import generic_construction_set
+from honeybee_energy.lib.constructionsets import generic_construction_set, \
+    construction_set_by_identifier
+from honeybee_energy.lib.programtypes import building_program_type_by_identifier
 
 
 class BuildingEnergyProperties(object):
@@ -22,7 +32,19 @@ class BuildingEnergyProperties(object):
         * host
         * construction_set
     """
-
+    _HVAC_REGISTRY = None
+    _HVAC_TYPES_DICT= {}
+    _HVAC_TYPES_DICT.update(AIR_EQUIP_TYPES)
+    _HVAC_TYPES_DICT.update(DOAS_EQUIP_TYPES)
+    _HVAC_TYPES_DICT.update(HEAT_COOL_EQUIP_TYPES)
+    _VINTAGE_MAP = {
+        'DOE Ref Pre-1980': ('pre_1980', 'DOE_Ref_Pre_1980'),
+        'DOE Ref 1980-2004': ('1980_2004', 'DOE_Ref_1980_2004'),
+        '90.1-2004': ('2004', 'ASHRAE_2004'),
+        '90.1-2007': ('2007', 'ASHRAE_2007'),
+        '90.1-2010': ('2010', 'ASHRAE_2010'),
+        '90.1-2013': ('2013', 'ASHRAE_2013'),
+    }
     __slots__ = ('_host', '_construction_set')
 
     def __init__(self, host, construction_set=None):
@@ -99,6 +121,17 @@ class BuildingEnergyProperties(object):
             'Building set_all_room_2d_program_type. Got {}'.format(type(program_type))
         for room_2d in self.host.unique_room_2ds:
             room_2d.properties.energy.program_type = program_type
+
+    def set_all_program_type_from_building_type(self, building_type):
+        """Set the children Room2Ds to have a program mix from a building_type.
+
+        Args:
+            building_type: A text string for the type of building. This must appear
+                under the BUILDING_TYPES contant of the honeybee_energy.lib.programtypes
+                module to be successful.
+        """
+        program = building_program_type_by_identifier(building_type)
+        self.set_all_room_2d_program_type(program)
 
     def set_all_room_2d_hvac(self, hvac, conditioned_only=True):
         """Set all children Room2Ds of this Building to have the same HVAC system.
@@ -248,6 +281,41 @@ class BuildingEnergyProperties(object):
 
         return base
 
+    def apply_properties_from_geojson_dict(self, data):
+        """Apply properties from a geoJSON dictionary.
+
+        Args:
+            data: A dictionary representation of a geoJSON feature properties.
+                Specifically, this should be the "properties" key describing
+                a Polygon or MultiPolygon object.
+        """
+        # determine the vintage of the building
+        template = data['template'] if 'template' in data else '90.1-2013'
+        vintage = self._VINTAGE_MAP[template]
+
+        # assign the construction set based on climate zone
+        if 'climate_zone' in data:
+            zone_int = str(data['climate_zone'])[0]
+            c_set_id = '{}::{}{}::SteelFramed'.format(
+                vintage[0], 'ClimateZone', zone_int)
+            try:
+                self.construction_set = construction_set_by_identifier(c_set_id)
+            except ValueError:  # not a construction set in the library
+                pass
+
+        # assign the program based on the building type
+        if 'building_type' in data:
+            try:
+                self.set_all_program_type_from_building_type(data['building_type'])
+            except ValueError:  # not a building type in the library
+                pass
+
+        # assign the HVAC based on the name
+        if 'system_type' in data:
+            hvac_instance = self._hvac_from_long_name(data['system_type'], vintage[1])
+            if hvac_instance is not None:
+                self.set_all_room_2d_hvac(hvac_instance, False)
+
     def duplicate(self, new_host=None):
         """Get a copy of this object.
 
@@ -256,6 +324,31 @@ class BuildingEnergyProperties(object):
         """
         _host = new_host or self._host
         return BuildingEnergyProperties(_host, self._construction_set)
+
+    def _hvac_from_long_name(self, hvac_long_name, vintage='ASHRAE_2013'):
+        """Get an HVAC class instance from it's long name (as found in a geoJSON)."""
+        hvac_reg = None
+        if BuildingEnergyProperties._HVAC_REGISTRY is None:
+            ext_folder = [f for f in folders.standards_extension_folders
+                          if f.endswith('honeybee_energy_standards')]
+            if len(ext_folder) == 1:
+                hvac_reg = os.path.join(ext_folder[0], 'hvac_registry.json')
+                if os.path.isfile(hvac_reg):
+                    with open(hvac_reg, 'r') as f:
+                        BuildingEnergyProperties._HVAC_REGISTRY  =json.load(f)
+                        BuildingEnergyProperties._HVAC_REGISTRY['Ideal Air System'] = \
+                            'IdealAirSystem'
+                        hvac_reg = BuildingEnergyProperties._HVAC_REGISTRY
+        if hvac_reg is not None:
+            try:
+                hvac_class = self._HVAC_TYPES_DICT[hvac_reg[hvac_long_name]]
+            except KeyError:  # HVAC type is not in the library
+                return None
+            if hvac_class is IdealAirSystem:
+                return IdealAirSystem('{} {}'.format(self.host.identifier, 'Ideal Air'))
+            else:  # assume it is an HVAC template
+                hvac_id = '{} {}'.format(self.host.identifier, hvac_reg[hvac_long_name])
+                return hvac_class(hvac_id, vintage, hvac_reg[hvac_long_name])
 
     def ToString(self):
         return self.__repr__()
