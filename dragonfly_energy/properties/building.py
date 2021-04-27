@@ -8,9 +8,7 @@ from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
-from honeybee_energy.hvac.allair import EQUIPMENT_TYPES_DICT as AIR_EQUIP_TYPES
-from honeybee_energy.hvac.doas import EQUIPMENT_TYPES_DICT as DOAS_EQUIP_TYPES
-from honeybee_energy.hvac.heatcool import EQUIPMENT_TYPES_DICT as HEAT_COOL_EQUIP_TYPES
+from honeybee_energy.hvac import HVAC_TYPES_DICT
 
 from honeybee_energy.lib.constructionsets import generic_construction_set, \
     construction_set_by_identifier
@@ -33,10 +31,7 @@ class BuildingEnergyProperties(object):
         * construction_set
     """
     _HVAC_REGISTRY = None
-    _HVAC_TYPES_DICT= {}
-    _HVAC_TYPES_DICT.update(AIR_EQUIP_TYPES)
-    _HVAC_TYPES_DICT.update(DOAS_EQUIP_TYPES)
-    _HVAC_TYPES_DICT.update(HEAT_COOL_EQUIP_TYPES)
+    _HVAC_TYPES_DICT = HVAC_TYPES_DICT
     _VINTAGE_MAP = {
         'DOE Ref Pre-1980': ('pre_1980', 'DOE_Ref_Pre_1980'),
         'DOE Ref 1980-2004': ('1980_2004', 'DOE_Ref_1980_2004'),
