@@ -28,7 +28,7 @@ COPY LICENSE ${LIBRARYDIR}
 
 USER root
 RUN pip3 install --no-cache-dir setuptools wheel\
-    && pip3 install --no-cache-dir ${LIBRARYDIR} \
+    && pip3 install --no-cache-dir ${LIBRARYDIR}[standards] \
     && apt-get -y --purge remove git \
     && apt-get -y clean \
     && apt-get -y autoremove \

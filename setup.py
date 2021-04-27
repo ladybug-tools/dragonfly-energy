@@ -19,6 +19,9 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests"]),
     include_package_data=True,
     install_requires=requirements,
+    extras_require={
+        'standards': "honeybee-energy-standards==2.1.2"
+    },
     entry_points={
         "console_scripts": ["dragonfly-energy = dragonfly_energy.cli:energy"]
     },
