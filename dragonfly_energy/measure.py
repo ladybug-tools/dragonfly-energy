@@ -183,7 +183,7 @@ class MapperMeasureArgument(MeasureArgument):
             e_msg = 'Value for measure argument "' + self.identifier + \
                 '" must be a {}. Got {}'
             if not isinstance(val, (list, tuple)):
-                val = (val,)            
+                val = (val,)
             try:
                 val = tuple(self._type(v) for v in val)
             except Exception:
