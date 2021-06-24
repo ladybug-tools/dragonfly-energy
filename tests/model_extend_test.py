@@ -119,10 +119,10 @@ def test_check_duplicate_construction_set_identifiers():
 
     model = Model('NewDevelopment', [building], [tree_canopy])
 
-    assert model.properties.energy.check_duplicate_construction_set_identifiers(False)
+    assert model.properties.energy.check_duplicate_construction_set_identifiers(False) == ''
     constr_set2 = ConstructionSet('Attic Construction Set')
     building.unique_room_2ds[-2].properties.energy.construction_set = constr_set2
-    assert not model.properties.energy.check_duplicate_construction_set_identifiers(False)
+    assert model.properties.energy.check_duplicate_construction_set_identifiers(False) != ''
     with pytest.raises(ValueError):
         model.properties.energy.check_duplicate_construction_set_identifiers(True)
 
@@ -158,11 +158,11 @@ def test_check_duplicate_program_type_identifiers():
 
     model = Model('NewDevelopment', [building], [tree_canopy])
 
-    assert model.properties.energy.check_duplicate_program_type_identifiers(False)
+    assert model.properties.energy.check_duplicate_program_type_identifiers(False) == ''
     attic_program_type.unlock()
     attic_program_type.identifier = office_program.identifier
     attic_program_type.lock()
-    assert not model.properties.energy.check_duplicate_program_type_identifiers(False)
+    assert model.properties.energy.check_duplicate_program_type_identifiers(False) != ''
     with pytest.raises(ValueError):
         model.properties.energy.check_duplicate_program_type_identifiers(True)
 
