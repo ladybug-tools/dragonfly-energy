@@ -6,6 +6,9 @@ with open("README.md", "r") as fh:
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
+with open('standards-requirements.txt') as f:
+    standards_requirements = f.read().splitlines()
+
 setuptools.setup(
     name="dragonfly-energy",
     use_scm_version=True,
@@ -20,7 +23,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=requirements,
     extras_require={
-        'standards': "honeybee-energy-standards==2.1.2"
+        'standards': standards_requirements
     },
     entry_points={
         "console_scripts": ["dragonfly-energy = dragonfly_energy.cli:energy"]
