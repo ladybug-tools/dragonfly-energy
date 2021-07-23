@@ -47,7 +47,7 @@ jobs:
       run: |
         export CLEAN_VERSION=$(echo $VERSION | sed 's/v//g')
         sed -i --regexp-extended 's/(honeybee-energy==).*/honeybee-energy=='"$CLEAN_VERSION"'/' requirements.txt
-        sed -i --regexp-extended 's/(honeybee-energy[standards]==).*/honeybee-energy[standards]=='"$CLEAN_VERSION"'/' cli-requirements.txt
+        sed -i --regexp-extended 's/(honeybee-energy[standards]==).*/honeybee-energy[standards]=='"$CLEAN_VERSION"'/' extra-requirements.txt
     - name: "Commit and Push Changes"
       id: push
       env:
