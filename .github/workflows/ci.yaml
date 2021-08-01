@@ -80,6 +80,20 @@ jobs:
           -H "Accept: application/vnd.github.everest-preview+json" \
           -d '{"event_type": "dragonfly_energy_release", "client_payload": {"version": "${{ steps.new_release.outputs.tag }}"}}' \
           -u ladybugbot:$DEPS_TOKEN
+      - name: sleep for 5 minutes for PyPI update
+        if: contains(steps.new_release.outputs.tag, '.')
+        run: sleep 300s
+        shell: bash
+      - name: Update pollination-dragonfly-energy
+        if: contains(steps.new_release.outputs.tag, '.')
+        env:
+          DISPATCH_REPO: pollination/dragonfly-energy
+          DEPS_TOKEN: ${{ secrets.DEPS_UPDATING }}
+        run: |
+          curl -X POST https://api.github.com/repos/$DISPATCH_REPO/dispatches \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -d '{"event_type": "dragonfly_energy_release", "client_payload": {"version": "${{ steps.new_release.outputs.tag }}"}}' \
+          -u ladybugbot:$DEPS_TOKEN
 
   docs:
     name: Generate docs
