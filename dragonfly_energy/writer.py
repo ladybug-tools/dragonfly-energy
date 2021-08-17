@@ -87,7 +87,7 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
             bldg_id = feature_dict['properties']['id']
             feature_dict['properties']['detailed_model_filename'] = \
                 os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
-    
+
     # add the electrical network to the geoJSOn dictionary
     if electrical_network is not None:
         electric_features = electrical_network.to_geojson_dict(

@@ -147,7 +147,7 @@ def base_honeybee_osw(
     return os.path.abspath(osw_json)
 
 
-def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
+def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
     """Prepare a directory with a feature geoJSON for URBANopt simulation.
 
     This includes copying the Gemfile to the folder and generating the runner.conf
@@ -158,7 +158,12 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
         feature_geojson: An URBANopt feature geoJSON to be prepared for URBANopt
             simulation.
         cpu_count: A positive integer for the number of CPUs to use in the
-            simulation. (Default: 2).
+            simulation. This number should not exceed the number of CPUs on the
+            machine running the simulation and should be lower if other tasks
+            are running while the simulation is running. If set to None, it
+            should automatically default to one less than the number of CPUs
+            currently available on the machine (or 1 if the machine has only
+            one processor). (Default: None).
         verbose: Boolean to note if the simulation should be run with verbose
             reporting of progress. (Default: False).
 
@@ -175,6 +180,9 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=2, verbose=False):
         'No URBANopt installation was found in dragonfly_energy.config.folders.'
     uo_folder = os.path.dirname(feature_geojson)
     shutil.copy(folders.urbanopt_gemfile_path, os.path.join(uo_folder, 'Gemfile'))
+
+    # auto-assign the number of processors if None
+    cpu_count = _recommended_processor_count() if cpu_count is None else cpu_count
 
     # generate the runner.conf to set the number of CPUs based on the input
     runner_dict = {
@@ -321,7 +329,7 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
     else:
         assert isinstance(reopt_parameters, REoptParameter), \
             'Expected REoptParameter. Got {}.'.format(type(reopt_parameters))
-    reopt_folder =  os.path.join(project_folder, 'reopt')
+    reopt_folder = os.path.join(project_folder, 'reopt')
     if not os.path.isdir(reopt_folder):
         os.mkdir(reopt_folder)
     reopt_par_json = os.path.join(reopt_folder, 'reopt_assumptions.json')
@@ -422,6 +430,24 @@ def _make_scenario(feature_geojson):
         for row in scenario_matrix:
             fp.write('{}\n'.format(','.join(row)))
     return scenario
+
+
+def _recommended_processor_count():
+    """Get an integer for one less than the number of processors on this machine.
+
+    This method should work on all of the major operating systems and in
+    both IronPython and cPython. If, for whatever reason, the number of
+    processors could not be sensed, a value of 1 will be returned.
+    """
+    try:  # assume that we are in cPython
+        cpu_count = os.cpu_count()
+    except AttributeError:  # we are probably in IronPython
+        try:
+            from System.Environment import ProcessorCount
+            cpu_count = ProcessorCount
+        except ImportError:  # no idea what Python this is; let's play it safe
+            cpu_count = 1
+    return 1 if cpu_count is None or cpu_count <= 1 else cpu_count - 1
 
 
 def _run_urbanopt_windows(feature_geojson, scenario_csv):
