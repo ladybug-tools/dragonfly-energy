@@ -6,6 +6,7 @@ from honeybee.config import folders
 from honeybee.model import Model as hb_model
 
 import os
+import re
 import json
 
 
@@ -40,8 +41,7 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
             with the dragonfly Model. (Default: None).
         folder: An optional folder to be used as the root of the model's
             URBANopt folder. If None, the files will be written into a sub-directory
-            of the honeybee-core default_simulation_folder. This sub-directory
-            is specifically: default_simulation_folder/[MODEL IDENTIFIER]
+            of the honeybee-core default_simulation_folder.
         tolerance: The minimum distance between points at which they are
             not considered touching. (Default: 0.01, suitable for objects
             in meters).
@@ -72,9 +72,23 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
 
     # prepare the folder for simulation
     if folder is None:  # use the default simulation folder
-        folder = os.path.join(folders.default_simulation_folder, model.identifier)
-    nukedir(folder, True)  # get rid of anything that exists in the folder already
-    preparedir(folder)  # create the directory if it's not there
+        folder = os.path.join(
+            folders.default_simulation_folder,
+            re.sub(r'[^.A-Za-z0-9_-]', '_', model.display_name)
+        )
+    # get rid of anything that exists in the folder already
+    if os.path.isdir(folder):
+        files = os.listdir(folder)
+        for f in files:
+            if f == '.bundle':
+                continue
+            path = os.path.join(folder, f)
+            if os.path.isdir(path):
+                nukedir(path, True)
+            else:
+                os.remove(path)
+    else: 
+        preparedir(folder)  # create the directory if it's not there
 
     # prepare the folder into which honeybee Model JSONs will be written
     hb_model_folder = os.path.join(folder, 'hb_json')  # folder for honeybee JSONs
