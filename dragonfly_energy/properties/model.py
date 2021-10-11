@@ -224,7 +224,7 @@ class ModelEnergyProperties(object):
         assert 'energy' in data['properties'], \
             'Dictionary possesses no ModelEnergyProperties.'
         materials, constructions, construction_sets, schedule_type_limits, \
-            schedules, program_types, hvacs = \
+            schedules, program_types, hvacs, shws = \
             hb_model_properties.ModelEnergyProperties.load_properties_from_dict(data)
 
         # collect lists of energy property dictionaries
