@@ -9,6 +9,7 @@ from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.hvac import HVAC_TYPES_DICT
+from honeybee_energy.shw import SHWSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set, \
     construction_set_by_identifier
@@ -131,13 +132,6 @@ class BuildingEnergyProperties(object):
     def set_all_room_2d_hvac(self, hvac, conditioned_only=True):
         """Set all children Room2Ds of this Building to have the same HVAC system.
 
-        For an HVAC system that is intended to be applied across multiple zones
-        (such as a VAVSystem), all Room2Ds will receive the same HVAC instance
-        as their HVAC system. In the case of an HVAC that can only be assigned
-        to individual zones (such as an IdealAirSystem), the input hvac will be
-        duplicated and identified (with an integer appended to the end) for each
-        Room2D to which is it applied.
-
         Args:
             hvac: An HVAC system with properties that will be assigned to all
                 children Room2Ds.
@@ -161,6 +155,21 @@ class BuildingEnergyProperties(object):
         """
         for room_2d in self.host.unique_room_2ds:
             room_2d.properties.energy.add_default_ideal_air()
+
+    def set_all_room_2d_shw(self, shw):
+        """Set all children Room2Ds of this Building to have the same SHW system.
+
+        Args:
+            shw: A Service Hot Water (SHW) system with properties that will be
+                assigned to all children Room2Ds.
+        """
+        assert isinstance(shw, SHWSystem), 'Expected SHWSystem for Building.' \
+            'set_all_room_2d_shw. Got {}'.format(type(shw))
+
+        new_shw = shw.duplicate()
+        new_shw._identifier = '{}_{}'.format(shw.identifier, self.host.identifier)
+        for room_2d in self.host.unique_room_2ds:
+            room_2d.properties.energy.shw = new_shw
 
     def diversify(self, occupancy_stdev=20, lighting_stdev=20,
                   electric_equip_stdev=20, gas_equip_stdev=20, hot_water_stdev=20,
