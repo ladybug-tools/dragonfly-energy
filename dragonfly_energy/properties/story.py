@@ -3,6 +3,7 @@
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac._base import _HVACSystem
+from honeybee_energy.shw import SHWSystem
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 
@@ -125,6 +126,21 @@ class StoryEnergyProperties(object):
         """
         for room_2d in self.host.room_2ds:
             room_2d.properties.energy.add_default_ideal_air()
+
+    def set_all_room_2d_shw(self, shw):
+        """Set all children Room2Ds of this Story to have the same HVAC system.
+
+        Args:
+            shw: An HVAC system with properties that will be assigned to all
+                children Room2Ds.
+        """
+        assert isinstance(shw, SHWSystem), 'Expected SHWSystem for Story.' \
+            'set_all_room_2d_shw. Got {}'.format(type(shw))
+
+        new_shw = shw.duplicate()
+        new_shw._identifier = '{}_{}'.format(shw.identifier, self.host.identifier)
+        for room_2d in self.host.room_2ds:
+            room_2d.properties.energy.shw = new_shw
 
     @classmethod
     def from_dict(cls, data, host):

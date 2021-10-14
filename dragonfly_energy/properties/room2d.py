@@ -7,6 +7,7 @@ from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.hvac import HVAC_TYPES_DICT
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
+from honeybee_energy.shw import SHWSystem
 from honeybee_energy.ventcool.control import VentilationControl
 from honeybee_energy.ventcool.opening import VentilationOpening
 
@@ -36,20 +37,23 @@ class Room2DEnergyProperties(object):
         * program_type
         * construction_set
         * hvac
+        * shw
         * window_vent_control
         * window_vent_opening
         * is_conditioned
     """
 
-    __slots__ = ('_host', '_program_type', '_construction_set', '_hvac',
+    __slots__ = ('_host', '_program_type', '_construction_set', '_hvac', '_shw',
                  '_window_vent_control', '_window_vent_opening')
 
-    def __init__(self, host, program_type=None, construction_set=None, hvac=None):
+    def __init__(
+            self, host, program_type=None, construction_set=None, hvac=None, shw=None):
         """Initialize Room2D energy properties."""
         self._host = host
         self.program_type = program_type
         self.construction_set = construction_set
         self.hvac = hvac
+        self.shw = shw
         self._window_vent_control = None  # set to None by default
         self._window_vent_opening = None  # set to None by default
 
@@ -116,6 +120,23 @@ class Room2DEnergyProperties(object):
         self._hvac = value
 
     @property
+    def shw(self):
+        """Get or set the SHWSystem object for the Room2D.
+
+        If None, all hot water loads will be met with a system that doesn't compute
+        fuel or electricity usage.
+        """
+        return self._shw
+
+    @shw.setter
+    def shw(self, value):
+        if value is not None:
+            assert isinstance(value, SHWSystem), \
+                'Expected SHWSystem for Room shw. Got {}'.format(type(value))
+            value.lock()   # lock in case shw has multiple references
+        self._shw = value
+
+    @property
     def window_vent_control(self):
         """Get or set a VentilationControl object to dictate the opening of windows.
 
@@ -173,8 +194,21 @@ class Room2DEnergyProperties(object):
         classmethod to work.
 
         Args:
-            data: A dictionary representation of Room2DEnergyProperties.
+            data: A dictionary representation of Room2DEnergyProperties in the
+                format below.
             host: A Room2D object that hosts these properties.
+
+        .. code-block:: python
+
+            {
+            "type": 'Room2DEnergyProperties',
+            "construction_set": {},  # A ConstructionSet dictionary
+            "program_type": {},  # A ProgramType dictionary
+            "hvac": {}, # A HVACSystem dictionary
+            "shw": {}, # A SHWSystem dictionary
+            "daylighting_control": {},  # A DaylightingControl dictionary
+            "window_vent_control": {}  # A VentilationControl dictionary
+            }
         """
         assert data['type'] == 'Room2DEnergyProperties', \
             'Expected Room2DEnergyProperties. Got {}.'.format(data['type'])
@@ -188,12 +222,14 @@ class Room2DEnergyProperties(object):
         if 'hvac' in data and data['hvac'] is not None:
             hvac_class = HVAC_TYPES_DICT[data['hvac']['type']]
             new_prop.hvac = hvac_class.from_dict(data['hvac'])
+        if 'shw' in data and data['shw'] is not None:
+            new_prop.shw = SHWSystem.from_dict(data['shw'])
         cls._deserialize_window_vent(new_prop, data)
 
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets,
-                                   program_types, hvacs):
+                                   program_types, hvacs, shws):
         """Apply properties from a Room2DEnergyPropertiesAbridged dictionary.
 
         Args:
@@ -205,6 +241,8 @@ class Room2DEnergyProperties(object):
                 types ask keys, which will be used to re-assign program_types.
             hvacs: A dictionary of HVACSystems with the identifiers of the
                 systems as keys, which will be used to re-assign hvac to the Room.
+            shws: A dictionary of SHWSystems with the identifiers of the systems as
+                keys, which will be used to re-assign shw to the Room.
         """
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
@@ -213,6 +251,8 @@ class Room2DEnergyProperties(object):
             self.program_type = program_types[abridged_data['program_type']]
         if 'hvac' in abridged_data and abridged_data['hvac'] is not None:
             self.hvac = hvacs[abridged_data['hvac']]
+        if 'shw' in abridged_data and abridged_data['shw'] is not None:
+            self.shw = shws[abridged_data['shw']]
         self._deserialize_window_vent(self, abridged_data)
 
     def to_dict(self, abridged=False):
@@ -243,6 +283,11 @@ class Room2DEnergyProperties(object):
             base['energy']['hvac'] = \
                 self._hvac.identifier if abridged else self._hvac.to_dict()
 
+        # write the shw into the dictionary
+        if self._shw is not None:
+            base['energy']['shw'] = \
+                self._shw.identifier if abridged else self._shw.to_dict()
+
         # write the window_vent_control and window_vent_opening into the dictionary
         if self._window_vent_control is not None:
             base['energy']['window_vent_control'] = \
@@ -261,7 +306,8 @@ class Room2DEnergyProperties(object):
         """
         constr_set = self.construction_set  # includes story and building-assigned sets
         hb_constr = constr_set if constr_set is not generic_construction_set else None
-        hb_prop = RoomEnergyProperties(new_host, self._program_type, hb_constr, self._hvac)
+        hb_prop = RoomEnergyProperties(
+            new_host, self._program_type, hb_constr, self._hvac, self._shw)
         if self._window_vent_control is not None:
             hb_prop.window_vent_control = self.window_vent_control
         if self._window_vent_opening is not None:
@@ -281,7 +327,7 @@ class Room2DEnergyProperties(object):
         """
         _host = new_host or self._host
         hb_prop = Room2DEnergyProperties(
-            _host, self._program_type, self._construction_set, self._hvac)
+            _host, self._program_type, self._construction_set, self._hvac, self._shw)
         hb_prop._window_vent_control = self._window_vent_control
         hb_prop._window_vent_opening = self._window_vent_opening
         return hb_prop

@@ -6,7 +6,6 @@ from honeybee_energy.construction.air import AirBoundaryConstruction
 import honeybee_energy.properties.model as hb_model_properties
 from honeybee.checkdup import check_duplicate_identifiers
 
-
 try:
     from itertools import izip as zip  # python 2
 except ImportError:
@@ -31,6 +30,8 @@ class ModelEnergyProperties(object):
         * program_type_schedules
         * hvac_schedules
         * program_types
+        * hvacs
+        * shws
     """
 
     def __init__(self, host):
@@ -175,6 +176,19 @@ class ModelEnergyProperties(object):
                             hvacs.append(room.properties.energy._hvac)
         return hvacs
 
+    @property
+    def shws(self):
+        """A list of all unique Service Hot Water (SHW) systems in the Model."""
+        shws = []
+        for bldg in self.host._buildings:
+            for story in bldg:
+                for room in story:
+                    if room.properties.energy._shw is not None:
+                        if not self._instance_in_array(
+                                room.properties.energy._shw, shws):
+                            shws.append(room.properties.energy._shw)
+        return shws
+
     def check_all(self, raise_exception=True):
         """Check all of the aspects of the Model energy properties.
 
@@ -192,6 +206,7 @@ class ModelEnergyProperties(object):
         msgs.append(self.check_duplicate_construction_set_identifiers(False))
         msgs.append(self.check_duplicate_program_type_identifiers(False))
         msgs.append(self.check_duplicate_hvac_identifiers(False))
+        msgs.append(self.check_duplicate_shw_identifiers(False))
         # output a final report of errors or raise an exception
         full_msgs = [msg for msg in msgs if msg != '']
         full_msg = '\n'.join(full_msgs)
@@ -212,6 +227,10 @@ class ModelEnergyProperties(object):
     def check_duplicate_hvac_identifiers(self, raise_exception=True):
         """Check that there are no duplicate HVAC identifiers in the model."""
         return check_duplicate_identifiers(self.hvacs, raise_exception, 'HVAC')
+
+    def check_duplicate_shw_identifiers(self, raise_exception=True):
+        """Check that there are no duplicate SHW identifiers in the model."""
+        return check_duplicate_identifiers(self.shws, raise_exception, 'SHW')
 
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
@@ -243,7 +262,7 @@ class ModelEnergyProperties(object):
         for room, r_dict in zip(self.host.room_2ds, room2d_e_dicts):
             if r_dict is not None:
                 room.properties.energy.apply_properties_from_dict(
-                    r_dict, construction_sets, program_types, hvacs)
+                    r_dict, construction_sets, program_types, hvacs, shws)
         for shade, s_dict in zip(self.host.context_shades, context_e_dicts):
             if s_dict is not None:
                 shade.properties.energy.apply_properties_from_dict(
@@ -333,6 +352,9 @@ class ModelEnergyProperties(object):
         base['energy']['hvacs'] = []
         for hvac in hvacs:
             base['energy']['hvacs'].append(hvac.to_dict(abridged=True))
+
+        # add all unique shws to the dictionary
+        base['energy']['shws'] = [shw.to_dict() for shw in self.shws]
 
         # add all unique ProgramTypes to the dictionary
         program_types = self.program_types
