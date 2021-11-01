@@ -10,6 +10,7 @@ from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.shw import SHWSystem
 from honeybee_energy.ventcool.control import VentilationControl
 from honeybee_energy.ventcool.opening import VentilationOpening
+from honeybee_energy.load.process import Process
 
 from honeybee_energy.lib.constructionsets import generic_construction_set
 from honeybee_energy.lib.programtypes import plenum_program
@@ -40,11 +41,12 @@ class Room2DEnergyProperties(object):
         * shw
         * window_vent_control
         * window_vent_opening
+        * process_loads
         * is_conditioned
     """
 
     __slots__ = ('_host', '_program_type', '_construction_set', '_hvac', '_shw',
-                 '_window_vent_control', '_window_vent_opening')
+                 '_window_vent_control', '_window_vent_opening', '_process_loads')
 
     def __init__(
             self, host, program_type=None, construction_set=None, hvac=None, shw=None):
@@ -56,6 +58,7 @@ class Room2DEnergyProperties(object):
         self.shw = shw
         self._window_vent_control = None  # set to None by default
         self._window_vent_opening = None  # set to None by default
+        self._process_loads = []
 
     @property
     def host(self):
@@ -172,6 +175,19 @@ class Room2DEnergyProperties(object):
         self._window_vent_opening = value
 
     @property
+    def process_loads(self):
+        """Get or set an array of Process objects for process loads within the Room2D."""
+        return tuple(self._process_loads)
+
+    @process_loads.setter
+    def process_loads(self, value):
+        for val in value:
+            assert isinstance(val, Process), 'Expected Process ' \
+                'object for Room process_loads. Got {}'.format(type(val))
+            val.lock()   # lock because we don't duplicate the object
+        self._process_loads = list(value)
+
+    @property
     def is_conditioned(self):
         """Boolean to note whether the Room is conditioned."""
         return self._hvac is not None
@@ -185,6 +201,21 @@ class Room2DEnergyProperties(object):
         """
         hvac_id = '{} Ideal Loads Air System'.format(self.host.identifier)
         self.hvac = IdealAirSystem(hvac_id)
+
+    def add_process_load(self, process_load):
+        """Add a Process load to this Room2D.
+
+        Args:
+            process_load: A Process load to add to this Room.
+        """
+        assert isinstance(process_load, Process), \
+            'Expected Process load object. Got {}.'.format(type(process_load))
+        process_load.lock()   # lock because we don't duplicate the object
+        self._process_loads.append(process_load)
+
+    def remove_process_loads(self):
+        """Remove all Process loads from the Room."""
+        self._process_loads = []
 
     @classmethod
     def from_dict(cls, data, host):
@@ -208,6 +239,7 @@ class Room2DEnergyProperties(object):
             "shw": {}, # A SHWSystem dictionary
             "daylighting_control": {},  # A DaylightingControl dictionary
             "window_vent_control": {}  # A VentilationControl dictionary
+            "process_loads": []  # An array of Process dictionaries
             }
         """
         assert data['type'] == 'Room2DEnergyProperties', \
@@ -225,11 +257,14 @@ class Room2DEnergyProperties(object):
         if 'shw' in data and data['shw'] is not None:
             new_prop.shw = SHWSystem.from_dict(data['shw'])
         cls._deserialize_window_vent(new_prop, data)
+        if 'process_loads' in data and data['process_loads'] is not None:
+            new_prop.process_loads = \
+                [Process.from_dict(dat) for dat in data['process_loads']]
 
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets,
-                                   program_types, hvacs, shws):
+                                   program_types, hvacs, shws, schedules):
         """Apply properties from a Room2DEnergyPropertiesAbridged dictionary.
 
         Args:
@@ -243,6 +278,8 @@ class Room2DEnergyProperties(object):
                 systems as keys, which will be used to re-assign hvac to the Room.
             shws: A dictionary of SHWSystems with the identifiers of the systems as
                 keys, which will be used to re-assign shw to the Room.
+            schedules: A dictionary of Schedules with identifiers of the schedules as
+                keys, which will be used to re-assign schedules.
         """
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
@@ -254,6 +291,14 @@ class Room2DEnergyProperties(object):
         if 'shw' in abridged_data and abridged_data['shw'] is not None:
             self.shw = shws[abridged_data['shw']]
         self._deserialize_window_vent(self, abridged_data)
+        if 'process_loads' in abridged_data and \
+                abridged_data['process_loads'] is not None:
+            self.process_loads = []
+            for dat in abridged_data['process_loads']:
+                if dat['type'] == 'Process':
+                    self.process_loads.append(Process.from_dict(dat))
+                else:
+                    self.process_loads.append(Process.from_dict_abridged(dat, schedules))
 
     def to_dict(self, abridged=False):
         """Return Room2D energy properties as a dictionary.
@@ -296,6 +341,11 @@ class Room2DEnergyProperties(object):
         if self._window_vent_opening is not None:
             base['energy']['window_vent_opening'] = self.window_vent_opening.to_dict()
 
+        # write the process_loads into the dictionary
+        if len(self._process_loads) != 0:
+            base['energy']['process_loads'] = \
+                [p.to_dict(abridged) for p in self._process_loads]
+
         return base
 
     def to_honeybee(self, new_host):
@@ -316,6 +366,8 @@ class Room2DEnergyProperties(object):
                     if isinstance(ap.boundary_condition, Outdoors):
                         ap.is_operable = True
             hb_prop.assign_ventilation_opening(self.window_vent_opening)
+        if len(self._process_loads) != 0:
+            new_host.process_loads = self.process_loads
         return hb_prop
 
     def duplicate(self, new_host=None):
@@ -330,6 +382,7 @@ class Room2DEnergyProperties(object):
             _host, self._program_type, self._construction_set, self._hvac, self._shw)
         hb_prop._window_vent_control = self._window_vent_control
         hb_prop._window_vent_opening = self._window_vent_opening
+        hb_prop._process_loads = self._process_loads[:]  # copy process load list
         return hb_prop
 
     @staticmethod
