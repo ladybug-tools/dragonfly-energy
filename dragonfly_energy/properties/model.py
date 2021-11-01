@@ -262,7 +262,7 @@ class ModelEnergyProperties(object):
         for room, r_dict in zip(self.host.room_2ds, room2d_e_dicts):
             if r_dict is not None:
                 room.properties.energy.apply_properties_from_dict(
-                    r_dict, construction_sets, program_types, hvacs, shws)
+                    r_dict, construction_sets, program_types, hvacs, shws, schedules)
         for shade, s_dict in zip(self.host.context_shades, context_e_dicts):
             if s_dict is not None:
                 shade.properties.energy.apply_properties_from_dict(
