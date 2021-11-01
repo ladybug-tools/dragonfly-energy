@@ -10,9 +10,11 @@ import re
 import json
 
 
-def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
-                      use_multiplier=True, add_plenum=False, electrical_network=None,
-                      folder=None, tolerance=0.01):
+def model_to_urbanopt(
+    model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
+    add_plenum=False, solve_ceiling_adjacencies=False, electrical_network=None,
+    folder=None, tolerance=0.01
+):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
     Args:
@@ -37,6 +39,11 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
             multipliers and all resulting multipliers will be 1. (Default: True).
         add_plenum: Boolean to indicate whether ceiling/floor plenums should
             be auto-generated for the Rooms. (Default: False).
+        solve_ceiling_adjacencies: Boolean to note whether adjacencies should be
+            solved between interior stories when Room2Ds perfectly match one
+            another in their floor plate. This ensures that Surface boundary
+            conditions are used instead of Adiabatic ones. Note that this input
+            has no effect when the object_per_model is Story. (Default: False).
         electrical_network: An optional OpenDSS ElectricalNetwork that's associated
             with the dragonfly Model. (Default: None).
         folder: An optional folder to be used as the root of the model's
@@ -119,7 +126,8 @@ def model_to_urbanopt(model, location, point=Point2D(0, 0), shade_distance=None,
     # write out the honeybee Model JSONS from the model
     hb_model_jsons = []
     hb_models = model.to_honeybee(
-        'Building', shade_distance, use_multiplier, add_plenum, tolerance=tolerance)
+        'Building', shade_distance, use_multiplier, add_plenum,
+        solve_ceiling_adjacencies=solve_ceiling_adjacencies, tolerance=tolerance)
     for bldg_model in hb_models:
         bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
         model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
