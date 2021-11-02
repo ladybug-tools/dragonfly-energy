@@ -367,7 +367,7 @@ class Room2DEnergyProperties(object):
                         ap.is_operable = True
             hb_prop.assign_ventilation_opening(self.window_vent_opening)
         if len(self._process_loads) != 0:
-            new_host.process_loads = self.process_loads
+            hb_prop.process_loads = self.process_loads
         return hb_prop
 
     def duplicate(self, new_host=None):
