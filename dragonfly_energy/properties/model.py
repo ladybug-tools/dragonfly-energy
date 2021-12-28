@@ -4,6 +4,7 @@ from dragonfly.extensionutil import model_extension_dicts
 
 from honeybee_energy.construction.air import AirBoundaryConstruction
 import honeybee_energy.properties.model as hb_model_properties
+from honeybee_energy.lib.constructionsets import generic_construction_set
 from honeybee.checkdup import check_duplicate_identifiers
 
 try:
@@ -24,6 +25,7 @@ class ModelEnergyProperties(object):
         * constructions
         * shade_constructions
         * construction_sets
+        * global_construction_set
         * schedule_type_limits
         * schedules
         * shade_schedules
@@ -99,6 +101,15 @@ class ModelEnergyProperties(object):
                 for room in story.room_2ds:
                     self._check_and_add_obj_constr_set(room, construction_sets)
         return list(set(construction_sets))  # catch equivalent construction sets
+
+    @property
+    def global_construction_set(self):
+        """The global energy construction set.
+
+        This is what is used whenever there is no construction_set assigned to a
+        Room2D, a parent Story, or a parent Building.
+        """
+        return generic_construction_set
 
     @property
     def schedule_type_limits(self):
@@ -304,6 +315,26 @@ class ModelEnergyProperties(object):
         Args:
             base: A base dictionary for a Dragonfly Model.
         """
+        # add the global construction set to the dictionary
+        gs = self.global_construction_set.to_dict(abridged=True, none_for_defaults=False)
+        gs['type'] = 'GlobalConstructionSet'
+        del gs['identifier']
+        g_constr = self.global_construction_set.constructions_unique
+        g_materials = []
+        for constr in g_constr:
+            try:
+                g_materials.extend(constr.materials)
+            except AttributeError:
+                pass  # ShadeConstruction or AirBoundaryConstruction
+        gs['constructions'] = []
+        for cnst in g_constr:
+            try:
+                gs['constructions'].append(cnst.to_dict(abridged=True))
+            except TypeError:  # ShadeConstruction
+                gs['constructions'].append(cnst.to_dict())
+        gs['materials'] = [mat.to_dict() for mat in set(g_materials)]
+        base['energy']['global_construction_set'] = gs
+
         # add all ConstructionSets to the dictionary
         base['energy']['construction_sets'] = []
         construction_sets = self.construction_sets
