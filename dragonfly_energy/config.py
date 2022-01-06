@@ -210,9 +210,18 @@ class Folders(object):
             'No URBANopt installation was found on this machine.\n{}'.format(in_msg)
         uo_version = self.urbanopt_version
         if uo_version is None:
+            if self.urbanopt_env_path is not None:
+                ext = '.bat' if os.name == 'nt' else '.sh'
+                ver_file = os.path.join(
+                    os.path.dirname(self.urbanopt_env_path),
+                    '.check_uo_version{}'.format(ext))
+                process = subprocess.Popen(ver_file, stderr=subprocess.PIPE, shell=True)
+                _, stderr = process.communicate()
+            else:
+                stderr = 'Unable to set up the URBANopt environment.'
             msg = 'An URBANopt installation was found at {}\n' \
-                'but the URBANopt executable is not accessible.'.format(
-                    self.urbanopt_cli_path)
+                'but the URBANopt executable is not accessible.\n{}'.format(
+                    self.urbanopt_cli_path, stderr)
             raise ValueError(msg)
         assert uo_version == self.URBANOPT_VERSION, \
             'The installed URBANopt is version {}.\nMust be version {} to work ' \
