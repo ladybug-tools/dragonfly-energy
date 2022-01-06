@@ -174,10 +174,7 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
     assert folders.urbanopt_gemfile_path, \
         'No URBANopt Gemfile was found in dragonfly_energy.config.folders.\n' \
         'This file must exist to run URBANopt.'
-    if not folders.urbanopt_env_path:
-        folders.generate_urbanopt_env_path()
-    assert folders.urbanopt_env_path, \
-        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    folders.check_urbanopt_version()
     uo_folder = os.path.dirname(feature_geojson)
     shutil.copy(folders.urbanopt_gemfile_path, os.path.join(uo_folder, 'Gemfile'))
 
@@ -229,10 +226,7 @@ def run_urbanopt(feature_geojson, scenario_csv):
         -   err -- Array of paths to .err files containing all errors and warnings
             from the simulation.
     """
-    if not folders.urbanopt_env_path:
-        folders.generate_urbanopt_env_path()
-    assert folders.urbanopt_env_path, \
-        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    folders.check_urbanopt_version()
     # run the simulation
     if os.name == 'nt':  # we are on Windows
         directory = _run_urbanopt_windows(feature_geojson, scenario_csv)
@@ -258,10 +252,7 @@ def run_default_report(feature_geojson, scenario_csv):
 
         -   report_json -- Path to a JSON file containing default scenario results.
     """
-    if not folders.urbanopt_env_path:
-        folders.generate_urbanopt_env_path()
-    assert folders.urbanopt_env_path, \
-        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    folders.check_urbanopt_version()
     assert os.path.isfile(feature_geojson), \
         'No feature_geojson as found at the specified path: {}.'.format(feature_geojson)
     assert os.path.isfile(scenario_csv), \
@@ -306,10 +297,7 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
         -   report_json -- Path to a JSON file containing scenario optimization results.
     """
     # run checks on the inputs
-    if not folders.urbanopt_env_path:
-        folders.generate_urbanopt_env_path()
-    assert folders.urbanopt_env_path, \
-        'No URBANopt installation was found in dragonfly_energy.config.folders.'
+    folders.check_urbanopt_version()
     assert folders.reopt_assumptions_path, \
         'No REopt assumptions were found in dragonfly_energy.config.folders.'
     assert os.path.isfile(feature_geojson), \
@@ -493,7 +481,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
-    # Write the shell script to call OpenStudio CLI
+    # Write the shell script to call URBANopt CLI
     shell = '#!/usr/bin/env bash\nsource {}\nuo -r -f {} -s {}'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
@@ -507,7 +495,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
 
 
 def _check_urbanopt_file(feature_geojson, scenario_csv):
-    """Prepare an OSW file to be run through OpenStudio CLI.
+    """Prepare an OSW file to be run through URBANopt CLI.
 
     Args:
         feature_geojson: The full path to a .geojson file containing the
@@ -565,6 +553,8 @@ def _output_urbanopt_files(directory):
 
     # generate paths to the simulation files and check their existence
     sim_dir = os.path.join(directory, 'run', 'honeybee_scenario')
+    assert os.path.isdir(sim_dir), 'The URBANopt simulation failed to run.\n' \
+        'No results were found at:\n{}'.format(sim_dir)
     for bldg_name in os.listdir(sim_dir):
         bldg_dir = os.path.join(sim_dir, bldg_name)
         osm_file = os.path.join(bldg_dir, 'in.osm')
