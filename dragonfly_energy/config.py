@@ -10,6 +10,7 @@ Usage:
     print(folders.mapper_path)
     folders.mapper_path = "C:/Urbanopt_test/Honeybee.rb"
 """
+from ladybug.futil import write_to_file
 import honeybee_energy.config as hb_energy_config
 
 import os
@@ -34,10 +35,15 @@ class Folders(object):
         * urbanopt_gemfile_path
         * urbanopt_cli_path
         * urbanopt_env_path
+        * urbanopt_version
+        * urbanopt_version_str
         * reopt_assumptions_path
         * config_file
         * mute
     """
+    URBANOPT_VERSION = (0, 7, 1)
+    COMPATIBILITY_URL = 'https://github.com/ladybug-tools/lbt-grasshopper/wiki/' \
+        '1.4-Compatibility-Matrix'
 
     def __init__(self, config_file=None, mute=True):
         self.mute = bool(mute)  # set the mute value
@@ -99,6 +105,9 @@ class Folders(object):
             assert os.path.isdir(path), \
                 '{} is not a valid path to an URBANopt installation.'.format(path)
         self._urbanopt_cli_path = path  # set the urbanopt_cli_path
+        self._urbanopt_env_path = None
+        self._urbanopt_version = None
+        self._urbanopt_version_str = None
         if path and not self.mute:
             print("Path to URBANopt CLI is set to: %s" % path)
 
@@ -116,6 +125,28 @@ class Folders(object):
         self._urbanopt_env_path = path  # set the urbanopt_env_path
         if path and not self.mute:
             print("Path to URBANopt Environment executable is set to: %s" % path)
+
+    @property
+    def urbanopt_version(self):
+        """Get a tuple for the version of URBANopt (eg. (0, 7, 1)).
+
+        This will be None if the version could not be sensed or if no URBANopt
+        installation was found.
+        """
+        if self._urbanopt_cli_path and self._urbanopt_version_str is None:
+            self._urbanopt_version_from_cli()
+        return self._urbanopt_version
+
+    @property
+    def urbanopt_version_str(self):
+        """Get text for the full version of URBANopt (eg. "0.7.1").
+
+        This will be None if the version could not be sensed or if no URBANopt
+        installation was found.
+        """
+        if self._urbanopt_cli_path and self._urbanopt_version_str is None:
+            self._urbanopt_version_from_cli()
+        return self._urbanopt_version_str
 
     @property
     def reopt_assumptions_path(self):
@@ -170,6 +201,25 @@ class Folders(object):
             if os.path.isfile(env_file):
                 self._urbanopt_env_path = env_file  # the file was successfully generated
 
+    def check_urbanopt_version(self):
+        """Check if the installed version of URBANopt is the acceptable one."""
+        in_msg = 'Get a compatible version of URBANopt by downloading and installing\n' \
+            'the version of URBANopt listed in the Ladybug Tools compatibility ' \
+            'matrix\n{}.'.format(self.COMPATIBILITY_URL)
+        assert self.urbanopt_cli_path is not None, \
+            'No URBANopt installation was found on this machine.\n{}'.format(in_msg)
+        uo_version = self.urbanopt_version
+        if uo_version is None:
+            msg = 'An URBANopt installation was found at {}\n' \
+                'but the URBANopt executable is not accessible.'.format(
+                    self.urbanopt_cli_path)
+            raise ValueError(msg)
+        assert uo_version == self.URBANOPT_VERSION, \
+            'The installed URBANopt is version {}.\nMust be version {} to work ' \
+            'with dragonfly.\n{}'.format(
+                '.'.join(str(v) for v in uo_version),
+                '.'.join(str(v) for v in self.URBANOPT_VERSION), in_msg)
+
     def _load_from_file(self, file_path):
         """Set all of the the properties of this object from a config JSON file.
 
@@ -209,6 +259,42 @@ class Folders(object):
         self.urbanopt_cli_path = default_path["urbanopt_cli_path"]
         self.urbanopt_env_path = default_path["urbanopt_env_path"]
         self.reopt_assumptions_path = default_path["reopt_assumptions_path"]
+
+    def _urbanopt_version_from_cli(self):
+        """Set this object's URBANopt version by making a call to URBANopt CLI."""
+        if not self.urbanopt_env_path:
+            self.generate_urbanopt_env_path()
+        assert self.urbanopt_env_path is not None, 'Unable to set up the URBANopt ' \
+            'environment. Make sure it is installed correctly.'
+        if os.name == 'nt':
+            working_drive = self.urbanopt_env_path[:2]
+            batch = '{}\ncd {}\ncall {}\nuo --version'.format(
+                working_drive, working_drive, self.urbanopt_env_path)
+            batch_file = os.path.join(
+                os.path.dirname(self.urbanopt_env_path), '.check_uo_version.bat')
+            write_to_file(batch_file, batch, True)
+            process = subprocess.Popen(batch_file, stdout=subprocess.PIPE, shell=True)
+            stdout = process.communicate()
+        else:
+            shell = '#!/usr/bin/env bash\nsource {}\nuo --version'.format(
+                self.urbanopt_env_path)
+            shell_file = os.path.join(
+                os.path.dirname(self.urbanopt_env_path), '.check_uo_version.sh')
+            write_to_file(shell_file, shell, True)
+            # make the shell script executable using subprocess.check_call
+            subprocess.check_call(['chmod', 'u+x', shell_file])
+            # run the shell script
+            process = subprocess.Popen(shell_file, stdout=subprocess.PIPE, shell=True)
+            stdout = process.communicate()
+        base_str = str(stdout[0]).split('--version')[-1]
+        base_str = base_str.replace(r"\r", '').replace(r"\n", '').replace(r"'", '')
+        base_str = base_str.strip()
+        try:
+            ver_nums = base_str.split('.')        
+            self._urbanopt_version = tuple(int(i) for i in ver_nums)
+            self._urbanopt_version_str = base_str
+        except Exception:
+            pass  # failed to parse the version into integers
 
     @staticmethod
     def _find_mapper_path():
