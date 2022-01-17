@@ -370,6 +370,28 @@ class Room2DEnergyProperties(object):
             hb_prop.process_loads = self.process_loads
         return hb_prop
 
+    def from_honeybee(self, hb_properties):
+        """Transfer energy attributes from a Honeybee Room to Dragonfly Room2D.
+
+        Args:
+            hb_properties: The RoomEnergyProperties of the honeybee Room that is being
+                translated to a Dragonfly Room2D.
+        """
+        self._program_type = hb_properties._program_type
+        self._construction_set = hb_properties._construction_set
+        self._hvac = hb_properties._hvac
+        self._shw = hb_properties._shw
+        self._process_loads = hb_properties._process_loads[:]  # copy the list
+        if hb_properties._window_vent_control is not None:
+            self._window_vent_control = hb_properties._window_vent_control
+            for face in hb_properties.host.faces:
+                for ap in face.apertures:
+                    if ap.properties.energy.vent_opening is not None:
+                        self._window_vent_opening = ap.properties.energy.vent_opening
+                        break
+                if self._window_vent_control is not None:
+                    break
+
     def duplicate(self, new_host=None):
         """Get a copy of this object.
 

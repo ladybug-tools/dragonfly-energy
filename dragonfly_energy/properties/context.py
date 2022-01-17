@@ -158,6 +158,16 @@ class ContextShadeEnergyProperties(object):
         return ShadeEnergyProperties(new_host, self._construction,
                                      self._transmittance_schedule)
 
+    def from_honeybee(self, hb_properties):
+        """Transfer energy attributes from a Honeybee Shade to Dragonfly ContextShade.
+
+        Args:
+            hb_properties: The ShadeEnergyProperties of the honeybee Shade that is being
+                translated to a Dragonfly ContextShade.
+        """
+        self._construction = hb_properties._construction
+        self._transmittance_schedule = hb_properties._transmittance_schedule
+
     def duplicate(self, new_host=None):
         """Get a copy of this object.
 
