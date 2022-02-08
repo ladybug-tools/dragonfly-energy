@@ -151,8 +151,8 @@ class Room2DEnergyProperties(object):
     @window_vent_control.setter
     def window_vent_control(self, value):
         if value is not None:
-            assert isinstance(value, VentilationControl), 'Expected VentilationControl ' \
-                'object for Room2D window_vent_control. Got {}'.format(type(value))
+            assert isinstance(value, VentilationControl), 'Expected VentilationControl' \
+                ' object for Room2D window_vent_control. Got {}'.format(type(value))
             assert value.schedule.identifier == 'Always On', 'VentilationControl ' \
                 'schedule must be default in order to apply it to dragonfly Room2D.'
             value.lock()   # lock because we don't duplicate the object
@@ -170,8 +170,8 @@ class Room2DEnergyProperties(object):
     @window_vent_opening.setter
     def window_vent_opening(self, value):
         if value is not None:
-            assert isinstance(value, VentilationOpening), 'Expected VentilationOpening ' \
-                'for Room2D window_vent_opening. Got {}'.format(type(value))
+            assert isinstance(value, VentilationOpening), 'Expected VentilationOpening' \
+                ' for Room2D window_vent_opening. Got {}'.format(type(value))
         self._window_vent_opening = value
 
     @property

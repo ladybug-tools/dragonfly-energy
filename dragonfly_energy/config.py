@@ -299,7 +299,7 @@ class Folders(object):
         base_str = base_str.replace(r"\r", '').replace(r"\n", '').replace(r"'", '')
         base_str = base_str.strip()
         try:
-            ver_nums = base_str.split('.')        
+            ver_nums = base_str.split('.')
             self._urbanopt_version = tuple(int(i) for i in ver_nums)
             self._urbanopt_version_str = base_str
         except Exception:
@@ -352,9 +352,10 @@ class Folders(object):
                           if (f.lower().startswith('urbanopt') and
                               os.path.isdir('C:\\{}'.format(f)))]
         elif platform.system() == 'Darwin':  # search the Applications folder on Mac
-            uo_folders = ['/Applications/{}'.format(f) for f in os.listdir('/Applications/')
-                          if (f.lower().startswith('urbanopt') and
-                              os.path.isdir('/Applications/{}'.format(f)))]
+            uo_folders = \
+                ['/Applications/{}'.format(f) for f in os.listdir('/Applications/')
+                 if (f.lower().startswith('urbanopt') and
+                     os.path.isdir('/Applications/{}'.format(f)))]
         elif platform.system() == 'Linux':  # search the usr/local folder
             uo_folders = ['/usr/local/{}'.format(f) for f in os.listdir('/usr/local/')
                           if (f.lower().startswith('urbanopt') and

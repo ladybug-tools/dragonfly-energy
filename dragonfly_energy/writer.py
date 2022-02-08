@@ -13,7 +13,7 @@ import json
 def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
     add_plenum=False, solve_ceiling_adjacencies=False, electrical_network=None,
-    folder=None, tolerance=0.01
+    ground_pv=None, folder=None, tolerance=0.01
 ):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
@@ -46,6 +46,9 @@ def model_to_urbanopt(
             has no effect when the object_per_model is Story. (Default: False).
         electrical_network: An optional OpenDSS ElectricalNetwork that's associated
             with the dragonfly Model. (Default: None).
+        ground_pv: An optional list of REopt GroundMountPV objects representing
+            ground-mounted photovoltaic fields to be included in the REopt
+            simulation. (Default: None).
         folder: An optional folder to be used as the root of the model's
             URBANopt folder. If None, the files will be written into a sub-directory
             of the honeybee-core default_simulation_folder.
@@ -66,6 +69,7 @@ def model_to_urbanopt(
             process of writing the URBANopt files.
     """
     # make sure the model is in meters and, if it's not, duplicate and scale it
+    conversion_factor = None
     if model.units != 'Meters':
         conversion_factor = hb_model.conversion_factor_to_meters(model.units)
         point = point.scale(conversion_factor)
@@ -75,7 +79,10 @@ def model_to_urbanopt(
         model = model.duplicate()  # duplicate the model to avoid mutating the input
         model.convert_to_units('Meters')
         if electrical_network is not None:
-            electrical_network = electrical_network.scale(conversion_factor)
+            electrical_network.scale(conversion_factor)
+        if ground_pv is not None:
+            for g_pv in ground_pv:
+                g_pv.scale(conversion_factor)
 
     # prepare the folder for simulation
     if folder is None:  # use the default simulation folder
@@ -101,7 +108,7 @@ def model_to_urbanopt(
     hb_model_folder = os.path.join(folder, 'hb_json')  # folder for honeybee JSONs
     preparedir(hb_model_folder)
 
-    # create geoJSON dictionary
+    # create GeoJSON dictionary
     geojson_dict = model.to_geojson_dict(location, point, tolerance=tolerance)
     for feature_dict in geojson_dict['features']:  # add the detailed model filename
         if feature_dict['properties']['type'] == 'Building':
@@ -109,7 +116,7 @@ def model_to_urbanopt(
             feature_dict['properties']['detailed_model_filename'] = \
                 os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
 
-    # add the electrical network to the geoJSOn dictionary
+    # add the electrical network to the GeoJSON dictionary
     if electrical_network is not None:
         electric_features = electrical_network.to_geojson_dict(
             model.buildings, location, point, tolerance=tolerance)
@@ -117,8 +124,18 @@ def model_to_urbanopt(
         electric_json = os.path.join(folder, 'electrical_database.json')
         with open(electric_json, 'w') as fp:
             json.dump(electrical_network.to_electrical_database_dict(), fp, indent=4)
+        if conversion_factor is not None:
+            electrical_network.scale(1 / conversion_factor)
 
-    # write out the geoJSON file
+    # add the ground-mounted PV to the GeoJSON dictionary
+    if ground_pv is not None and len(ground_pv) != 0:
+        pv_features = [g_pv.to_geojson_dict(location, point) for g_pv in ground_pv]
+        geojson_dict['features'].extend(pv_features)
+        if conversion_factor is not None:
+            for g_pv in ground_pv:
+                g_pv.scale(1 / conversion_factor)
+
+    # write out the GeoJSON file
     feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
     with open(feature_geojson, 'w') as fp:
         json.dump(geojson_dict, fp, indent=4)
