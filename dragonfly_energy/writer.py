@@ -101,7 +101,7 @@ def model_to_urbanopt(
                 nukedir(path, True)
             else:
                 os.remove(path)
-    else: 
+    else:
         preparedir(folder)  # create the directory if it's not there
 
     # prepare the folder into which honeybee Model JSONs will be written

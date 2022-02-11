@@ -73,7 +73,7 @@ def base_honeybee_osw(
         }
         osw_dict['steps'].insert(0, sim_par_dict)
 
-    # addd the model json serialization into the steps
+    # add the model json serialization into the steps
     model_measure_dict = {
         'arguments': {
             'model_json': 'model_json_to_be_mapped.json'
@@ -551,11 +551,25 @@ def _output_urbanopt_files(directory):
     html = []
     err = []
 
-    # generate paths to the simulation files and check their existence
+    # parse the GeoJSON so that we can get the correct order of result files
     sim_dir = os.path.join(directory, 'run', 'honeybee_scenario')
     assert os.path.isdir(sim_dir), 'The URBANopt simulation failed to run.\n' \
         'No results were found at:\n{}'.format(sim_dir)
-    for bldg_name in os.listdir(sim_dir):
+    geojson = [f for f in os.listdir(directory) if f.endswith('.geojson')]
+    if len(geojson) == 1:
+        geo_file = os.path.join(directory, geojson[0])
+        with open(geo_file, 'r') as base_file:
+            geo_dict = json.load(base_file)
+        bldg_names = []
+        for ft in geo_dict['features']:
+            if 'properties' in ft and 'type' in ft['properties']:
+                if ft['properties']['type'] == 'Building' and 'id' in ft['properties']:
+                    bldg_names.append(ft['properties']['id'])
+    else:
+        bldg_names = os.listdir(sim_dir)
+
+    # generate paths to the simulation files and check their existence
+    for bldg_name in bldg_names:
         bldg_dir = os.path.join(sim_dir, bldg_name)
         osm_file = os.path.join(bldg_dir, 'in.osm')
         if os.path.isfile(osm_file):
