@@ -180,7 +180,7 @@ class BuildingEnergyProperties(object):
         generate loads that vary about the original "mean" programs. Note that the
         randomly generated values can be set to something predictable by using the
         native Python random.seed() method before running this method.
-        
+
         In addition to diversifying load values, approximately 2/3 of the schedules
         in the resulting Room2Ds will be offset from the mean by the input
         schedule_offset (1/3 ahead and another 1/3 behind).
@@ -220,7 +220,7 @@ class BuildingEnergyProperties(object):
                 program_dict[p_type.identifier][1].append(room_2d)
             except KeyError:  # this is the firs time encountering the program
                 program_dict[p_type.identifier] = [p_type, [room_2d]]
-        
+
         # loop through the dictionary and generate + assign diversified programs
         for prog_list in program_dict.values():
             prog, rooms = prog_list[0], prog_list[1]
@@ -339,7 +339,7 @@ class BuildingEnergyProperties(object):
                 hvac_reg = os.path.join(ext_folder[0], 'hvac_registry.json')
                 if os.path.isfile(hvac_reg):
                     with open(hvac_reg, 'r') as f:
-                        BuildingEnergyProperties._HVAC_REGISTRY  =json.load(f)
+                        BuildingEnergyProperties._HVAC_REGISTRY = json.load(f)
                         BuildingEnergyProperties._HVAC_REGISTRY['Ideal Air System'] = \
                             'IdealAirSystem'
                         hvac_reg = BuildingEnergyProperties._HVAC_REGISTRY
