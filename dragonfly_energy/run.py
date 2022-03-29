@@ -482,7 +482,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the shell script to call URBANopt CLI
-    shell = '#!/usr/bin/env bash\nsource {}\nuo -r -f {} -s {}'.format(
+    shell = '#!/usr/bin/env bash\nsource {}\nuo -f {} -s {}'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
