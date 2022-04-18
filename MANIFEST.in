@@ -1,2 +1,10 @@
 include dragonfly_energy/config.json
 include dragonfly_energy/opendss/lib/electrical_database.json
+recursive-exclude tests *
+recursive-exclude docs *
+recursive-exclude .github *
+exclude .gitignore
+exclude .dockerignore
+exclude .releaserc.json
+exclude deploy.sh
+exclude Dockerfile
