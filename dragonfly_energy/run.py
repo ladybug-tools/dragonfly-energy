@@ -197,12 +197,15 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
     return _make_scenario(feature_geojson)
 
 
-def run_urbanopt(feature_geojson, scenario_csv):
+def run_urbanopt(feature_geojson, scenario_csv, cpu_count=None):
     """Run a feature and scenario file through URBANopt on any operating system.
 
     Args:
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
+        cpu_count: A positive integer for the number of CPUs to use in the
+            simulation. If None, the simulation will default to whatever is
+            specified in the runner.conf. (Default: None).
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
@@ -229,9 +232,9 @@ def run_urbanopt(feature_geojson, scenario_csv):
     folders.check_urbanopt_version()
     # run the simulation
     if os.name == 'nt':  # we are on Windows
-        directory = _run_urbanopt_windows(feature_geojson, scenario_csv)
+        directory = _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count)
     else:  # we are on Mac, Linux, or some other unix-based system
-        directory = _run_urbanopt_unix(feature_geojson, scenario_csv)
+        directory = _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count)
 
     # output the simulation files
     return _output_urbanopt_files(directory)
@@ -438,7 +441,7 @@ def _recommended_processor_count():
     return 1 if cpu_count is None or cpu_count <= 1 else cpu_count - 1
 
 
-def _run_urbanopt_windows(feature_geojson, scenario_csv):
+def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
     """Run a feature and scenario file through URBANopt on a Windows-based os.
 
     A batch file will be used to run the simulation.
@@ -447,6 +450,7 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        cpu_count: A positive integer for the number of processors to use.
 
     Returns:
         Path to the folder out of which the simulation was run.
@@ -458,6 +462,8 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
     batch = '{}\ncd {}\ncall {}\nuo run -f {} -s {}'.format(
         working_drive, working_drive, folders.urbanopt_env_path,
         feature_geojson, scenario_csv)
+    if cpu_count is not None:
+        batch = '{} --num-parallel={}'.format(batch, cpu_count)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
@@ -465,7 +471,7 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
     return directory
 
 
-def _run_urbanopt_unix(feature_geojson, scenario_csv):
+def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
     """Run a feature and scenario file through URBANopt on a Unix-based os.
 
     This includes both Mac OS and Linux since a shell will be used to run
@@ -475,6 +481,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        cpu_count: A positive integer for the number of processors to use.
 
     Returns:
         Path to the folder out of which the simulation was run.
@@ -484,6 +491,8 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     # Write the shell script to call URBANopt CLI
     shell = '#!/usr/bin/env bash\nsource {}\nuo run -f {} -s {}'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
+    if cpu_count is not None:
+        shell = '{} --num-parallel={}'.format(shell, cpu_count)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
     # make the shell script executable using subprocess.check_call

@@ -133,9 +133,7 @@ class Transformer(_GeometryBase):
                 'footprint_area': self.geometry.area,
                 'footprint_perimeter': self.geometry.perimeter,
                 'district_system_type': 'Transformer',
-                'equipment': [
-                    self.properties.identifier
-                ]
+                'electrical_catalog_name': self.properties.identifier
             },
             'geometry': {
                 'type': 'Polygon',
