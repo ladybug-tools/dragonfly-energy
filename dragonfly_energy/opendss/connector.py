@@ -155,7 +155,7 @@ class ElectricalConnector(_GeometryBase):
                 'endJunctionId': end_id,
                 'total_length': self.geometry.length,
                 'connector_type': 'Wire',
-                'wires': self.wire_ids,
+                'electrical_catalog_name': ''.join(self.wire_ids),
                 'name': self.display_name
             },
             'geometry': {

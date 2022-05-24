@@ -17,7 +17,7 @@ from dragonfly.projection import meters_to_long_lat_factors, \
 
 
 class ElectricalNetwork(object):
-    """Represents an electrical newtwork in OpenDSS.
+    """Represents an electrical network in OpenDSS.
 
     This includes a substation, transformers, and all electrical connectors needed
     to connect these objects to Dragonfly Buildings.
