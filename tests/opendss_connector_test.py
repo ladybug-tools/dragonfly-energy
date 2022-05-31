@@ -1,6 +1,7 @@
 # coding=utf-8
 from dragonfly_energy.opendss.connector import ElectricalConnector
-from dragonfly_energy.opendss.wire import Wire
+from dragonfly_energy.opendss.powerline import PowerLine
+from dragonfly_energy.opendss.lib.powerlines import power_line_by_identifier
 
 from ladybug_geometry.geometry2d.pointvector import Point2D
 from ladybug_geometry.geometry2d.line import LineSegment2D
@@ -13,24 +14,22 @@ import pytest
 def test_connector_init():
     """Test the initialization of ElectricalConnector and basic properties."""
     geo = LineSegment2D.from_end_points(Point2D(0, 0), Point2D(100, 0))
-    wire = Wire('OH AL 2/0 A')
-    connector = ElectricalConnector('Connector_1', geo, [wire])
+    p_line = power_line_by_identifier('3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0')
+    connector = ElectricalConnector('Connector_1', geo, p_line)
     str(connector)  # test the string representation
 
     assert connector.identifier == 'Connector_1'
     assert connector.geometry == geo
-    assert len(connector) == 1
-    assert len(connector.wires) == 1
-    assert connector.wires[0] == wire
-    assert connector[0] == wire
-    assert connector.wire_ids == ['OH AL 2/0 A']
+    assert isinstance(connector.power_line, PowerLine)
+    assert len(connector.power_line.wires) == 4
+    assert connector.power_line == p_line
 
 
 def test_connector_transform():
     """Test the ElectricalConnector transform methods."""
     geo = LineSegment2D.from_end_points(Point2D(0, 0), Point2D(100, 0))
-    wire = Wire('OH AL 2/0 A')
-    connector = ElectricalConnector('Connector_1', geo, [wire])
+    p_line = power_line_by_identifier('3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0')
+    connector = ElectricalConnector('Connector_1', geo, p_line)
 
     new_connector = connector.duplicate()
     new_connector.move(Vector3D(100, 0))
@@ -52,8 +51,8 @@ def test_connector_transform():
 def test_connector_dict_methods():
     """Test the ElectricalConnector to/from dict methods."""
     geo = LineSegment2D.from_end_points(Point2D(0, 0), Point2D(100, 0))
-    wire = Wire('OH AL 2/0 A')
-    connector = ElectricalConnector('Connector_1', geo, [wire])
+    p_line = power_line_by_identifier('3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0')
+    connector = ElectricalConnector('Connector_1', geo, p_line)
 
     connector_dict = connector.to_dict()
     new_connector = ElectricalConnector.from_dict(connector_dict)

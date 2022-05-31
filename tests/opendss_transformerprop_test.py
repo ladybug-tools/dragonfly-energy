@@ -13,7 +13,7 @@ def test_tp_init():
     assert tp.kva == 25
     assert tp.resistance == 0.1
     assert tp.reactance == 0.1
-    assert tp.phases == ('A', 'B', 'C')
+    assert tp.phase_count == 3
     assert tp.high_voltage == 13.2
     assert tp.low_voltage == 0.48
     assert not tp.is_center_tap
@@ -32,8 +32,8 @@ def test_tp_setability():
     assert tp.resistance == 0.15
     tp.reactance = 0.15
     assert tp.reactance == 0.15
-    tp.phases = ('A',)
-    assert tp.phases == ('A',)
+    tp.phase_count = 1
+    assert tp.phase_count == 1
     tp.high_voltage = 20
     assert tp.high_voltage == 20
     tp.low_voltage = 0.5

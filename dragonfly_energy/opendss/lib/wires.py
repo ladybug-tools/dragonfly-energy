@@ -1,14 +1,14 @@
 """Library of wires that come standard with dragonfly."""
-from ..wire import Wire
-
 import os
 import json
+from ..wire import Wire
+
 
 # load the  defaults
 _wires = {}
-_data_path = os.path.join(os.path.dirname(__file__), 'electrical_database.json')
+_data_path = os.path.join(os.path.dirname(__file__), 'extended_catalog.json')
 with open(_data_path) as json_file:
-    _default_data = json.load(json_file)['wires']
+    _default_data = json.load(json_file)['WIRES']['WIRES CATALOG']
 for _t_dict in _default_data:
     _t_obj = Wire.from_electrical_database_dict(_t_dict)
     _t_obj.lock()
@@ -27,4 +27,4 @@ def wire_by_identifier(wire_identifier):
         return _wires[wire_identifier]
     except KeyError:
         raise ValueError(
-            '"{}" was not found in the wire property library.'.format(wire_identifier))
+            '"{}" was not found in the wire library.'.format(wire_identifier))

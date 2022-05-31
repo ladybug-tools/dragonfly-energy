@@ -9,13 +9,13 @@ def test_wire_init():
     str(wire)  # test the string representation
 
     assert wire.identifier == 'OH AL 2/0 A'
-    assert wire.height == 16
-    assert wire.relative_x == 0
-    assert wire.phase == 'A'
     assert wire.ampacity == 220
-    assert wire.geometrical_mean_radius == 0.0039
-    assert wire.resistance == 0.0003937
-    assert wire.diameter == 0.01
+    assert wire.geometrical_mean_radius == 3.9
+    assert wire.resistance == 0.3937
+    assert wire.diameter == 10
+    assert wire.voltage_level == 'MV'
+    assert wire.wire_type == 'OH'
+    assert wire.concentric_properties is None
 
 
 def test_wire_setability():
@@ -24,12 +24,6 @@ def test_wire_setability():
 
     wire.identifier = 'OH AL 2/0 B'
     assert wire.identifier == 'OH AL 2/0 B'
-    wire.height = -6
-    assert wire.height == -6
-    wire.relative_x = 1
-    assert wire.relative_x == 1
-    wire.phase = 'B'
-    assert wire.phase == 'B'
     wire.ampacity = 200
     assert wire.ampacity == 200
     wire.geometrical_mean_radius = 0.004
@@ -44,19 +38,19 @@ def test_wire_equality():
     """Test the equality of Wire objects."""
     wire = Wire('OH AL 2/0 A')
     wire_dup = wire.duplicate()
-    wire_alt = Wire('OH AL 2/0 A', -6)
+    wire_alt = Wire('OH AL 2/0 A', 170)
 
     assert wire is wire
     assert wire is not wire_dup
     assert wire == wire_dup
-    wire_dup.height = 17
+    wire_dup.ampacity = 200
     assert wire != wire_dup
     assert wire != wire_alt
 
 
 def test_wire_dict_methods():
     """Test the to/from dict methods."""
-    wire = Wire('OH AL 2/0 A', -6)
+    wire = Wire('OH AL 2/0 A', 170)
 
     wire_dict = wire.to_dict()
     new_wire = Wire.from_dict(wire_dict)
