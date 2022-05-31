@@ -3,7 +3,7 @@
 from __future__ import division
 
 from ._base import _GeometryBase
-from .wire import Wire
+from .powerline import PowerLine
 
 from ladybug_geometry.geometry2d.line import LineSegment2D
 from ladybug_geometry.geometry2d.polyline import Polyline2D
@@ -19,24 +19,24 @@ class ElectricalConnector(_GeometryBase):
             identify the object across the exported geoJSON and OpenDSS files.
         geometry: A LineSegment2D or Polyline2D representing the geometry of the
             electrical connector.
-        wires: A list of Wire objects representing the wire objects carried along
-            the electrical connector.
+        power_line: A PowerLine object representing the wires carried along the
+            electrical connector and their arrangement.
 
     Properties:
         * identifier
         * display_name
         * geometry
-        * wires
+        * power_line
     """
-    __slots__ = ('_wires',)
+    __slots__ = ('_power_line',)
 
-    def __init__(self, identifier, geometry, wires):
+    def __init__(self, identifier, geometry, power_line):
         """Initialize ElectricalConnector."""
         _GeometryBase.__init__(self, identifier)  # process the identifier
         assert isinstance(geometry, (LineSegment2D, Polyline2D)), 'Expected ' \
             'ladybug_geometry LineSegment2D or Polyline2D. Got {}'.format(type(geometry))
         self._geometry = geometry
-        self.wires = wires
+        self.power_line = power_line
 
     @classmethod
     def from_dict(cls, data):
@@ -48,34 +48,34 @@ class ElectricalConnector(_GeometryBase):
         # check the type of dictionary
         assert data['type'] == 'ElectricalConnector', 'Expected ElectricalConnector ' \
             'dictionary. Got {}.'.format(data['type'])
-        wires = [Wire.from_dict(wire) for wire in data['wires']]
+        power_line = PowerLine.from_dict(data['power_line'])
         geo = LineSegment2D.from_dict(data['geometry']) \
             if data['geometry']['type'] == 'LineSegment2D' \
             else Polyline2D.from_dict(data['geometry'])
-        con = cls(data['identifier'], geo, wires)
+        con = cls(data['identifier'], geo, power_line)
         if 'display_name' in data and data['display_name'] is not None:
             con.display_name = data['display_name']
         return con
 
     @classmethod
-    def from_dict_abridged(cls, data, wires):
+    def from_dict_abridged(cls, data, power_lines):
         """Initialize an ElectricalConnector from an abridged dictionary.
 
         Args:
             data: A ElectricalConnectorAbridged dictionary.
-            wires: A dictionary with identifiers of Wires as keys and Python
-                Wire objects as values.
+            power_lines: A dictionary with identifiers of PowerLines as keys and Python
+                PowerLine objects as values.
         """
         assert data['type'] == 'ElectricalConnectorAbridged', \
             'Expected ElectricalConnectorAbridged. Got {}.'.format(data['type'])
         try:
-            wires = [wires[wire_id] for wire_id in data['wires']]
+            power_line = power_lines[data['power_line']]
         except KeyError as e:
             raise ValueError('Failed to find "{}" in wires.'.format(e))
         geo = LineSegment2D.from_dict(data['geometry']) \
             if data['geometry']['type'] == 'LineSegment2D' \
             else Polyline2D.from_dict(data['geometry'])
-        con = cls(data['identifier'], geo, wires)
+        con = cls(data['identifier'], geo, power_line)
         if 'display_name' in data and data['display_name'] is not None:
             con.display_name = data['display_name']
         return con
@@ -86,29 +86,16 @@ class ElectricalConnector(_GeometryBase):
         return self._geometry
 
     @property
-    def wires(self):
-        """Get or set the list of Wire objects carried along the electrical connector."""
-        return self._wires
+    def power_line(self):
+        """Get or set the PowerLine object carried along the electrical connector."""
+        return self._power_line
 
-    @wires.setter
-    def wires(self, values):
-        try:
-            if not isinstance(values, tuple):
-                values = tuple(values)
-        except TypeError:
-            raise TypeError('Expected list or tuple for electrical connector wires. '
-                            'Got {}'.format(type(values)))
-        for wir in values:
-            assert isinstance(wir, Wire), 'Expected Wire object' \
-                ' for electrical connector wires. Got {}.'.format(type(wir))
-            wir.lock()  # lock to avoid editing
-        assert len(values) > 0, 'ElectricalConnector must possess at least one wire.'
-        self._wires = values
-
-    @property
-    def wire_ids(self):
-        """A list of wire identifiers in the electrical connector."""
-        return [wire.identifier for wire in self._wires]
+    @power_line.setter
+    def power_line(self, value):
+        assert isinstance(value, PowerLine), 'Expected PowerLine object' \
+            ' for electrical connector power_line. Got {}.'.format(type(value))
+        value.lock()  # lock to avoid editing
+        self._power_line = value
 
     def to_dict(self, abridged=False):
         """ElectricalConnector dictionary representation.
@@ -116,13 +103,14 @@ class ElectricalConnector(_GeometryBase):
         Args:
             abridged: Boolean to note whether the full dictionary describing the
                 object should be returned (False) or just an abridged version (True),
-                which only specifies the identifiers of wires. (Default: False).
+                which only specifies the identifier of the power line. (Default: False).
         """
         base = {'type': 'ElectricalConnector'} if not \
             abridged else {'type': 'ElectricalConnectorAbridged'}
         base['identifier'] = self.identifier
         base['geometry'] = self.geometry.to_dict()
-        base['wires'] = self.wire_ids if abridged else [w.to_dict() for w in self.wires]
+        base['power_line'] = self.power_line.identifier if abridged \
+            else self.power_line.to_dict()
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -155,7 +143,7 @@ class ElectricalConnector(_GeometryBase):
                 'endJunctionId': end_id,
                 'total_length': self.geometry.length,
                 'connector_type': 'Wire',
-                'electrical_catalog_name': ''.join(self.wire_ids),
+                'electrical_catalog_name': self.power_line.identifier,
                 'name': self.display_name
             },
             'geometry': {
@@ -165,20 +153,10 @@ class ElectricalConnector(_GeometryBase):
         }
 
     def __copy__(self):
-        new_con = ElectricalConnector(
-            self.identifier, self.geometry, [wire for wire in self.wires])
+        new_con = ElectricalConnector(self.identifier, self.geometry, self.power_line)
         new_con._display_name = self._display_name
         return new_con
 
-    def __len__(self):
-        return len(self._wires)
-
-    def __getitem__(self, key):
-        return self._wires[key]
-
-    def __iter__(self):
-        return iter(self._wires)
-
     def __repr__(self):
         return 'ElectricalConnector: {}, [{} wires]'.format(
-            self.display_name, len(self.wires))
+            self.display_name, self.power_line.wire_count)

@@ -1,12 +1,15 @@
 # coding=utf-8
 """Electrical network in OpenDSS."""
+import os
 import uuid
+import json
 
 from .substation import Substation
 from .transformer import Transformer
 from .connector import ElectricalConnector
 from .junction import ElectricalJunction
 from .transformerprop import TransformerProperties
+from .powerline import PowerLine
 from .wire import Wire
 
 from ladybug_geometry.geometry2d.pointvector import Point2D
@@ -45,6 +48,7 @@ class ElectricalNetwork(object):
         * transformers
         * connectors
         * transformer_properties
+        * power_lines
         * wires
     """
     __slots__ = ('_identifier', '_display_name', '_substation',
@@ -72,11 +76,13 @@ class ElectricalNetwork(object):
         t_props = {tp['identifier']: TransformerProperties.from_dict(tp)
                    for tp in data['transformer_properties']}
         wires = {w['identifier']: Wire.from_dict(w) for w in data['wires']}
+        power_lines = {pl['identifier']: PowerLine.from_dict_abridged(pl, wires)
+                       for pl in data['power_lines']}
         # re-serialize geometry objects
         substation = Substation.from_dict(data['substation'])
         transformers = [Transformer.from_dict_abridged(trans, t_props)
                         for trans in data['transformers']]
-        conns = [ElectricalConnector.from_dict_abridged(c, wires)
+        conns = [ElectricalConnector.from_dict_abridged(c, power_lines)
                  for c in data['connectors']]
         net = cls(data['identifier'], substation, transformers, conns)
         if 'display_name' in data and data['display_name'] is not None:
@@ -168,11 +174,20 @@ class ElectricalNetwork(object):
         return list(set(t_props))  # catch duplicated/equivalent objects
 
     @property
+    def power_lines(self):
+        """A list of all unique PowerLines in the network."""
+        power_lines = []
+        for connector in self.connectors:
+            if not self._instance_in_array(connector.power_line, power_lines):
+                power_lines.append(connector.power_line)
+        return list(set(power_lines))  # catch duplicated/equivalent objects
+
+    @property
     def wires(self):
         """A list of all unique Wires in the network."""
         wires = []
-        for connector in self.connectors:
-            for wire in connector.wires:
+        for p_line in self.power_lines:
+            for wire in p_line.wires:
                 if not self._instance_in_array(wire, wires):
                     wires.append(wire)
         return list(set(wires))  # catch duplicated/equivalent objects
@@ -288,6 +303,7 @@ class ElectricalNetwork(object):
         base['connectors'] = [c.to_dict(True) for c in self.connectors]
         base['transformer_properties'] = \
             [tp.to_dict() for tp in self.transformer_properties]
+        base['power_lines'] = [pl.to_dict(True) for pl in self.power_lines]
         base['wires'] = [w.to_dict() for w in self.wires]
         if self._display_name is not None:
             base['display_name'] = self.display_name
@@ -335,18 +351,20 @@ class ElectricalNetwork(object):
 
     def to_electrical_database_dict(self):
         """Get ElectricalNetwork as it should appear in the electrical_database.json."""
-        base = {}
-        base['transformer_properties'] = \
-            [tp.to_electrical_database_dict() for tp in self.transformer_properties]
-        base['wires'] = [wire.to_electrical_database_dict() for wire in self.wires]
-        base['capacitor_properties'] = [{
-            'nameclass': 'Capacitor--150KVAR',
-            'kvar': 150,
-            'resistance': 0.1,
-            'phases': ['A', 'B', 'C'],
-            'control_type': 'Voltage',
-            'connection': 'Wye-Wye'
-        }]
+        catalog_json = os.path.join(
+            os.path.dirname(__file__), 'lib', 'extended_catalog.json')
+        with open(catalog_json) as inf:
+            base = json.load(inf)
+        base['SUBSTATIONS AND DISTRIBUTION TRANSFORMERS'] = [
+            {
+                '#Interurban:':
+                [tp.to_electrical_database_dict() for tp in self.transformer_properties]
+            }
+        ]
+        base['LINES'][1]['#Interurban Zone A:'] = \
+            [pl.to_electrical_database_dict() for pl in self.power_lines]
+        base['WIRES']['WIRES CATALOG'] = \
+            [wire.to_electrical_database_dict() for wire in self.wires]
         return base
 
     def duplicate(self):

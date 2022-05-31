@@ -3,7 +3,7 @@
 from __future__ import division
 
 from honeybee._lockable import lockable
-from honeybee.typing import float_positive, valid_ep_string
+from honeybee.typing import float_positive, int_in_range, valid_ep_string
 
 
 @lockable
@@ -19,8 +19,8 @@ class TransformerProperties(object):
             in ohms. (Default: 0.1).
         reactance: A number for the electrical reactance of the transformer
             in ohms. (Default: 0.1).
-        phases: A list or tuple of letters (A, B or C) for the phases of the
-            transformer. (Default: ('A', 'B', 'C')).
+        phase_count: An integer for the number of phases in the transformer. Typically,
+            this is either 1 or 3. (Default: 3).
         high_voltage: A number for the high voltage of the transformer in
             kiloVolts. (Default: 13.2).
         low_voltage: A number for the low voltage of the transformer in
@@ -36,7 +36,7 @@ class TransformerProperties(object):
         * kva
         * resistance
         * reactance
-        * phases
+        * phase_count
         * high_voltage
         * low_voltage
         * is_center_tap
@@ -44,13 +44,12 @@ class TransformerProperties(object):
     """
     __slots__ = (
         '_locked', '_display_name', '_identifier', '_kva', '_resistance', '_reactance',
-        '_phases', '_high_voltage', '_low_voltage', '_is_center_tap', '_connection')
+        '_phase_count', '_high_voltage', '_low_voltage', '_is_center_tap', '_connection')
 
-    VALID_PHASES = ('A', 'B', 'C')
     VALID_CONNECTIONS = ('Wye-Wye', 'Wye-Delta', 'Delta-Wye', 'Delta-Delta')
 
     def __init__(self, identifier, kva, resistance=0.1, reactance=0.1,
-                 phases=('A', 'B', 'C'), high_voltage=13.2, low_voltage=0.48,
+                 phase_count=3, high_voltage=13.2, low_voltage=0.48,
                  is_center_tap=False, connection='Wye-Wye'):
         """Initialize TransformerProperties"""
         self._locked = False  # unlocked by default
@@ -59,7 +58,7 @@ class TransformerProperties(object):
         self.kva = kva
         self.resistance = resistance
         self.reactance = reactance
-        self.phases = phases
+        self.phase_count = phase_count
         self.high_voltage = high_voltage
         self.low_voltage = low_voltage
         self.is_center_tap = is_center_tap
@@ -81,7 +80,7 @@ class TransformerProperties(object):
             'kva': 50,  # kVA rating of the transformer
             'resistance': 0.1,  # transformer resistance in ohms
             'reactance': 0.1,  # transformer reactance in ohms
-            'phases': ('A', 'B', 'C'),  # transformer phases
+            'phase_count': 3,  # number of transformer phases
             'high_voltage': 13.2,  # transformer high voltage in kV
             'low_voltage': 0.48,  # transformer low voltage in kV
             'is_center_tap': False,  # boolean for if the transformer is center-tapped
@@ -90,7 +89,7 @@ class TransformerProperties(object):
         """
         resistance = data['resistance'] if 'resistance' in data else 0.1
         reactance = data['reactance'] if 'reactance' in data else 0.1
-        phases = data['phases'] if 'phases' in data else ('A', 'B', 'C')
+        phases = data['phase_count'] if 'phase_count' in data else 3
         hv = data['high_voltage'] if 'high_voltage' in data else 13.2
         lv = data['low_voltage'] if 'low_voltage' in data else 0.48
         icp = data['is_center_tap'] if 'is_center_tap' in data else False
@@ -112,21 +111,23 @@ class TransformerProperties(object):
         .. code-block:: python
 
             {
-            'nameclass': 'Transformer--50KVA PM',  # unique identifier
-            'kva': 50,  # kVA rating of the transformer
-            'resistance': 0.1,  # transformer resistance in ohms
-            'reactance': 0.1,  # transformer reactance in ohms
-            'phases': ('A', 'B', 'C'),  # transformer phases
-            'high_voltage': 13.2,  # transformer high voltage in kV
-            'low_voltage': 0.48,  # transformer low voltage in kV
-            'is_center_tap': False,  # boolean for if the transformer is center-tapped
+            'Name': 'MAT_1I_230_69',  # unique identifier
+            'Installed Power(kVA)': 50,  # kVA rating of the transformer
+            'Low-voltage-side short-circuit resistance (ohms)': 0.1,  # resistance (ohms)
+            'Reactance (p.u. transf)': 0.1,  # transformer reactance in ohms
+            'Nphases': 3,  # number of transformer phases
+            'Primary Voltage (kV)': 13.2,  # transformer high voltage in kV
+            'Secondary Voltage (kV)': 0.48,  # transformer low voltage in kV
+            'Centertap': False,  # boolean for if the transformer is center-tapped
             'connection': 'Wye-Wye'  # text for the type of connection
             }
         """
         return cls(
-            data['nameclass'], data['kva'], data['resistance'], data['reactance'],
-            data['phases'], data['high_voltage'], data['low_voltage'],
-            data['is_center_tap'], data['connection'])
+            data['Name'], data['Installed Power(kVA)'],
+            data['Low-voltage-side short-circuit resistance (ohms)'],
+            data['Reactance (p.u. transf)'], data['Nphases'],
+            data['Primary Voltage (kV)'], data['Secondary Voltage (kV)'],
+            data['Centertap'], data['connection'])
 
     @property
     def identifier(self):
@@ -165,7 +166,7 @@ class TransformerProperties(object):
 
     @property
     def resistance(self):
-        """Get or set a number for the resistance of the tranformer in ohms."""
+        """Get or set a number for the resistance of the transformer in ohms."""
         return self._resistance
 
     @resistance.setter
@@ -174,7 +175,7 @@ class TransformerProperties(object):
 
     @property
     def reactance(self):
-        """Get or set a number for the reactance of the tranformer in ohms."""
+        """Get or set a number for the reactance of the transformer in ohms."""
         return self._reactance
 
     @reactance.setter
@@ -182,25 +183,17 @@ class TransformerProperties(object):
         self._reactance = float_positive(value, 'reactance')
 
     @property
-    def phases(self):
-        """Get or set a list or tuple of letters for the phases of the transformer."""
-        return self._phases
+    def phase_count(self):
+        """Get or set an integer for the number of phases of the transformer."""
+        return self._phase_count
 
-    @phases.setter
-    def phases(self, values):
-        try:
-            values = tuple(values)
-        except TypeError:
-            raise TypeError('Expected list or tuple for phases. '
-                            'Got {}'.format(type(values)))
-        for v in values:
-            assert v in self.VALID_PHASES, 'Phase "{}" is not acceptable. Choose from ' \
-                'the following:\n{}'.format(v, '\n'.join(self.VALID_PHASES))
-        self._phases = values
+    @phase_count.setter
+    def phase_count(self, value):
+        self._phase_count = int_in_range(value, 1, 3, 'transformer phase count')
 
     @property
     def high_voltage(self):
-        """Get or set a number for the high voltage of the tranformer in kiloVolts."""
+        """Get or set a number for the high voltage of the transformer in kiloVolts."""
         return self._high_voltage
 
     @high_voltage.setter
@@ -209,7 +202,7 @@ class TransformerProperties(object):
 
     @property
     def low_voltage(self):
-        """Get or set a number for the low voltage of the tranformer in kiloVolts."""
+        """Get or set a number for the low voltage of the transformer in kiloVolts."""
         return self._low_voltage
 
     @low_voltage.setter
@@ -245,7 +238,7 @@ class TransformerProperties(object):
             'kva': self.kva,
             'resistance': self.resistance,
             'reactance': self.reactance,
-            'phases': self.phases,
+            'phase_count': self.phase_count,
             'high_voltage': self.high_voltage,
             'low_voltage': self.low_voltage,
             'is_center_tap': self.is_center_tap,
@@ -257,14 +250,17 @@ class TransformerProperties(object):
     def to_electrical_database_dict(self):
         """Get Wire as it should appear in the URBANopt electrical_database.json."""
         return {
-            'nameclass': self.identifier,
-            'kva': self.kva,
-            'resistance': self.resistance,
-            'reactance': self.reactance,
-            'phases': self.phases,
-            'high_voltage': self.high_voltage,
-            'low_voltage': self.low_voltage,
-            'is_center_tap': self.is_center_tap,
+            'Name': self.identifier,
+            'Type': 'I',
+            'Voltage level': 'MV-LV',
+            'Installed Power(kVA)': self.kva,
+            'Guaranteed Power(kVA)': self.kva,
+            'Low-voltage-side short-circuit resistance (ohms)': self.resistance,
+            'Reactance (p.u. transf)': self.reactance,
+            'Nphases': self.phase_count,
+            'Primary Voltage (kV)': self.high_voltage,
+            'Secondary Voltage (kV)': self.low_voltage,
+            'Centertap': self.is_center_tap,
             'connection': self.connection
         }
 
@@ -274,7 +270,7 @@ class TransformerProperties(object):
 
     def __copy__(self):
         new_obj = TransformerProperties(
-            self.identifier, self.kva, self.resistance, self.reactance, self.phases,
+            self.identifier, self.kva, self.resistance, self.reactance, self.phase_count,
             self.high_voltage, self.low_voltage, self.is_center_tap, self.connection)
         new_obj._display_name = self._display_name
         return new_obj
@@ -283,7 +279,7 @@ class TransformerProperties(object):
         """A tuple based on the object properties, useful for hashing."""
         return (
             self.identifier, self.kva, self.resistance, self.reactance,
-            hash(self.phases), self.high_voltage, self.low_voltage,
+            self.phase_count, self.high_voltage, self.low_voltage,
             self.is_center_tap, self.connection)
 
     def __hash__(self):

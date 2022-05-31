@@ -2,269 +2,58 @@
     "identifier": "unnamed", 
     "transformer_properties": [
         {
-            "kva": 75.0, 
-            "reactance": 0.10000000000000001, 
-            "phases": [
-                "A", 
-                "B", 
-                "C"
-            ], 
-            "resistance": 0.10000000000000001, 
+            "kva": 1500.0, 
+            "reactance": 0.056500000000000002, 
+            "resistance": 0.0016128, 
+            "phase_count": 3, 
             "is_center_tap": false, 
             "connection": "Wye-Wye", 
-            "high_voltage": 13.199999999999999, 
+            "high_voltage": 12.470000000000001, 
             "low_voltage": 0.47999999999999998, 
             "type": "TransformerProperties", 
-            "identifier": "Transformer--75KVA PM"
+            "identifier": "PM3_6_12_47_0_480"
         }, 
         {
-            "kva": 75.0, 
-            "reactance": 0.10000000000000001, 
-            "phases": [
-                "A"
-            ], 
-            "resistance": 0.10000000000000001, 
-            "is_center_tap": true, 
-            "connection": "Wye-Wye", 
-            "high_voltage": 13.199999999999999, 
-            "low_voltage": 0.12, 
-            "type": "TransformerProperties", 
-            "identifier": "Transformer--75KVA CT"
-        }, 
-        {
-            "kva": 50.0, 
-            "reactance": 0.10000000000000001, 
-            "phases": [
-                "A"
-            ], 
-            "resistance": 0.10000000000000001, 
-            "is_center_tap": true, 
-            "connection": "Wye-Wye", 
-            "high_voltage": 13.199999999999999, 
-            "low_voltage": 0.12, 
-            "type": "TransformerProperties", 
-            "identifier": "Transformer--50KVA CT"
-        }, 
-        {
-            "kva": 50.0, 
-            "reactance": 0.10000000000000001, 
-            "phases": [
-                "A", 
-                "B", 
-                "C"
-            ], 
-            "resistance": 0.10000000000000001, 
+            "kva": 300.0, 
+            "reactance": 0.037600000000000001, 
+            "resistance": 0.010521600000000001, 
+            "phase_count": 3, 
             "is_center_tap": false, 
             "connection": "Wye-Wye", 
-            "high_voltage": 13.199999999999999, 
+            "high_voltage": 12.470000000000001, 
             "low_voltage": 0.47999999999999998, 
             "type": "TransformerProperties", 
-            "identifier": "Transformer--50KVA PM"
-        }, 
-        {
-            "kva": 100.0, 
-            "reactance": 0.10000000000000001, 
-            "phases": [
-                "A", 
-                "B", 
-                "C"
-            ], 
-            "resistance": 0.10000000000000001, 
-            "is_center_tap": false, 
-            "connection": "Wye-Wye", 
-            "high_voltage": 13.199999999999999, 
-            "low_voltage": 0.47999999999999998, 
-            "type": "TransformerProperties", 
-            "identifier": "Transformer--100KVA PM"
+            "identifier": "PM3_4_12_47_0_480"
         }
     ], 
     "wires": [
         {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "N", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 2/0 N", 
-            "relative_x": 1.0, 
+            "wire_type": "OH", 
+            "resistance": 0.12, 
+            "identifier": "OH ACSR 477kcmil", 
+            "diameter": 21.800000000000001, 
+            "geometrical_mean_radius": 8.8000000000000007, 
             "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 17.0
+            "ampacity": 660.0, 
+            "voltage_level": "MV"
         }, 
         {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "C", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 2/0 C", 
-            "relative_x": 1.0, 
+            "wire_type": "UG concentric neutral", 
+            "resistance": 0.075499999999999998, 
+            "concentric_properties": {
+                "geometrical_mean_radius": 0.7994, 
+                "concentric_outside_diameter": 45.719999999999999, 
+                "resistance": 5.8592000000000004, 
+                "concentric_strand_diameter": 2.0499999999999998, 
+                "type": "ConcentricProperties", 
+                "strand_count": 24
+            }, 
+            "identifier": "UG AL 750kcmil 15 kV", 
+            "diameter": 22.021799999999999, 
+            "geometrical_mean_radius": 8.5753000000000004, 
             "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "B", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 1/0 B", 
-            "relative_x": 0.5, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "C", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 1/0 C", 
-            "relative_x": 2.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "C", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 1/0 C", 
-            "relative_x": 1.0, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "B", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 2/0 B", 
-            "relative_x": 1.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "N", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 1/0 N", 
-            "relative_x": 1.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 17.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "N", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH TPLX 2/0 N", 
-            "relative_x": 0.10000000000000001, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": 15.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "B", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 1/0 B", 
-            "relative_x": 1.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "S2", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH TPLX 2/0 S2", 
-            "relative_x": 0.20000000000000001, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "S1", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH TPLX 2/0 S1", 
-            "relative_x": 0.0, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "A", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 2/0 A", 
-            "relative_x": 0.0, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "C", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 2/0 C", 
-            "relative_x": 2.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "A", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 2/0 A", 
-            "relative_x": 0.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "A", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "OH AL 1/0 A", 
-            "relative_x": 0.0, 
-            "type": "Wire", 
-            "ampacity": 220.0, 
-            "diameter": 0.0101, 
-            "height": 16.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "B", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 2/0 B", 
-            "relative_x": 0.5, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
-        }, 
-        {
-            "geometrical_mean_radius": 0.0038999999999999998, 
-            "phase": "A", 
-            "resistance": 0.00039370099999999999, 
-            "identifier": "UG TPLX 1/0 A", 
-            "relative_x": 0.0, 
-            "type": "Wire", 
-            "ampacity": 200.0, 
-            "diameter": 0.0101, 
-            "height": -6.0
+            "ampacity": 640.0, 
+            "voltage_level": "LV or MV"
         }
     ], 
     "substation": {
@@ -295,50 +84,8 @@
     "type": "ElectricalNetwork", 
     "connectors": [
         {
-            "display_name": "ElectricalConnector_18", 
-            "identifier": "ElectricalConnector_18_9ad4a91e", 
-            "geometry": {
-                "v": [
-                    59.950884148862201, 
-                    -34.976098774702834
-                ], 
-                "p": [
-                    171.90968183583263, 
-                    50.460614898668922
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N", 
-                "OH TPLX 2/0 S1"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_19", 
-            "identifier": "ElectricalConnector_19_387351fa", 
-            "geometry": {
-                "v": [
-                    -50.163474961894963, 
-                    20.900888827184275
-                ], 
-                "p": [
-                    527.06541152118643, 
-                    168.55238751509441
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N", 
-                "OH TPLX 2/0 S1"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_1", 
-            "identifier": "ElectricalConnector_1_4c599146", 
+            "display_name": "Primary_Lines_1", 
+            "identifier": "Primary_Lines_1_6d85166c", 
             "geometry": {
                 "v": [
                     -647.3281772578606, 
@@ -350,17 +97,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_2", 
-            "identifier": "ElectricalConnector_2_3851ae24", 
+            "display_name": "Primary_Lines_2", 
+            "identifier": "Primary_Lines_2_ccab9892", 
             "geometry": {
                 "v": [
                     -409.39133372481575, 
@@ -372,17 +114,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_3", 
-            "identifier": "ElectricalConnector_3_587bd414", 
+            "display_name": "Primary_Lines_3", 
+            "identifier": "Primary_Lines_3_3a9152bc", 
             "geometry": {
                 "v": [
                     64.732817727060592, 
@@ -394,17 +131,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_4", 
-            "identifier": "ElectricalConnector_4_8aaf4a32", 
+            "display_name": "Primary_Lines_4", 
+            "identifier": "Primary_Lines_4_faab0e63", 
             "geometry": {
                 "v": [
                     192.44891756465091, 
@@ -416,17 +148,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_5", 
-            "identifier": "ElectricalConnector_5_113788fd", 
+            "display_name": "Primary_Lines_5", 
+            "identifier": "Primary_Lines_5_01dcfc10", 
             "geometry": {
                 "v": [
                     57.734675269047671, 
@@ -438,17 +165,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_6", 
-            "identifier": "ElectricalConnector_6_1f523167", 
+            "display_name": "Primary_Lines_6", 
+            "identifier": "Primary_Lines_6_9763e4d0", 
             "geometry": {
                 "vertices": [
                     [
@@ -466,17 +188,12 @@
                 ], 
                 "type": "Polyline2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_7", 
-            "identifier": "ElectricalConnector_7_b99ac95b", 
+            "display_name": "Primary_Lines_7", 
+            "identifier": "Primary_Lines_7_d8a501eb", 
             "geometry": {
                 "v": [
                     66.48235334243283, 
@@ -488,39 +205,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_8", 
-            "identifier": "ElectricalConnector_8_e411dfa9", 
-            "geometry": {
-                "v": [
-                    -20.994427369404093, 
-                    -18.368190161467965
-                ], 
-                "p": [
-                    392.35116922674189, 
-                    732.74063109652366
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_9", 
-            "identifier": "ElectricalConnector_9_ba5bac49", 
+            "display_name": "Primary_Lines_8", 
+            "identifier": "Primary_Lines_8_e5d93944", 
             "geometry": {
                 "v": [
                     -24.49349859898992, 
@@ -532,17 +222,114 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 2/0 A", 
-                "OH AL 2/0 B", 
-                "OH AL 2/0 C", 
-                "OH AL 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_10", 
-            "identifier": "ElectricalConnector_10_c36999db", 
+            "display_name": "Primary_Lines_9", 
+            "identifier": "Primary_Lines_9_2d39285f", 
+            "geometry": {
+                "v": [
+                    24.038306954928071, 
+                    65.883984227244696
+                ], 
+                "p": [
+                    -24.038306954928071, 
+                    648.77136100658288
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_10", 
+            "identifier": "Primary_Lines_10_871940ad", 
+            "geometry": {
+                "v": [
+                    -121.08316464110152, 
+                    71.544360838050466
+                ], 
+                "p": [
+                    392.35116922790058, 
+                    732.74063110126212
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_11", 
+            "identifier": "Primary_Lines_11_0963f025", 
+            "geometry": {
+                "v": [
+                    -74.963882248652737, 
+                    -66.515113214604867
+                ], 
+                "p": [
+                    392.35116922790058, 
+                    732.74063110126212
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_12", 
+            "identifier": "Primary_Lines_12_c14dcafc", 
+            "geometry": {
+                "v": [
+                    -26.099800538501, 
+                    169.39674223951067
+                ], 
+                "p": [
+                    119.42361340942564, 
+                    267.39801510567133
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_13", 
+            "identifier": "Primary_Lines_13_0ffa28c1", 
+            "geometry": {
+                "v": [
+                    17.830440525667584, 
+                    35.798775217680657
+                ], 
+                "p": [
+                    119.42361340942564, 
+                    267.39801510567133
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_14", 
+            "identifier": "Primary_Lines_14_2f7fb3b1", 
+            "geometry": {
+                "v": [
+                    45.954599233995026, 
+                    -66.467436514706804
+                ], 
+                "p": [
+                    185.9059667506998, 
+                    81.951952638672893
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
+        }, 
+        {
+            "display_name": "Primary_Lines_15", 
+            "identifier": "Primary_Lines_15_2c1d6faa", 
             "geometry": {
                 "v": [
                     -26.24303421204479, 
@@ -554,17 +341,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 1/0 A", 
-                "OH AL 1/0 B", 
-                "OH AL 1/0 C", 
-                "OH AL 1/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_11", 
-            "identifier": "ElectricalConnector_11_67be1703", 
+            "display_name": "Primary_Lines_16", 
+            "identifier": "Primary_Lines_16_694d0935", 
             "geometry": {
                 "v": [
                     -13.996284912549839, 
@@ -576,60 +358,29 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 1/0 A", 
-                "OH AL 1/0 B", 
-                "OH AL 1/0 C", 
-                "OH AL 1/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_12", 
-            "identifier": "ElectricalConnector_12_04d2e716", 
+            "display_name": "Primary_Lines_17", 
+            "identifier": "Primary_Lines_17_da444703", 
             "geometry": {
                 "v": [
-                    -31.491641053526834, 
-                    19.24411616388727
+                    -108.67582860443787, 
+                    34.775363723545837
                 ], 
                 "p": [
-                    119.42361340826697, 
-                    267.39801510646112
+                    584.8000867913928, 
+                    157.18067546575739
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH AL 1/0 A", 
-                "OH AL 1/0 B", 
-                "OH AL 1/0 C", 
-                "OH AL 1/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0"
         }, 
         {
-            "display_name": "ElectricalConnector_13", 
-            "identifier": "ElectricalConnector_13_baa812bb", 
-            "geometry": {
-                "v": [
-                    48.531805553917991, 
-                    27.397941412809587
-                ], 
-                "p": [
-                    -48.531805553917991, 
-                    687.25740382101799
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "UG TPLX 1/0 A", 
-                "UG TPLX 1/0 B", 
-                "UG TPLX 1/0 C"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_14", 
-            "identifier": "ElectricalConnector_14_6ddbf37a", 
+            "display_name": "Secondary_Lines_1", 
+            "identifier": "Secondary_Lines_1_595b3397", 
             "geometry": {
                 "v": [
                     198.1665767710812, 
@@ -641,79 +392,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "UG TPLX 1/0 A", 
-                "UG TPLX 1/0 B", 
-                "UG TPLX 1/0 C"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
         }, 
         {
-            "display_name": "ElectricalConnector_15", 
-            "identifier": "ElectricalConnector_15_1778424f", 
-            "geometry": {
-                "v": [
-                    -68.597096215853185, 
-                    63.672294362908588
-                ], 
-                "p": [
-                    339.86510080265225, 
-                    740.612697576404
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "UG TPLX 1/0 A", 
-                "UG TPLX 1/0 B", 
-                "UG TPLX 1/0 C"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_16", 
-            "identifier": "ElectricalConnector_16_61815802", 
-            "geometry": {
-                "v": [
-                    -22.477813823404404, 
-                    -74.387179689746745
-                ], 
-                "p": [
-                    339.86510080265225, 
-                    740.612697576404
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "UG TPLX 1/0 A", 
-                "UG TPLX 1/0 B", 
-                "UG TPLX 1/0 C"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_17", 
-            "identifier": "ElectricalConnector_17_d390501e", 
-            "geometry": {
-                "v": [
-                    49.322081580353085, 
-                    -0.9399452481170556
-                ], 
-                "p": [
-                    87.93197235474014, 
-                    304.13673557146905
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "UG TPLX 1/0 A", 
-                "UG TPLX 1/0 B", 
-                "UG TPLX 1/0 C"
-            ], 
-            "type": "ElectricalConnectorAbridged"
-        }, 
-        {
-            "display_name": "ElectricalConnector_20", 
-            "identifier": "ElectricalConnector_20_0fbc9d84", 
+            "display_name": "Secondary_Lines_2", 
+            "identifier": "Secondary_Lines_2_7741c2d6", 
             "geometry": {
                 "v": [
                     -93.829576565366153, 
@@ -725,16 +409,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH TPLX 2/0 S1", 
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
         }, 
         {
-            "display_name": "ElectricalConnector_21", 
-            "identifier": "ElectricalConnector_21_c15aec2e", 
+            "display_name": "Secondary_Lines_3", 
+            "identifier": "Secondary_Lines_3_6b3732f9", 
             "geometry": {
                 "v": [
                     68.669367881703408, 
@@ -746,16 +426,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH TPLX 2/0 S1", 
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
         }, 
         {
-            "display_name": "ElectricalConnector_22", 
-            "identifier": "ElectricalConnector_22_608229e2", 
+            "display_name": "Secondary_Lines_4", 
+            "identifier": "Secondary_Lines_4_c8de8e55", 
             "geometry": {
                 "v": [
                     145.78918380075274, 
@@ -767,16 +443,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH TPLX 2/0 S1", 
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
         }, 
         {
-            "display_name": "ElectricalConnector_23", 
-            "identifier": "ElectricalConnector_23_ac0ec721", 
+            "display_name": "Secondary_Lines_5", 
+            "identifier": "Secondary_Lines_5_821d2d4d", 
             "geometry": {
                 "v": [
                     96.864981058667951, 
@@ -788,16 +460,12 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH TPLX 2/0 S1", 
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N"
-            ], 
-            "type": "ElectricalConnectorAbridged"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
         }, 
         {
-            "display_name": "ElectricalConnector_24", 
-            "identifier": "ElectricalConnector_24_8199117a", 
+            "display_name": "Secondary_Lines_6", 
+            "identifier": "Secondary_Lines_6_018f5011", 
             "geometry": {
                 "v": [
                     177.22674429167577, 
@@ -809,126 +477,70 @@
                 ], 
                 "type": "LineSegment2D"
             }, 
-            "wires": [
-                "OH TPLX 2/0 S1", 
-                "OH TPLX 2/0 S2", 
-                "OH TPLX 2/0 N"
+            "type": "ElectricalConnectorAbridged", 
+            "power_line": "3P_UG_AL_750kcmil_15_0_480_0"
+        }
+    ], 
+    "power_lines": [
+        {
+            "identifier": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0", 
+            "relative_xs": [
+                0.0, 
+                0.30399999999999999, 
+                0.60799999999999998, 
+                0.0
             ], 
-            "type": "ElectricalConnectorAbridged"
+            "phases": [
+                "A", 
+                "B", 
+                "C", 
+                "N"
+            ], 
+            "wires": [
+                "OH ACSR 477kcmil", 
+                "OH ACSR 477kcmil", 
+                "OH ACSR 477kcmil", 
+                "OH ACSR 477kcmil"
+            ], 
+            "heights": [
+                10.0, 
+                10.0, 
+                10.0, 
+                9.6951999999999998
+            ], 
+            "type": "PowerLineAbridged"
         }, 
         {
-            "display_name": "ElectricalConnector_25", 
-            "identifier": "ElectricalConnector_25_129ef055", 
-            "geometry": {
-                "v": [
-                    5.3918405161845016, 
-                    132.65802177371296
-                ], 
-                "p": [
-                    87.93197235474014, 
-                    304.13673557146905
-                ], 
-                "type": "LineSegment2D"
-            }, 
-            "wires": [
-                "UG TPLX 2/0 C", 
-                "UG TPLX 2/0 B", 
-                "UG TPLX 2/0 A"
+            "identifier": "3P_UG_AL_750kcmil_15_0_480_0", 
+            "relative_xs": [
+                0.0, 
+                0.152, 
+                0.30399999999999999
             ], 
-            "type": "ElectricalConnectorAbridged"
+            "phases": [
+                "A", 
+                "B", 
+                "C"
+            ], 
+            "wires": [
+                "UG AL 750kcmil 15 kV", 
+                "UG AL 750kcmil 15 kV", 
+                "UG AL 750kcmil 15 kV"
+            ], 
+            "heights": [
+                -2.0, 
+                -2.0, 
+                -2.0
+            ], 
+            "type": "PowerLineAbridged"
         }
     ], 
     "transformers": [
         {
-            "display_name": "Transformer_1", 
-            "identifier": "Transformer_1_f597fba6", 
+            "display_name": "NorthWest_Transformer", 
+            "identifier": "NorthWest_Transformer_7a500fd8", 
             "geometry": {
                 "vertices": [
-                    [
-                        -48.531805553917991, 
-                        687.25740382180766
-                    ], 
-                    [
-                        -80.023446609762175, 
-                        687.25740382180766
-                    ], 
-                    [
-                        -80.023446609762175, 
-                        648.77136100816233
-                    ], 
-                    [
-                        -48.531805553917991, 
-                        648.77136100816233
-                    ]
-                ], 
-                "type": "Polygon2D"
-            }, 
-            "type": "TransformerAbridged", 
-            "properties": "Transformer--100KVA PM"
-        }, 
-        {
-            "display_name": "Transformer_2", 
-            "identifier": "Transformer_2_585d85e4", 
-            "geometry": {
-                "vertices": [
-                    [
-                        87.93197235474014, 
-                        304.13673556988954
-                    ], 
-                    [
-                        54.69079568584106, 
-                        304.13673556988954
-                    ], 
-                    [
-                        54.69079568584106, 
-                        286.64213127113817
-                    ], 
-                    [
-                        87.93197235474014, 
-                        286.64213127113817
-                    ]
-                ], 
-                "type": "Polygon2D"
-            }, 
-            "type": "TransformerAbridged", 
-            "properties": "Transformer--50KVA PM"
-        }, 
-        {
-            "display_name": "Transformer_3", 
-            "identifier": "Transformer_3_e638147f", 
-            "geometry": {
-                "vertices": [
-                    [
-                        206.90039412126259, 
-                        50.460614899458669
-                    ], 
-                    [
-                        171.90968183814996, 
-                        50.460614899458669
-                    ], 
-                    [
-                        171.90968183814996, 
-                        13.720538520770734
-                    ], 
-                    [
-                        206.90039412126259, 
-                        13.720538520770734
-                    ]
-                ], 
-                "type": "Polygon2D"
-            }, 
-            "type": "TransformerAbridged", 
-            "properties": "Transformer--50KVA CT"
-        }, 
-        {
-            "display_name": "Transformer_4", 
-            "identifier": "Transformer_4_8ee9c930", 
-            "geometry": {
-                "vertices": [
-                    [
-                        558.55705257818931, 
-                        168.55238751509441
-                    ], 
                     [
                         527.06541152234513, 
                         168.55238751509441
@@ -940,39 +552,70 @@
                     [
                         558.55705257818931, 
                         128.31393731678304
+                    ], 
+                    [
+                        558.55705257818931, 
+                        168.55238751509441
                     ]
                 ], 
                 "type": "Polygon2D"
             }, 
             "type": "TransformerAbridged", 
-            "properties": "Transformer--75KVA CT"
+            "properties": "PM3_4_12_47_0_480"
         }, 
         {
-            "display_name": "Transformer_5", 
-            "identifier": "Transformer_5_456e3b58", 
+            "display_name": "SouthWest_Transformer", 
+            "identifier": "SouthWest_Transformer_b0609026", 
             "geometry": {
                 "vertices": [
                     [
-                        371.35674185733779, 
-                        740.61269757482444
+                        -80.023446609762175, 
+                        687.25740382180766
                     ], 
                     [
-                        339.86510080265225, 
-                        740.61269757482444
+                        -80.023446609762175, 
+                        648.77136100816233
                     ], 
                     [
-                        339.86510080265225, 
-                        714.37244093584547
+                        -48.531805553917991, 
+                        648.77136100816233
                     ], 
                     [
-                        371.35674185733779, 
-                        714.37244093584547
+                        -48.531805553917991, 
+                        687.25740382180766
                     ]
                 ], 
                 "type": "Polygon2D"
             }, 
             "type": "TransformerAbridged", 
-            "properties": "Transformer--75KVA PM"
+            "properties": "PM3_6_12_47_0_480"
+        }, 
+        {
+            "display_name": "SouthEasr_Transformer", 
+            "identifier": "SouthEasr_Transformer_c27f1960", 
+            "geometry": {
+                "vertices": [
+                    [
+                        171.90968183814996, 
+                        50.460614899458669
+                    ], 
+                    [
+                        171.90968183814996, 
+                        13.720538520770734
+                    ], 
+                    [
+                        206.90039412126259, 
+                        13.720538520770734
+                    ], 
+                    [
+                        206.90039412126259, 
+                        50.460614899458669
+                    ]
+                ], 
+                "type": "Polygon2D"
+            }, 
+            "type": "TransformerAbridged", 
+            "properties": "PM3_6_12_47_0_480"
         }
     ]
 }

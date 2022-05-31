@@ -123,7 +123,7 @@ class Transformer(_GeometryBase):
         """
         pts = [(pt.x, pt.y) for pt in self.geometry.vertices]
         coords = [polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)]
-        return {
+        base = {
             'type': 'Feature',
             'properties': {
                 'id': self.identifier,
@@ -140,6 +140,11 @@ class Transformer(_GeometryBase):
                 'coordinates': coords
             }
         }
+        if self.properties.phase_count == 3:
+            base['properties']['phases'] = ['A', 'B', 'C']
+        elif self.properties.phase_count == 1:
+            base['properties']['phases'] = ['A']
+        return base
 
     def __copy__(self):
         new_con = Transformer(self.identifier, self.geometry, self.properties)
