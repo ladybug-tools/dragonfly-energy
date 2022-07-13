@@ -462,8 +462,6 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
     batch = '{}\ncd {}\ncall {}\nuo run -f {} -s {}'.format(
         working_drive, working_drive, folders.urbanopt_env_path,
         feature_geojson, scenario_csv)
-    if cpu_count is not None:
-        batch = '{} --num-parallel={}'.format(batch, cpu_count)
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
@@ -491,8 +489,6 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
     # Write the shell script to call URBANopt CLI
     shell = '#!/usr/bin/env bash\nsource {}\nuo run -f {} -s {}'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
-    if cpu_count is not None:
-        shell = '{} --num-parallel={}'.format(shell, cpu_count)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
     # make the shell script executable using subprocess.check_call
