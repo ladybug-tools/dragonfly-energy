@@ -3,7 +3,7 @@
 from __future__ import division
 
 from honeybee._lockable import lockable
-from honeybee.typing import float_in_range, valid_ep_string
+from honeybee.typing import float_in_range, float_positive, int_positive, valid_ep_string
 
 from .wire import Wire
 
@@ -25,6 +25,14 @@ class PowerLine(object):
             one of the conductors in a given wire is usually assigned the 0 position.
         phases: An array of text values that align with the wires and denote the
             phases of the wire. Must be one of the following values (A, B, C, N, S1, S2).
+        phase_count: An optional integer for the number of phases carried along the
+            power line. If None, it wil be inferred from the phases with only
+            phases A, B, C considered distinct from one another. (Default: None).
+        nominal_voltage: An optional number for the nominal voltage along the
+            power line. This is not required for OpenDSS simulation since this
+            value can be inferred from surrounding transformers and substations
+            but it it sometimes useful to assign a value directly to the
+            power line object. (Default: None).
 
     Properties:
         * identifier
@@ -33,16 +41,19 @@ class PowerLine(object):
         * heights
         * relative_xs
         * phases
+        * phase_count
+        * nominal_voltage
         * wire_count
         * wire_ids
     """
     __slots__ = (
-        '_locked', '_display_name', '_identifier', '_wire_count',
-        '_wires', '_heights', '_relative_xs', '_phases'
+        '_locked', '_display_name', '_identifier', '_wire_count', '_wires', '_heights',
+        '_relative_xs', '_phases', '_phase_count', '_nominal_voltage'
     )
     VALID_PHASES = ('A', 'B', 'C', 'N', 'S1', 'S2')
 
-    def __init__(self, identifier, wires, heights, relative_xs, phases):
+    def __init__(self, identifier, wires, heights, relative_xs, phases,
+                 phase_count=None, nominal_voltage=None):
         """Initialize PowerLine"""
         self._locked = False  # unlocked by default
         self._display_name = None
@@ -53,6 +64,8 @@ class PowerLine(object):
         self.heights = heights
         self.relative_xs = relative_xs
         self.phases = phases
+        self.phase_count = phase_count
+        self.nominal_voltage = nominal_voltage
 
     @classmethod
     def from_dict(cls, data):
@@ -73,8 +86,10 @@ class PowerLine(object):
             }
         """
         wires = [Wire.from_dict(wd) for wd in data['wires']]
+        pc = data['phase_count'] if 'phase_count' in data else None
+        vol = data['nominal_voltage'] if 'nominal_voltage' in data else None
         p_line = cls(data['identifier'], wires, data['heights'],
-                     data['relative_xs'], data['phases'])
+                     data['relative_xs'], data['phases'], pc, vol)
         if 'display_name' in data and data['display_name'] is not None:
             p_line.display_name = data['display_name']
         return p_line
@@ -103,8 +118,10 @@ class PowerLine(object):
             wires = [wires[wd] for wd in data['wires']]
         except KeyError as e:
             raise ValueError('Failed to find {} in wires.'.format(e))
+        pc = data['phase_count'] if 'phase_count' in data else None
+        vol = data['nominal_voltage'] if 'nominal_voltage' in data else None
         p_line = cls(data['identifier'], wires, data['heights'],
-                     data['relative_xs'], data['phases'])
+                     data['relative_xs'], data['phases'], pc, vol)
         if 'display_name' in data and data['display_name'] is not None:
             p_line.display_name = data['display_name']
         return p_line
@@ -146,7 +163,9 @@ class PowerLine(object):
         heights = [w_i['height (m)'] for w_i in data['Line geometry']]
         rel_xs = [w_i['x (m)'] for w_i in data['Line geometry']]
         phases = [w_i['phase'] for w_i in data['Line geometry']]
-        return cls(data['Name'], wire_objs, heights, rel_xs, phases)
+        pc = data['Nphases'] if 'Nphases' in data else None
+        vol = data['Voltage(kV)'] if 'Voltage(kV)' in data else None
+        return cls(data['Name'], wire_objs, heights, rel_xs, phases, pc, vol)
 
     @property
     def identifier(self):
@@ -232,6 +251,31 @@ class PowerLine(object):
                 len(self._phases), self._wire_count)
 
     @property
+    def phase_count(self):
+        """Get or set an integer for the number of phases carried along the line."""
+        if self._phase_count is not None:
+            return self._phase_count
+        all_phases = [p for p in self._phases if p in ('A', 'B', 'C')]
+        return len(all_phases) if len(all_phases) != 0 else 1
+
+    @phase_count.setter
+    def phase_count(self, value):
+        if value is not None:
+            value = int_positive(value, 'power line phase count')
+        self._phase_count = value
+
+    @property
+    def nominal_voltage(self):
+        """Get or set a number for nominal voltage of the power line in kiloVolts."""
+        return self._nominal_voltage
+
+    @nominal_voltage.setter
+    def nominal_voltage(self, value):
+        if value is not None:
+            value = float_positive(value, 'nominal voltage')
+        self._nominal_voltage = value
+
+    @property
     def wire_count(self):
         """Get an integer for the number of wires in the power line."""
         return self._wire_count
@@ -255,6 +299,10 @@ class PowerLine(object):
         base['heights'] = self.heights
         base['relative_xs'] = self.relative_xs
         base['phases'] = self.phases
+        if self._phase_count is not None:
+            base['phase_count'] = self._phase_count
+        if self._nominal_voltage is not None:
+            base['nominal_voltage'] = self._nominal_voltage
         if self._display_name is not None:
             base['display_name'] = self._display_name
         return base
@@ -273,6 +321,10 @@ class PowerLine(object):
             }
             line_geo.append(w_dict)
         base['Line geometry'] = line_geo
+        if self._phase_count is not None:
+            base['Nphases'] = self._phase_count
+        if self._nominal_voltage is not None:
+            base['Voltage(kV)'] = self._nominal_voltage
         return base
 
     def duplicate(self):
@@ -281,14 +333,16 @@ class PowerLine(object):
 
     def __copy__(self):
         new_obj = PowerLine(
-            self.identifier, self.wires, self.heights, self.relative_xs, self.phases)
+            self.identifier, self.wires, self.heights, self.relative_xs, self.phases,
+            self._phase_count, self._nominal_voltage)
         new_obj._display_name = self._display_name
         return new_obj
 
     def __key(self):
         """A tuple based on the object properties, useful for hashing."""
         return (self.identifier,) + tuple(hash(w) for w in self.wires) + \
-            self.heights + self.relative_xs + self.phases
+            self.heights + self.relative_xs + self.phases + \
+            (self._phase_count, self._nominal_voltage)
 
     def __hash__(self):
         return hash(self.__key())

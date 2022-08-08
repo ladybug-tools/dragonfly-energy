@@ -2288,6 +2288,4490 @@
           ]
         }
       ]
+    },
+    {
+      "#Urban-Overhead": [
+        {
+          "Name": "1P_OH_AL_4_Periwinkle_0_416_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "7044.866667",
+          "Preventive maintenance cost (dolars/km)": "73.05526733",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "OH TPLX 4",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 4",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 4",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 4.5592
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_1/0_Neritina_0_416_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "8731.433333",
+          "Preventive maintenance cost (dolars/km)": "90.54496367",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "OH TPLX 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 1/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 4.5592
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_2/0_Rucina_0_416_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "9530.333333",
+          "Preventive maintenance cost (dolars/km)": "98.82955667",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "OH TPLX 2/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 2/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 2/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 4.5592
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_4/0_Zuzara_0_416_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "11039.36667",
+          "Preventive maintenance cost (dolars/km)": "114.4782323",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "OH TPLX 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 4/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": 4.864
+            },
+            {
+              "wire": "OH TPLX 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 4.5592
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_15_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "10936.75",
+          "Preventive maintenance cost (dolars/km)": "113.4140975",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "11059.85",
+          "Preventive maintenance cost (dolars/km)": "114.6906445",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_15_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "11983.1",
+          "Preventive maintenance cost (dolars/km)": "124.264747",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "12229.3",
+          "Preventive maintenance cost (dolars/km)": "126.817841",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_15_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "13891.15",
+          "Preventive maintenance cost (dolars/km)": "144.0512255",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_0_416_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "14198.9",
+          "Preventive maintenance cost (dolars/km)": "147.242593",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_#2_Sparrow_4_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "68923.05",
+          "Preventive maintenance cost (dolars/km)": "714.7320285",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR #2",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR #2",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_1/0_Raven_4_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "74315.06667",
+          "Preventive maintenance cost (dolars/km)": "770.6472413",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_4/0_Penguin_4_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "84608.91667",
+          "Preventive maintenance cost (dolars/km)": "877.3944658",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_336kcmil_Merlin_4_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "99314.41667",
+          "Preventive maintenance cost (dolars/km)": "1029.890501",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_477kcmil_Hawk_4_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "111078.8167",
+          "Preventive maintenance cost (dolars/km)": "1151.887329",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_4_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "116470.8333",
+          "Preventive maintenance cost (dolars/km)": "1207.802542",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_336kcmil_Merlin_4_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "145881.8333",
+          "Preventive maintenance cost (dolars/km)": "1512.794612",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_4/0_Penguin_4_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "148332.75",
+          "Preventive maintenance cost (dolars/km)": "1538.210617",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_336kcmil_Merlin_4_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "192449.25",
+          "Preventive maintenance cost (dolars/km)": "1995.698722",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_477kcmil_Hawk_4_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "227742.45",
+          "Preventive maintenance cost (dolars/km)": "2361.689206",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_4_1",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "335092.6",
+          "Preventive maintenance cost (dolars/km)": "3474.910261",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_#2_Sparrow_12_47_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "68923.05",
+          "Preventive maintenance cost (dolars/km)": "714.7320285",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR #2",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR #2",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_1/0_Raven_12_47_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "74315.06667",
+          "Preventive maintenance cost (dolars/km)": "770.6472413",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_4/0_Penguin_12_47_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "84608.91667",
+          "Preventive maintenance cost (dolars/km)": "877.3944658",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_336kcmil_Merlin_12_47_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "99314.41667",
+          "Preventive maintenance cost (dolars/km)": "1029.890501",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_477kcmil_Hawk_12_47_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "111078.8167",
+          "Preventive maintenance cost (dolars/km)": "1151.887329",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_12_47_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "116470.8333",
+          "Preventive maintenance cost (dolars/km)": "1207.802542",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_336kcmil_Merlin_12_47_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "145881.8333",
+          "Preventive maintenance cost (dolars/km)": "1512.794612",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_4/0_Penguin_12_47_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "148332.75",
+          "Preventive maintenance cost (dolars/km)": "1538.210617",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_336kcmil_Merlin_12_47_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "192449.25",
+          "Preventive maintenance cost (dolars/km)": "1995.698722",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_477kcmil_Hawk_12_47_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "227742.45",
+          "Preventive maintenance cost (dolars/km)": "2361.689206",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_12.47_1",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "335092.6",
+          "Preventive maintenance cost (dolars/km)": "3474.910261",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_#2_Sparrow_13_2_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "68923.05",
+          "Preventive maintenance cost (dolars/km)": "714.7320285",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR #2",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR #2",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_1/0_Raven_13_2_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "74315.06667",
+          "Preventive maintenance cost (dolars/km)": "770.6472413",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_4/0_Penguin_13_2_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "84608.91667",
+          "Preventive maintenance cost (dolars/km)": "877.3944658",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_336kcmil_Merlin_13_2_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "99314.41667",
+          "Preventive maintenance cost (dolars/km)": "1029.890501",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_ACSR_477kcmil_Hawk_13_2_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "111078.8167",
+          "Preventive maintenance cost (dolars/km)": "1151.887329",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_13_2_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "116470.8333",
+          "Preventive maintenance cost (dolars/km)": "1207.802542",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_336kcmil_Merlin_13_2_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "145881.8333",
+          "Preventive maintenance cost (dolars/km)": "1512.794612",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_4/0_Penguin_13_2_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "148332.75",
+          "Preventive maintenance cost (dolars/km)": "1538.210617",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_336kcmil_Merlin_13_2_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "192449.25",
+          "Preventive maintenance cost (dolars/km)": "1995.698722",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_477kcmil_Hawk_13_2_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "227742.45",
+          "Preventive maintenance cost (dolars/km)": "2361.689206",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_13.2_1",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "335092.6",
+          "Preventive maintenance cost (dolars/km)": "3474.910261",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_AAC_#2_Iris_25_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "69413.23333",
+          "Preventive maintenance cost (dolars/km)": "719.8152297",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC #2",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC #2",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_AAC_1/0_Poppy_25_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "74805.25",
+          "Preventive maintenance cost (dolars/km)": "775.7304425",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_AAC_4/0_Oxlip_25_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "87059.83333",
+          "Preventive maintenance cost (dolars/km)": "902.8104717",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_AAC_336kcmil_Tulip_25_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "98824.23333",
+          "Preventive maintenance cost (dolars/km)": "1024.8073",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_OH_AL_AAC_477kcmil_Cosmos_25_0",
+          "Type": "UA",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "110098.45",
+          "Preventive maintenance cost (dolars/km)": "1141.720926",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_AAC_4/0_Oxlip_25_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "121372.6667",
+          "Preventive maintenance cost (dolars/km)": "1258.634553",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_AAC_336kcmil_Tulip_25_0",
+          "Type": "UA",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "144901.4667",
+          "Preventive maintenance cost (dolars/km)": "1502.628209",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_AAC_4/0_Oxlip_25_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "155685.5",
+          "Preventive maintenance cost (dolars/km)": "1614.458635",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_AAC_336kcmil_Tulip_25_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "190978.7",
+          "Preventive maintenance cost (dolars/km)": "1980.449119",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 336kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_AAC_477kcmil_Cosmos_25_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "224801.35",
+          "Preventive maintenance cost (dolars/km)": "2331.189999",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 477kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_AAC_795kcmil_Arbutus_25_0",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "288035",
+          "Preventive maintenance cost (dolars/km)": "2986.92295",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH AAC 795kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 795kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 795kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH AAC 795kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_25_1",
+          "Type": "UA",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "335092.6",
+          "Preventive maintenance cost (dolars/km)": "3474.910261",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "#Urban-Underground": [
+        {
+          "Name": "1P_UG_AL_1/0_Brenau_0_416_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "8269.583333",
+          "Preventive maintenance cost (dolars/km)": "85.75557917",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG TPLX 1/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 1/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 1/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": -2.3048
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_2/0_Converse_0_416_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "8384.476667",
+          "Preventive maintenance cost (dolars/km)": "86.94702303",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG TPLX 2/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 2/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 2/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": -2.3048
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_Sweetbriar_0_416_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "8663.503333",
+          "Preventive maintenance cost (dolars/km)": "89.84052957",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG TPLX 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 4/0",
+              "phase": "S2",
+              "x (m)": 0.0304,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG TPLX 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": -2.3048
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_15_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "10936.75",
+          "Preventive maintenance cost (dolars/km)": "113.4140975",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "11059.85",
+          "Preventive maintenance cost (dolars/km)": "114.6906445",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_15_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "11983.1",
+          "Preventive maintenance cost (dolars/km)": "124.264747",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "12229.3",
+          "Preventive maintenance cost (dolars/km)": "126.817841",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_15_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "13891.15",
+          "Preventive maintenance cost (dolars/km)": "144.0512255",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_0_416_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "0.416",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "14198.9",
+          "Preventive maintenance cost (dolars/km)": "147.242593",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "0",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_#2_15_4_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "40290.16667",
+          "Preventive maintenance cost (dolars/km)": "417.8090283",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL #2 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_15_4_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "61021.5",
+          "Preventive maintenance cost (dolars/km)": "632.792955",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_25_4_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "65733.16667",
+          "Preventive maintenance cost (dolars/km)": "681.6529383",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_15_4_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "103426.5",
+          "Preventive maintenance cost (dolars/km)": "1072.532805",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_25_4_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "108138.1667",
+          "Preventive maintenance cost (dolars/km)": "1121.392788",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_4_0",
+          "Type": "US",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "183601.5556",
+          "Preventive maintenance cost (dolars/km)": "1903.948131",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_15_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "247994.3333",
+          "Preventive maintenance cost (dolars/km)": "2571.701237",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "257417.6667",
+          "Preventive maintenance cost (dolars/km)": "2669.421203",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_15_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "328092.6667",
+          "Preventive maintenance cost (dolars/km)": "3402.320953",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "346939.3333",
+          "Preventive maintenance cost (dolars/km)": "3597.760887",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_15_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "398767.6667",
+          "Preventive maintenance cost (dolars/km)": "4135.220703",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_25_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "417614.3333",
+          "Preventive maintenance cost (dolars/km)": "4330.660637",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_15_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "474154.3333",
+          "Preventive maintenance cost (dolars/km)": "4916.980437",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "497712.6667",
+          "Preventive maintenance cost (dolars/km)": "5161.280353",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_15_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "521271",
+          "Preventive maintenance cost (dolars/km)": "5405.58027",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_69_4_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "554252.6667",
+          "Preventive maintenance cost (dolars/km)": "5747.600153",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_4_1",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "4",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "884065.46",
+          "Preventive maintenance cost (dolars/km)": "8840.6546",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_#2_15_12_47_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "40290.16667",
+          "Preventive maintenance cost (dolars/km)": "417.8090283",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL #2 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_15_12_47_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "61021.5",
+          "Preventive maintenance cost (dolars/km)": "632.792955",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_25_12_47_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "65733.16667",
+          "Preventive maintenance cost (dolars/km)": "681.6529383",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_15_12_47_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "103426.5",
+          "Preventive maintenance cost (dolars/km)": "1072.532805",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_25_12_47_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "108138.1667",
+          "Preventive maintenance cost (dolars/km)": "1121.392788",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_12_47_0",
+          "Type": "US",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "183601.5556",
+          "Preventive maintenance cost (dolars/km)": "1903.948131",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "257417.6667",
+          "Preventive maintenance cost (dolars/km)": "2669.421203",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_15_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "328092.6667",
+          "Preventive maintenance cost (dolars/km)": "3402.320953",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "346939.3333",
+          "Preventive maintenance cost (dolars/km)": "3597.760887",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_15_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "398767.6667",
+          "Preventive maintenance cost (dolars/km)": "4135.220703",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_25_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "417614.3333",
+          "Preventive maintenance cost (dolars/km)": "4330.660637",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_15_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "474154.3333",
+          "Preventive maintenance cost (dolars/km)": "4916.980437",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "497712.6667",
+          "Preventive maintenance cost (dolars/km)": "5161.280353",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_15_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "521271",
+          "Preventive maintenance cost (dolars/km)": "5405.58027",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_69_12_47_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "554252.6667",
+          "Preventive maintenance cost (dolars/km)": "5747.600153",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_12.47_1",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "12.47",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "884065.46",
+          "Preventive maintenance cost (dolars/km)": "8840.6546",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_#2_15_13_2_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "40290.16667",
+          "Preventive maintenance cost (dolars/km)": "417.8090283",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL #2 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_15_13_2_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "61021.5",
+          "Preventive maintenance cost (dolars/km)": "632.792955",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_25_13_2_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "65733.16667",
+          "Preventive maintenance cost (dolars/km)": "681.6529383",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_15_13_2_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "103426.5",
+          "Preventive maintenance cost (dolars/km)": "1072.532805",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_25_13_2_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "108138.1667",
+          "Preventive maintenance cost (dolars/km)": "1121.392788",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_13_2_0",
+          "Type": "US",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "183601.5556",
+          "Preventive maintenance cost (dolars/km)": "1903.948131",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_15_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "247994.3333",
+          "Preventive maintenance cost (dolars/km)": "2571.701237",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "257417.6667",
+          "Preventive maintenance cost (dolars/km)": "2669.421203",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_15_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "328092.6667",
+          "Preventive maintenance cost (dolars/km)": "3402.320953",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "346939.3333",
+          "Preventive maintenance cost (dolars/km)": "3597.760887",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_15_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "398767.6667",
+          "Preventive maintenance cost (dolars/km)": "4135.220703",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_25_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "417614.3333",
+          "Preventive maintenance cost (dolars/km)": "4330.660637",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_15_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "474154.3333",
+          "Preventive maintenance cost (dolars/km)": "4916.980437",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "497712.6667",
+          "Preventive maintenance cost (dolars/km)": "5161.280353",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_15_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "521271",
+          "Preventive maintenance cost (dolars/km)": "5405.58027",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 15 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_69_13_2_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "554252.6667",
+          "Preventive maintenance cost (dolars/km)": "5747.600153",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_13.2_1",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "13.2",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "884065.46",
+          "Preventive maintenance cost (dolars/km)": "8840.6546",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_1/0_25_25_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "65733.16667",
+          "Preventive maintenance cost (dolars/km)": "681.6529383",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "1P_UG_AL_4/0_25_25_0",
+          "Type": "US",
+          "Nphases": "1",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "108138.1667",
+          "Preventive maintenance cost (dolars/km)": "1121.392788",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "2P_OH_AL_ACSR_4/0_Penguin_25_0",
+          "Type": "US",
+          "Nphases": "2",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "183601.5556",
+          "Preventive maintenance cost (dolars/km)": "1903.948131",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S1",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "S2",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 4/0",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_4/0_25_25_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "257417.6667",
+          "Preventive maintenance cost (dolars/km)": "2669.421203",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 4/0 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_350kcmil_25_25_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "346939.3333",
+          "Preventive maintenance cost (dolars/km)": "3597.760887",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 350kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_500kcmil_25_25_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "417614.3333",
+          "Preventive maintenance cost (dolars/km)": "4330.660637",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 500kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_750kcmil_25_25_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "497712.6667",
+          "Preventive maintenance cost (dolars/km)": "5161.280353",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 750kcmil 25 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_UG_AL_1000mcm_69_25_0",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "554252.6667",
+          "Preventive maintenance cost (dolars/km)": "5747.600153",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "1",
+          "Repair time minimum (hours)": "20",
+          "Repair time medium (hours)": "30",
+          "Repair time maximum (hours)": "40",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "B",
+              "x (m)": 0.152,
+              "height (m)": -2
+            },
+            {
+              "wire": "UG AL 1000mcm 69 kV",
+              "phase": "C",
+              "x (m)": 0.304,
+              "height (m)": -2
+            }
+          ]
+        },
+        {
+          "Name": "3P_OH_AL_ACSR_1033kcmil_Curlew_25_1",
+          "Type": "US",
+          "Nphases": "3",
+          "Overload(pu) ": "1.1",
+          "Voltage(kV)": "25",
+          " Failure rate minimum[failures / km year]": "0.1",
+          " Failure rate medium[failures / km year]": "0.1",
+          " Failure rate maximum[failures / km year]": "0.1",
+          "Investment Cost (dolars/km)": "884065.46",
+          "Preventive maintenance cost (dolars/km)": "8840.6546",
+          "Corrective maintenance cost (dolars/km)": "0",
+          "Preventive maintenance time (hours)": "6",
+          "Repair time minimum (hours)": "2",
+          "Repair time medium (hours)": "5",
+          "Repair time maximum (hours)": "8",
+          "Delta (0=any": "1",
+          "Line geometry": [
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "A",
+              "x (m)": 0.0,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "B",
+              "x (m)": 0.304,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "C",
+              "x (m)": 0.608,
+              "height (m)": 10
+            },
+            {
+              "wire": "OH ACSR 1033kcmil",
+              "phase": "N",
+              "x (m)": 0.0,
+              "height (m)": 9.6952
+            }
+          ]
+        }
+      ]
     }
   ],
   "SUBSTATIONS AND DISTRIBUTION TRANSFORMERS": [

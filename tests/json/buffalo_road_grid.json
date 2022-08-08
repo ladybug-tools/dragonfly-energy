@@ -1,0 +1,160 @@
+{
+    "roads": [
+        {
+            "geometry": {
+                "v": [
+                    286.92384072986613, 
+                    -917.35409295671832
+                ], 
+                "p": [
+                    285.19211285847837, 
+                    898.05213335280723
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_18_89e4d398", 
+            "display_name": "Road_18"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -373.08846973220159, 
+                    -125.09281229437875
+                ], 
+                "p": [
+                    579.98886385346418, 
+                    6.7224064691287051
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_19_c78ba533", 
+            "display_name": "Road_19"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -308.79303590869438, 
+                    923.71122765182395
+                ], 
+                "p": [
+                    242.76587421379938, 
+                    -137.61565592068146
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_20_55bd8590", 
+            "display_name": "Road_20"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    393.6455131968936, 
+                    129.45049932562836
+                ], 
+                "p": [
+                    -78.273910993231269, 
+                    738.8633502473989
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_21_94a48b30", 
+            "display_name": "Road_21"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    296.5462866091994, 
+                    -918.45316657765852
+                ], 
+                "p": [
+                    131.67036271123794, 
+                    856.06863649057482
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_22_9389c442", 
+            "display_name": "Road_22"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -405.0174946904404, 
+                    -139.95838403588141
+                ], 
+                "p": [
+                    520.94203687491495, 
+                    289.26632475192287
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_23_fa3f93bc", 
+            "display_name": "Road_23"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -204.36762893416346, 
+                    -68.008366789018169
+                ], 
+                "p": [
+                    241.56306847902755, 
+                    522.15950620218302
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_24_bfb1727b", 
+            "display_name": "Road_24"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    158.1142811333923, 
+                    53.574233174462393
+                ], 
+                "p": [
+                    192.24803335454135, 
+                    652.48877227230196
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "Road", 
+            "identifier": "Road_25_8538b893", 
+            "display_name": "Road_25"
+        }
+    ], 
+    "type": "RoadNetwork", 
+    "identifier": "unnamed", 
+    "substation": {
+        "geometry": {
+            "vertices": [
+                [
+                    -261.39595015169539, 
+                    362.23707636196872
+                ], 
+                [
+                    -231.75327825343419, 
+                    372.86832139124959
+                ], 
+                [
+                    -256.56084318475354, 
+                    442.03045585679604
+                ], 
+                [
+                    -286.20351508301474, 
+                    431.39931780628689
+                ]
+            ], 
+            "type": "Polygon2D"
+        }, 
+        "type": "Substation", 
+        "identifier": "West_Substation", 
+        "display_name": "West_Substation"
+    }
+}

@@ -312,7 +312,7 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
     project_folder = os.path.dirname(feature_geojson)
 
     # write the parameter file
-    if reopt_parameters is None:  # genrate some defaults
+    if reopt_parameters is None:  # generate some defaults
         reopt_parameters = REoptParameter()
         reopt_parameters.pv_parameter.max_kw = 1000000000
         reopt_parameters.storage_parameter.max_kw = 1000000
@@ -337,6 +337,29 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
 
     # output the simulation files
     return _output_reopt_files(directory)
+
+
+def run_rnm(feature_geojson, scenario_csv):
+    """Run a feature and scenario file through RNM post processing.
+
+    Note that the URBANopt simulation must already be run with the input feature_geojson
+    and scenario_csv in order for the RNM post-processing to be successful.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+
+    Returns:
+        A series of file paths to the simulation output files.
+    """
+    # run the simulation
+    folders.check_urbanopt_version()
+    if os.name == 'nt':  # we are on Windows
+        directory = _run_rnm_windows(feature_geojson, scenario_csv)
+    else:  # we are on Mac, Linux, or some other unix-based system
+        directory = _run_rnm_unix(feature_geojson, scenario_csv)
+    return directory
 
 
 def _add_mapper_measure(project_directory, mapper_measure):
@@ -741,3 +764,59 @@ def _output_reopt_files(directory):
     csv = csv_file if os.path.isfile(csv_file) else None
     report_json = report_json_file if os.path.isfile(report_json_file) else None
     return csv, report_json
+
+
+def _run_rnm_windows(feature_geojson, scenario_csv):
+    """Run a feature and scenario file through RNM on a Windows-based os.
+
+    A batch file will be used to run the simulation.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        Path to the folder out of which the simulation was run.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the batch file to call URBANopt CLI
+    working_drive = directory[:2]
+    batch = '{}\ncd {}\ncall {}\nuo rnm --feature {} --scenario {}'.format(
+        working_drive, working_drive, folders.urbanopt_env_path,
+        feature_geojson, scenario_csv)
+    batch_file = os.path.join(directory, 'run_rnm.bat')
+    write_to_file(batch_file, batch, True)
+    # run the batch file
+    os.system(batch_file)
+    return directory
+
+
+def _run_rnm_unix(feature_geojson, scenario_csv):
+    """Run a feature and scenario file through RNM on a Unix-based os.
+
+    This includes both Mac OS and Linux since a shell script will be used to run
+    the simulation.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        Path to the folder in which results should be contained.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # Write the shell script to call URBANopt CLI
+    shell = '#!/usr/bin/env bash\nsource {}\nuo rnm --feature {} -s-scenario {}'.format(
+        folders.urbanopt_env_path, feature_geojson, scenario_csv)
+    shell_file = os.path.join(directory, 'run_rnm.sh')
+    write_to_file(shell_file, shell, True)
+    # make the shell script executable using subprocess.check_call
+    # this is more reliable than native Python chmod on Mac
+    subprocess.check_call(['chmod', 'u+x', shell_file])
+    # run the shell script
+    subprocess.call(shell_file)
+    return directory
