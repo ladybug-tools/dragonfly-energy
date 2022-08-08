@@ -18,7 +18,7 @@ class TransformerProperties(object):
         resistance: A number for the electrical resistance of the transformer
             in ohms. (Default: 0.1).
         reactance: A number for the electrical reactance of the transformer
-            in ohms. (Default: 0.1).
+            in per-unit values (p.u. transf). (Default: 0.1).
         phase_count: An integer for the number of phases in the transformer. Typically,
             this is either 1 or 3. (Default: 3).
         high_voltage: A number for the high voltage of the transformer in
@@ -175,7 +175,7 @@ class TransformerProperties(object):
 
     @property
     def reactance(self):
-        """Get or set a number for the reactance of the transformer in ohms."""
+        """Get or set a number for the reactance of the transformer in p.u. transf."""
         return self._reactance
 
     @reactance.setter

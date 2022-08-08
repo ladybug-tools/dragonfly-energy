@@ -25,6 +25,8 @@ class Transformer(_GeometryBase):
         * display_name
         * geometry
         * properties
+        * phase_count
+        * nominal_voltage
     """
     __slots__ = ('_properties',)
 
@@ -91,6 +93,16 @@ class Transformer(_GeometryBase):
         value.lock()
         self._properties = value
 
+    @property
+    def phase_count(self):
+        """Get an integer for the number of phases this transformer supports."""
+        return self._properties.phase_count
+
+    @property
+    def nominal_voltage(self):
+        """Get an integer for the higher voltage of this transformer."""
+        return self._properties.high_voltage
+
     def to_dict(self, abridged=False):
         """Transformer dictionary representation.
 
@@ -130,8 +142,8 @@ class Transformer(_GeometryBase):
                 'geometryType': 'Rectangle',
                 'name': self.display_name,
                 'type': 'District System',
-                'footprint_area': self.geometry.area,
-                'footprint_perimeter': self.geometry.perimeter,
+                'footprint_area': round(self.geometry.area, 1),
+                'footprint_perimeter': round(self.geometry.perimeter, 1),
                 'district_system_type': 'Transformer',
                 'electrical_catalog_name': self.properties.identifier
             },

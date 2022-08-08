@@ -13,7 +13,7 @@ import json
 def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
     add_plenum=False, solve_ceiling_adjacencies=False, electrical_network=None,
-    ground_pv=None, folder=None, tolerance=0.01
+    road_network=None, ground_pv=None, folder=None, tolerance=0.01
 ):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
@@ -46,6 +46,8 @@ def model_to_urbanopt(
             has no effect when the object_per_model is Story. (Default: False).
         electrical_network: An optional OpenDSS ElectricalNetwork that's associated
             with the dragonfly Model. (Default: None).
+        road_network: An optional RNM RoadNetwork that's associated with the
+            dragonfly Model. (Default: None).
         ground_pv: An optional list of REopt GroundMountPV objects representing
             ground-mounted photovoltaic fields to be included in the REopt
             simulation. (Default: None).
@@ -80,16 +82,26 @@ def model_to_urbanopt(
         model.convert_to_units('Meters')
         if electrical_network is not None:
             electrical_network.scale(conversion_factor)
+        if road_network is not None:
+            road_network.scale(conversion_factor)
         if ground_pv is not None:
             for g_pv in ground_pv:
                 g_pv.scale(conversion_factor)
 
     # prepare the folder for simulation
+    tr_msg = 'The following simulation folder is too long to be used with URBANopt:' \
+        '\n{}\nSpecify a shorter folder path in which to write the GeoJSON.'
     if folder is None:  # use the default simulation folder
-        folder = os.path.join(
-            folders.default_simulation_folder,
-            re.sub(r'[^.A-Za-z0-9_-]', '_', model.display_name)
-        )
+        assert len(folders.default_simulation_folder) < 55, \
+            tr_msg.format(folders.default_simulation_folder)
+        sim_dir = re.sub(r'[^.A-Za-z0-9_-]', '_', model.display_name)
+        folder = os.path.join(folders.default_simulation_folder, sim_dir)
+        if len(folder) >= 60:
+            tr_len = 58 - len(folders.default_simulation_folder)
+            folder = os.path.join(folders.default_simulation_folder, sim_dir[:tr_len])
+    else:
+        assert len(folder) < 60, tr_msg.format(folder)
+
     # get rid of anything that exists in the folder already
     if os.path.isdir(folder):
         files = os.listdir(folder)
@@ -126,6 +138,14 @@ def model_to_urbanopt(
             json.dump(electrical_network.to_electrical_database_dict(), fp, indent=4)
         if conversion_factor is not None:
             electrical_network.scale(1 / conversion_factor)
+
+    # add the road network to the GeoJSON dictionary
+    if road_network is not None:
+        road_features = road_network.to_geojson_dict(
+            location, point, tolerance=tolerance)
+        geojson_dict['features'].extend(road_features)
+        if conversion_factor is not None:
+            road_network.scale(1 / conversion_factor)
 
     # add the ground-mounted PV to the GeoJSON dictionary
     if ground_pv is not None and len(ground_pv) != 0:

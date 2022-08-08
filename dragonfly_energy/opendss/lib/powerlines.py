@@ -10,8 +10,9 @@ from .wires import _wires
 _power_lines = {}
 _data_path = os.path.join(os.path.dirname(__file__), 'extended_catalog.json')
 with open(_data_path) as json_file:
-    _all_data = json.load(json_file)['LINES'][1]
-    _default_data = _all_data['#Interurban Zone A:']
+    _all_data = json.load(json_file)['LINES']
+    _default_data = _all_data[1]['#Interurban Zone A:'] + \
+        _all_data[2]['#Urban-Overhead'] + _all_data[3]['#Urban-Underground']
 for _t_dict in _default_data:
     _t_obj = PowerLine.from_electrical_database_dict(_t_dict, _wires)
     _t_obj.lock()

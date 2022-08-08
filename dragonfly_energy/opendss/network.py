@@ -8,6 +8,7 @@ from .substation import Substation
 from .transformer import Transformer
 from .connector import ElectricalConnector
 from .junction import ElectricalJunction
+from .road import Road
 from .transformerprop import TransformerProperties
 from .powerline import PowerLine
 from .wire import Wire
@@ -431,3 +432,205 @@ class ElectricalNetwork(object):
 
     def __repr__(self):
         return 'ElectricalNetwork: {}'.format(self.display_name)
+
+
+class RoadNetwork(object):
+    """Represents a road network for RNM input.
+
+    This includes a substation and roads that will be used to lay out the
+    road network.
+
+    Args:
+        identifier: Text string for a unique road network ID. Must contain only
+            characters that are acceptable in RNM nad OpenDSS. This will be used to
+            identify the object across the exported geoJSON RNM, and OpenDSS files.
+        substation: A Substation object representing the road substation
+            supplying the network with electricity.
+        roads: An array of Road objects that are included within the road network.
+
+    Properties:
+        * identifier
+        * display_name
+        * substation
+        * roads
+    """
+    __slots__ = ('_identifier', '_display_name', '_substation', '_roads')
+
+    def __init__(self, identifier, substation, roads):
+        """Initialize RoadNetwork."""
+        self.identifier = identifier
+        self._display_name = None
+        self.substation = substation
+        self.roads = roads
+
+    @classmethod
+    def from_dict(cls, data):
+        """Initialize an RoadNetwork from a dictionary.
+
+        Args:
+            data: A dictionary representation of an RoadNetwork object.
+        """
+        # check the type of dictionary
+        assert data['type'] == 'RoadNetwork', 'Expected RoadNetwork ' \
+            'dictionary. Got {}.'.format(data['type'])
+        # re-serialize geometry objects
+        substation = Substation.from_dict(data['substation'])
+        roads = [Road.from_dict(r) for r in data['roads']]
+        net = cls(data['identifier'], substation, roads)
+        if 'display_name' in data and data['display_name'] is not None:
+            net.display_name = data['display_name']
+        return net
+
+    @property
+    def identifier(self):
+        """Get or set the text string for unique object identifier."""
+        return self._identifier
+
+    @identifier.setter
+    def identifier(self, identifier):
+        self._identifier = valid_ep_string(identifier, 'identifier')
+
+    @property
+    def display_name(self):
+        """Get or set a string for the object name without any character restrictions.
+
+        If not set, this will be equal to the identifier.
+        """
+        if self._display_name is None:
+            return self._identifier
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, value):
+        try:
+            self._display_name = str(value)
+        except UnicodeEncodeError:  # Python 2 machine lacking the character set
+            self._display_name = value  # keep it as unicode
+
+    @property
+    def substation(self):
+        """Get or set a Substation object for the network's substation."""
+        return self._substation
+
+    @substation.setter
+    def substation(self, value):
+        assert isinstance(value, Substation), \
+            'Expected Substation for road network. Got {}.'.format(type(value))
+        self._substation = value
+
+    @property
+    def roads(self):
+        """Get or set the list of Road objects within the network."""
+        return self._roads
+
+    @roads.setter
+    def roads(self, values):
+        try:
+            if not isinstance(values, tuple):
+                values = tuple(values)
+        except TypeError:
+            raise TypeError('Expected list or tuple of roads. '
+                            'Got {}'.format(type(values)))
+        for r in values:
+            assert isinstance(r, Road), 'Expected Road ' \
+                'object for road network. Got {}.'.format(type(r))
+        assert len(values) > 0, 'RoadNetwork must possess at least one road.'
+        self._roads = values
+
+    def move(self, moving_vec):
+        """Move this object along a vector.
+
+        Args:
+            moving_vec: A ladybug_geometry Vector3D with the direction and distance
+                to move the object.
+        """
+        self._substation.move(moving_vec)
+        for road in self.roads:
+            road.move(moving_vec)
+
+    def rotate_xy(self, angle, origin):
+        """Rotate this object counterclockwise in the XY plane by a certain angle.
+
+        Args:
+            angle: An angle in degrees.
+            origin: A ladybug_geometry Point3D for the origin around which the
+                object will be rotated.
+        """
+        self._substation.rotate_xy(angle, origin)
+        for road in self.roads:
+            road.rotate_xy(angle, origin)
+
+    def reflect(self, plane):
+        """Reflect this object across a plane.
+
+        Args:
+            plane: A ladybug_geometry Plane across which the object will be reflected.
+        """
+        self._substation.reflect(plane)
+        for road in self.roads:
+            road.reflect(plane)
+
+    def scale(self, factor, origin=None):
+        """Scale this object by a factor from an origin point.
+
+        Args:
+            factor: A number representing how much the object should be scaled.
+            origin: A ladybug_geometry Point3D representing the origin from which
+                to scale. If None, it will be scaled from the World origin (0, 0, 0).
+        """
+        self._substation.scale(factor, origin)
+        for road in self.roads:
+            road.scale(factor, origin)
+
+    def to_dict(self):
+        """RoadNetwork dictionary representation."""
+        base = {'type': 'RoadNetwork'}
+        base['identifier'] = self.identifier
+        base['substation'] = self.substation.to_dict()
+        base['roads'] = [r.to_dict() for r in self.roads]
+        if self._display_name is not None:
+            base['display_name'] = self.display_name
+        return base
+
+    def to_geojson_dict(self, location, point=Point2D(0, 0), tolerance=0.01):
+        """Get RoadNetwork dictionary as it appears in an URBANopt geoJSON.
+
+        The resulting dictionary array can be directly appended to the "features"
+        key of a base geoJSON dict in order to represent the network in the
+        geoJSON.
+
+        Args:
+            location: A ladybug Location object possessing longitude and latitude data.
+            point: A ladybug_geometry Point2D for where the location object exists
+                within the space of a scene. The coordinates of this point are
+                expected to be in the units of this Model. (Default: (0, 0)).
+            tolerance: The minimum difference between the coordinate values of two
+                faces at which they can be considered centered adjacent. (Default: 0.01,
+                suitable for objects in meters).
+        """
+        # get the conversion factors over to (longitude, latitude)
+        origin_lon_lat = origin_long_lat_from_location(location, point)
+        convert_facs = meters_to_long_lat_factors(origin_lon_lat)
+
+        # translate substation and transformers into the geoJSON features list
+        features_list = [self.substation.to_geojson_dict(origin_lon_lat, convert_facs)]
+        for road in self.roads:
+            features_list.append(road.to_geojson_dict(origin_lon_lat, convert_facs))
+        return features_list
+
+    def duplicate(self):
+        """Get a copy of this object."""
+        return self.__copy__()
+
+    def __copy__(self):
+        new_net = RoadNetwork(
+            self.identifier, self.substation.duplicate(),
+            tuple(r.duplicate() for r in self.roads))
+        new_net._display_name = self._display_name
+        return new_net
+
+    def ToString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return 'RoadNetwork: {}'.format(self.display_name)

@@ -80,8 +80,8 @@ class Substation(_GeometryBase):
                 'geometryType': 'Rectangle',
                 'name': self.display_name,
                 'type': 'District System',
-                'footprint_area': self.geometry.area,
-                'footprint_perimeter': self.geometry.perimeter,
+                'footprint_area': round(self.geometry.area, 1),
+                'footprint_perimeter': round(self.geometry.perimeter, 1),
                 'district_system_type': 'Electrical Substation',
             },
             'geometry': {

@@ -27,6 +27,8 @@ class ElectricalConnector(_GeometryBase):
         * display_name
         * geometry
         * power_line
+        * phase_count
+        * nominal_voltage
     """
     __slots__ = ('_power_line',)
 
@@ -97,6 +99,16 @@ class ElectricalConnector(_GeometryBase):
         value.lock()  # lock to avoid editing
         self._power_line = value
 
+    @property
+    def phase_count(self):
+        """Get an integer for the number of phases this connector supports."""
+        return self._power_line.phase_count
+
+    @property
+    def nominal_voltage(self):
+        """Get an integer for the nominal voltage of this connector."""
+        return self._power_line.nominal_voltage
+
     def to_dict(self, abridged=False):
         """ElectricalConnector dictionary representation.
 
@@ -141,7 +153,7 @@ class ElectricalConnector(_GeometryBase):
                 'type': 'ElectricalConnector',
                 'startJunctionId': start_id,
                 'endJunctionId': end_id,
-                'total_length': self.geometry.length,
+                'total_length': round(self.geometry.length, 2),
                 'connector_type': 'Wire',
                 'electrical_catalog_name': self.power_line.identifier,
                 'name': self.display_name
