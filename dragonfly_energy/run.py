@@ -351,7 +351,7 @@ def run_rnm(feature_geojson, scenario_csv):
         scenario_csv: The full path to a .csv file for the URBANopt scenario.
 
     Returns:
-        A series of file paths to the simulation output files.
+        Path to a folder that contains all of the RNM output files.
     """
     # run the simulation
     folders.check_urbanopt_version()
@@ -359,7 +359,10 @@ def run_rnm(feature_geojson, scenario_csv):
         directory = _run_rnm_windows(feature_geojson, scenario_csv)
     else:  # we are on Mac, Linux, or some other unix-based system
         directory = _run_rnm_unix(feature_geojson, scenario_csv)
-    return directory
+    # output the path to the results folder
+    scenario_name = os.path.basename(scenario_csv).replace('.csv', '')
+    rnm_path = os.path.join(directory, 'run', scenario_name, 'rnm-us', 'results')
+    return rnm_path if os.path.isdir(rnm_path) else None
 
 
 def _add_mapper_measure(project_directory, mapper_measure):
@@ -777,7 +780,7 @@ def _run_rnm_windows(feature_geojson, scenario_csv):
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
-        Path to the folder out of which the simulation was run.
+        Path to the project folder.
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
@@ -805,7 +808,7 @@ def _run_rnm_unix(feature_geojson, scenario_csv):
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
 
     Returns:
-        Path to the folder in which results should be contained.
+        Path to the project folder.
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
