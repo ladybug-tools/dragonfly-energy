@@ -84,6 +84,13 @@ def test_network_dict_methods():
     assert network_dict == new_network.to_dict()
 
 
+def test_network_from_rnm_geojson():
+    """Test the ElectricalNetwork from_rnm_geojson method."""
+    network_json = './tests/json/sample_rnm_network.geojson'
+    network = ElectricalNetwork.from_rnm_geojson(network_json)
+    assert isinstance(network, ElectricalNetwork)
+
+
 def test_road_network_init():
     """Test the initialization of RoadNetwork and basic properties."""
     network_json = './tests/json/buffalo_road_grid.json'

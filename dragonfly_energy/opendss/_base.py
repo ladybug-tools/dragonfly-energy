@@ -3,8 +3,10 @@
 from __future__ import division
 import math
 
-from ladybug_geometry.geometry2d.pointvector import Point2D, Vector2D
+from ladybug_geometry.geometry2d import Point2D, Vector2D, LineSegment2D, \
+    Polyline2D, Polygon2D
 from honeybee.typing import valid_ep_string
+from dragonfly.projection import lon_lat_to_polygon
 
 
 class _GeometryBase(object):
@@ -103,6 +105,59 @@ class _GeometryBase(object):
     def duplicate(self):
         """Get a copy of this object."""
         return self.__copy__()
+
+    @staticmethod
+    def _geojson_coordinates_to_polygon2d(
+            geojson_coordinates, origin_lon_lat, convert_facs):
+        """Convert geoJSON coordinates to a Polygon2D.
+
+        Args:
+            geojson_coordinates: The coordinates from the geojson file. For 'Polygon'
+                geometries, this will be the list from the 'coordinates' key in the
+                geojson file, for 'MultiPolygon' geometries, this will be each item
+                in the list from the 'coordinates' key. This can also be a single
+                point, which will be interpreted as a rectangular polygon with
+                the point at its center.
+            origin_lon_lat: An array of two numbers in degrees representing the
+                longitude and latitude of the scene origin in degrees.
+            convert_facs: A tuple with two values used to translate between
+                longitude, latitude and meters.
+
+        Returns:
+            A Polygon2D  object in model space coordinates converted from the geojson
+            coordinates.
+        """
+        pt_array = [geojson_coordinates] if \
+            isinstance(geojson_coordinates[0], (float, int)) else geojson_coordinates[0]
+        coords = lon_lat_to_polygon(pt_array, origin_lon_lat, convert_facs)
+        coords = [Point2D(pt2d[0], pt2d[1]) for pt2d in coords]
+        if len(coords) != 1:
+            return Polygon2D(coords[:-1])
+        else:
+            return Polygon2D.from_regular_polygon(4, 5, coords[0])
+
+    @staticmethod
+    def _geojson_coordinates_to_line2d(
+            geojson_coordinates, origin_lon_lat, convert_facs):
+        """Convert geoJSON coordinates to a LineSegment2D or Polyline2D.
+
+        Args:
+            geojson_coordinates: The coordinates from the geojson file. This must
+                be from the 'coordinates' key of a 'LineString' geometry in order
+                to translate successfully.
+            origin_lon_lat: An array of two numbers in degrees representing the
+                longitude and latitude of the scene origin in degrees.
+            convert_facs: A tuple with two values used to translate between
+                longitude, latitude and meters.
+
+        Returns:
+            A Polygon2D  object in model space coordinates converted from the geojson
+            coordinates.
+        """
+        coords = lon_lat_to_polygon(geojson_coordinates, origin_lon_lat, convert_facs)
+        coords = [Point2D(pt2d[0], pt2d[1]) for pt2d in coords]
+        return LineSegment2D.from_end_points(*coords) \
+            if len(coords) == 2 else Polyline2D(coords)
 
     def __copy__(self):
         new_obj = self.__class__(self.identifier)

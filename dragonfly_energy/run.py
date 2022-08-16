@@ -339,7 +339,8 @@ def run_reopt(feature_geojson, scenario_csv, urdb_label, reopt_parameters=None,
     return _output_reopt_files(directory)
 
 
-def run_rnm(feature_geojson, scenario_csv):
+def run_rnm(feature_geojson, scenario_csv, underground_ratio=0.9, lv_only=True,
+            nodes_per_building=1):
     """Run a feature and scenario file through RNM post processing.
 
     Note that the URBANopt simulation must already be run with the input feature_geojson
@@ -349,20 +350,49 @@ def run_rnm(feature_geojson, scenario_csv):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to a .csv file for the URBANopt scenario.
+        underground_ratio: A number between 0 and 1 for the ratio of overall cables
+            that are underground vs. overhead in the analysis. (Default: 0.9).
+        lv_only: Boolean to note whether to consider only low voltage consumers
+            in the analysis. (Default: True).
+        nodes_per_building: Positive integer for the maximum number of low voltage
+            nodes to represent a single building. (Default: 1).
 
     Returns:
         Path to a folder that contains all of the RNM output files.
     """
+    # load the information from the GeoJSON
+    geo_dict, project_dict = None, None
+    if os.path.isfile(feature_geojson):
+        with open(feature_geojson, 'r') as fg:
+            geo_dict = json.load(fg)
+            project_dict = geo_dict['project']
+    # change the GeoJSON to have the RNM inputs
+    if underground_ratio != 0.9 or not lv_only or nodes_per_building != 1:
+        if geo_dict is not None:
+            geo_dict['project']['underground_cables_ratio'] = underground_ratio
+            geo_dict['project']['only_lv_consumers'] = lv_only
+            geo_dict['project']['max_number_of_lv_nodes_per_building'] = \
+                nodes_per_building
+            with open(feature_geojson, 'w') as fp:
+                json.dump(geo_dict, fp, indent=4)
     # run the simulation
     folders.check_urbanopt_version()
     if os.name == 'nt':  # we are on Windows
         directory = _run_rnm_windows(feature_geojson, scenario_csv)
     else:  # we are on Mac, Linux, or some other unix-based system
         directory = _run_rnm_unix(feature_geojson, scenario_csv)
-    # output the path to the results folder
+    # get the path to the results folder
     scenario_name = os.path.basename(scenario_csv).replace('.csv', '')
     rnm_path = os.path.join(directory, 'run', scenario_name, 'rnm-us', 'results')
-    return rnm_path if os.path.isdir(rnm_path) else None
+    # copy the project information into the RNM GeoJSON
+    if os.path.isdir(rnm_path):
+        rnm_geojson = os.path.join(rnm_path, 'GeoJSON', 'Distribution_system.json')
+        with open(rnm_geojson, 'r') as fg:
+            rnm_dict = json.load(fg)
+        rnm_dict['project'] = project_dict
+        with open(rnm_geojson, 'w') as fp:
+            json.dump(rnm_dict, fp, indent=4)
+        return rnm_path
 
 
 def _add_mapper_measure(project_directory, mapper_measure):
