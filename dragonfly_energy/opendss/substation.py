@@ -45,6 +45,25 @@ class Substation(_GeometryBase):
             trans.display_name = data['display_name']
         return trans
 
+    @classmethod
+    def from_rnm_geojson_dict(
+            cls, data, origin_lon_lat, conversion_factors):
+        """Get a Substation from a dictionary as it appears in an RNM GeoJSON.
+
+        Args:
+            data: A GeoJSON dictionary representation of an Substation feature.
+            origin_lon_lat: An array of two numbers in degrees. The first value
+                represents the longitude of the scene origin in degrees (between -180
+                and +180). The second value represents latitude of the scene origin
+                in degrees (between -90 and +90). Note that the "scene origin" is the
+                (0, 0) coordinate in the 2D space of the input polygon.
+            conversion_factors: A tuple with two values used to translate between
+                meters and longitude, latitude.
+        """
+        geo = cls._geojson_coordinates_to_polygon2d(
+            data['geometry']['coordinates'], origin_lon_lat, conversion_factors)
+        return cls(data['properties']['Code'], geo)
+
     @property
     def geometry(self):
         """Get a Polygon2D representing the substation."""

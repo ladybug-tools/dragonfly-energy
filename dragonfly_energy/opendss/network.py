@@ -4,6 +4,14 @@ import os
 import uuid
 import json
 
+from ladybug_geometry.geometry2d.pointvector import Point2D
+from ladybug_geometry.geometry2d.polygon import Polygon2D
+from ladybug.location import Location
+from honeybee.typing import valid_ep_string
+from honeybee.units import conversion_factor_to_meters
+from dragonfly.projection import meters_to_long_lat_factors, \
+    origin_long_lat_from_location
+
 from .substation import Substation
 from .transformer import Transformer
 from .connector import ElectricalConnector
@@ -12,12 +20,7 @@ from .road import Road
 from .transformerprop import TransformerProperties
 from .powerline import PowerLine
 from .wire import Wire
-
-from ladybug_geometry.geometry2d.pointvector import Point2D
-from ladybug_geometry.geometry2d.polygon import Polygon2D
-from honeybee.typing import valid_ep_string
-from dragonfly.projection import meters_to_long_lat_factors, \
-    origin_long_lat_from_location
+from .lib.powerlines import power_line_by_identifier
 
 
 class ElectricalNetwork(object):
@@ -89,6 +92,127 @@ class ElectricalNetwork(object):
         if 'display_name' in data and data['display_name'] is not None:
             net.display_name = data['display_name']
         return net
+
+    @classmethod
+    def from_rnm_geojson(
+            cls, geojson_file_path, location=None, point=None, units='Meters'):
+        """Get an ElectricalNetwork from a dictionary as it appears in an RNM GeoJSON.
+
+        Args:
+            geojson_file_path: Text for the full path to the geojson file to load as
+                Model.
+            location: An optional ladybug location object with longitude and
+                latitude data defining the origin of the geojson file. If None,
+                an attempt will be made to sense the location from the project
+                point in the GeoJSON (if it sexists). If nothing is found, the
+                origin is autocalcualted as the bottom-left corner of the bounding
+                box of all building footprints in the geojson file. (Default: None).
+            point: A ladybug_geometry Point2D for where the location object exists
+                within the space of a scene. The coordinates of this point are
+                expected to be in the units input. If None, an attempt will be
+                made to sense the CAD coordinates from the GeoJSON if they
+                exist. If not found, they will default to (0, 0).
+            units: Text for the units system in which the model geometry
+                exists. Default: 'Meters'. Choose from the following:
+
+                * Meters
+                * Millimeters
+                * Feet
+                * Inches
+                * Centimeters
+
+                Note that this method assumes the point coordinates are in the
+                same units.
+        """
+        # parse the geoJSON into a dictionary
+        with open(geojson_file_path, 'r') as fp:
+            data = json.load(fp)
+
+        # extract the CAD coordinates and location from the GeoJSON if they exist
+        if 'project' in data:
+            prd = data['project']
+            if 'latitude' in prd and 'longitude' in prd and location is None:
+                location = Location(latitude=prd['latitude'], longitude=prd['longitude'])
+            if 'cad_coordinates' in prd and point is None:
+                point = Point2D(*prd['cad_coordinates'])
+        if point is None:  # just use the world origin if no point was found
+            point = Point2D(0, 0)
+
+        # Get the list of substation, transformer and electrical connector data
+        transf_data, connector_data, subst_data = [], [], None
+        for obj_data in data['features']:
+            if 'type' in obj_data['properties']:
+                if obj_data['properties']['type'] == 'Line':
+                    connector_data.append(obj_data)
+                elif obj_data['properties']['type'] == 'DistribTransf':
+                    transf_data.append(obj_data)
+                elif 'Substation' in obj_data['properties']['type']:
+                    subst_data = obj_data
+
+        # if model units is not Meters, convert non-meter user inputs to meters
+        scale_to_meters = conversion_factor_to_meters(units)
+        if units != 'Meters':
+            point = point.scale(scale_to_meters)
+
+        # Get long and lat in the geojson that correspond to the model origin (point).
+        # If location is None, derive coordinates from the geojson geometry.
+        if location is None:
+            point_lon_lat = cls._bottom_left_coordinate_from_geojson(connector_data)
+            location = Location(longitude=point_lon_lat[0], latitude=point_lon_lat[1])
+
+        # The model point may not be at (0, 0), so shift the longitude and latitude to
+        # get the equivalent point in longitude and latitude for (0, 0) in the model.
+        origin_lon_lat = origin_long_lat_from_location(location, point)
+        _convert_facs = meters_to_long_lat_factors(origin_lon_lat)
+        convert_facs = 1 / _convert_facs[0], 1 / _convert_facs[1]
+
+        # extract the connectors
+        power_line_dict = {
+            p['properties']['Equip']: power_line_by_identifier(p['properties']['Equip'])
+            for p in connector_data
+        }
+        connectors = []
+        for con_data in connector_data:
+            con_obj = ElectricalConnector.from_rnm_geojson_dict(
+                con_data, origin_lon_lat, convert_facs, power_line_dict)
+            connectors.append(con_obj)
+        # extract the transformers
+        transformers = []
+        for trn_data in transf_data:
+            trn_obj = Transformer.from_rnm_geojson_dict(
+                trn_data, origin_lon_lat, convert_facs)
+            transformers.append(trn_obj)
+        # extract the substation
+        substation = Substation.from_rnm_geojson_dict(
+            subst_data, origin_lon_lat, convert_facs)
+
+        # create the network and adjust for the units
+        base_name = os.path.basename(geojson_file_path)
+        net_id = base_name.replace('.json', '').replace('.geojson', '')
+        net = cls(net_id, substation, transformers, connectors)
+        if units != 'Meters':
+            net.convert_to_units(units)
+        return net
+
+    @staticmethod
+    def _bottom_left_coordinate_from_geojson(connector_data):
+        """Calculate the bottom-left bounding box coordinate from geojson coordinates.
+
+        Args:
+            connector_data: a list of dictionaries containing geojson geometries that
+                represent power lines.
+
+        Returns:
+            The bottom-left most corner of the bounding box around the coordinates.
+        """
+        xs, ys = [], []
+        for conn in connector_data:
+            conn_coords = conn['geometry']['coordinates']
+            if conn['geometry']['type'] == 'LineString':
+                for pt in conn_coords:
+                    xs.append(pt[0])
+                    ys.append(pt[1])
+        return min(xs), min(ys)
 
     @property
     def identifier(self):
@@ -294,6 +418,27 @@ class ElectricalNetwork(object):
             transformer.scale(factor, origin)
         for connector in self.connectors:
             connector.scale(factor, origin)
+
+    def convert_to_units(self, units='Meters', starting_units='Meters'):
+        """Convert all of the geometry in this ElectricalNetwork to certain units.
+
+        Args:
+            units: Text for the units to which the Model geometry should be
+                converted. (Default: Meters). Choose from the following:
+
+                * Meters
+                * Millimeters
+                * Feet
+                * Inches
+                * Centimeters
+
+            starting_units: The starting units system of the network. (Default: Meters).
+        """
+        if starting_units != units:
+            scale_fac1 = conversion_factor_to_meters(starting_units)
+            scale_fac2 = conversion_factor_to_meters(units)
+            scale_fac = scale_fac1 / scale_fac2
+            self.scale(scale_fac)
 
     def to_dict(self):
         """ElectricalNetwork dictionary representation."""
@@ -592,7 +737,7 @@ class RoadNetwork(object):
             base['display_name'] = self.display_name
         return base
 
-    def to_geojson_dict(self, location, point=Point2D(0, 0), tolerance=0.01):
+    def to_geojson_dict(self, location, point=Point2D(0, 0)):
         """Get RoadNetwork dictionary as it appears in an URBANopt geoJSON.
 
         The resulting dictionary array can be directly appended to the "features"
@@ -604,9 +749,6 @@ class RoadNetwork(object):
             point: A ladybug_geometry Point2D for where the location object exists
                 within the space of a scene. The coordinates of this point are
                 expected to be in the units of this Model. (Default: (0, 0)).
-            tolerance: The minimum difference between the coordinate values of two
-                faces at which they can be considered centered adjacent. (Default: 0.01,
-                suitable for objects in meters).
         """
         # get the conversion factors over to (longitude, latitude)
         origin_lon_lat = origin_long_lat_from_location(location, point)

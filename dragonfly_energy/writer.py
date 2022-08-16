@@ -141,8 +141,7 @@ def model_to_urbanopt(
 
     # add the road network to the GeoJSON dictionary
     if road_network is not None:
-        road_features = road_network.to_geojson_dict(
-            location, point, tolerance=tolerance)
+        road_features = road_network.to_geojson_dict(location, point)
         geojson_dict['features'].extend(road_features)
         if conversion_factor is not None:
             road_network.scale(1 / conversion_factor)

@@ -73,7 +73,7 @@ class ElectricalConnector(_GeometryBase):
         try:
             power_line = power_lines[data['power_line']]
         except KeyError as e:
-            raise ValueError('Failed to find "{}" in wires.'.format(e))
+            raise ValueError('Failed to find "{}" in power lines.'.format(e))
         geo = LineSegment2D.from_dict(data['geometry']) \
             if data['geometry']['type'] == 'LineSegment2D' \
             else Polyline2D.from_dict(data['geometry'])
@@ -81,6 +81,31 @@ class ElectricalConnector(_GeometryBase):
         if 'display_name' in data and data['display_name'] is not None:
             con.display_name = data['display_name']
         return con
+
+    @classmethod
+    def from_rnm_geojson_dict(
+            cls, data, origin_lon_lat, conversion_factors, power_lines):
+        """Get an ElectricalConnector from a dictionary as it appears in an RNM GeoJSON.
+
+        Args:
+            data: A GeoJSON dictionary representation of an ElectricalConnector feature.
+            origin_lon_lat: An array of two numbers in degrees. The first value
+                represents the longitude of the scene origin in degrees (between -180
+                and +180). The second value represents latitude of the scene origin
+                in degrees (between -90 and +90). Note that the "scene origin" is the
+                (0, 0) coordinate in the 2D space of the input polygon.
+            conversion_factors: A tuple with two values used to translate between
+                meters and longitude, latitude.
+            power_lines: A dictionary with identifiers of PowerLines as keys and Python
+                PowerLine objects as values.
+        """
+        geo = cls._geojson_coordinates_to_line2d(
+            data['geometry']['coordinates'], origin_lon_lat, conversion_factors)
+        try:
+            power_line = power_lines[data['properties']['Equip']]
+        except KeyError as e:
+            raise ValueError('Failed to find "{}" in power lines.'.format(e))
+        return cls(data['properties']['Code'], geo, power_line)
 
     @property
     def geometry(self):
