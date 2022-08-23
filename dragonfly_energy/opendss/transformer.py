@@ -93,9 +93,10 @@ class Transformer(_GeometryBase):
         geo = cls._geojson_coordinates_to_polygon2d(
             data['geometry']['coordinates'], origin_lon_lat, conversion_factors)
         prop = data['properties']
-        kva_rating = 100 if 'kVA' not in prop else prop['kVA']
+        kva_rating = 100 if 'Snom' not in prop else prop['Snom']
+        resis = 0.1 if 'LV_R(ohm)' not in prop else prop['LV_R(ohm)']
         t_props = TransformerProperties(
-            prop['Code'], kva_rating,
+            prop['Code'], kva_rating, resistance=resis,
             reactance=prop['Xsc(pu)'], phase_count=prop['Phases'],
             high_voltage=prop['Vnom1'], low_voltage=prop['Vnom2'])
         return cls(prop['Code'], geo, t_props)
