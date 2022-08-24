@@ -7,17 +7,20 @@ import json
 import shutil
 import subprocess
 
+from ladybug.futil import preparedir, write_to_file
+from ladybug.epw import EPW
+from honeybee_energy.config import folders as hb_energy_folders
+from honeybee_energy.result.emissions import emissions_region
+
 from .config import folders
 from .measure import MapperMeasure
 from .reopt import REoptParameter
 
-from honeybee_energy.config import folders as hb_energy_folders
-from ladybug.futil import preparedir, write_to_file
-
 
 def base_honeybee_osw(
         project_directory, sim_par_json=None, additional_measures=None,
-        additional_mapper_measures=None, base_osw=None, epw_file=None, skip_report=True):
+        additional_mapper_measures=None, base_osw=None, epw_file=None,
+        skip_report=True, emissions_year=None):
     """Create a honeybee_workflow.osw to be used as a base in URBANopt simulations.
 
     This method will also copy the Honeybee.rb mapper to this folder if it is
@@ -48,7 +51,11 @@ def base_honeybee_osw(
             measure skipped as part of the workflow. If False, the measure will
             be run after all simulations are complete. Note that this input
             has no effect if the default_feature_reports measure is already
-            in the base_osw or additional_measures (Default: True)
+            in the base_osw or additional_measures. (Default: True).
+        emissions_year: An optional integer to set the year for which carbon emissions
+            will be computed. If not for a historical year, values must be an even
+            number and be between 2020 and 2050. If None, no carbon emission
+            calculations will be included in the simulation. (Default: None).
 
     Returns:
         The file path to the honeybee_workflow.osw written out by this method.
@@ -89,6 +96,28 @@ def base_honeybee_osw(
         m_dir = os.path.join(hb_energy_folders.honeybee_openstudio_gem_path, 'measures')
         osw_dict['measure_paths'].append(m_dir)
 
+    # add the emissions reporting if a year has been selected
+    if emissions_year is not None and epw_file is not None:
+        epw_obj = EPW(epw_file)
+        ems_region = emissions_region(epw_obj.location)
+        if ems_region is not None:
+            if emissions_year < 2020:
+                hist_yr, fut_yr = emissions_year, 2030
+            else:
+                hist_yr, fut_yr = 2019, emissions_year
+            emissions_measure_dict = {
+                'arguments': {
+                    'future_subregion': ems_region[0],
+                    'hourly_historical_subregion': ems_region[2],
+                    'annual_historical_subregion': ems_region[1],
+                    'future_year': str(fut_yr),
+                    'hourly_historical_year': '2019',
+                    'annual_historical_year': str(hist_yr)
+                },
+                'measure_dir_name': 'add_ems_emissions_reporting'
+            }
+            osw_dict['steps'].append(emissions_measure_dict)
+
     # add any additional measures to the osw_dict
     if additional_measures or additional_mapper_measures:
         measures = []
@@ -112,7 +141,7 @@ def base_honeybee_osw(
         for m_path in measure_paths:  # add outside measure paths
             osw_dict['measure_paths'].append(m_path)
 
-    # add default feature reports if they aren't already in the steps
+    # add default feature reports if they aren't in the steps
     all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
     if 'default_feature_reports' not in all_measures:
         report_measure_dict = {
