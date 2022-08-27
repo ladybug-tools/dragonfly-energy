@@ -544,7 +544,7 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\ncall {}\nuo run -f {} -s {}'.format(
+    batch = '{}\ncd {}\ncall "{}"\nuo run -f "{}" -s "{}"'.format(
         working_drive, working_drive, folders.urbanopt_env_path,
         feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_simulation.bat')
@@ -572,7 +572,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the shell script to call URBANopt CLI
-    shell = '#!/usr/bin/env bash\nsource {}\nuo run -f {} -s {}'.format(
+    shell = '#!/usr/bin/env bash\nsource "{}"\nuo run -f "{}" -s "{}"'.format(
         folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_simulation.sh')
     write_to_file(shell_file, shell, True)
@@ -701,7 +701,7 @@ def _run_default_report_windows(feature_geojson, scenario_csv):
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\ncall {}\nuo process --default -f {} -s {}'.format(
+    batch = '{}\ncd {}\ncall "{}"\nuo process --default -f "{}" -s "{}"'.format(
         working_drive, working_drive, folders.urbanopt_env_path,
         feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_default_report.bat')
@@ -728,8 +728,8 @@ def _run_default_report_unix(feature_geojson, scenario_csv):
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nsource {}\n' \
-        'uo process --default -f {} -s {}'.format(
+    shell = '#!/usr/bin/env bash\nsource "{}"\n' \
+        'uo process --default -f "{}" -s "{}"'.format(
             folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_default_report.sh')
     write_to_file(shell_file, shell, True)
@@ -762,8 +762,8 @@ def _run_reopt_windows(feature_geojson, scenario_csv, developer_key):
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\ncall {}\nSET GEM_DEVELOPER_KEY={}\n' \
-        'uo process --reopt-scenario -f {} -s {}'.format(
+    batch = '{}\ncd {}\ncall "{}"\nSET GEM_DEVELOPER_KEY={}\n' \
+        'uo process --reopt-scenario -f "{}" -s "{}"'.format(
             working_drive, working_drive, folders.urbanopt_env_path, developer_key,
             feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_reopt.bat')
@@ -792,8 +792,8 @@ def _run_reopt_unix(feature_geojson, scenario_csv, developer_key):
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the shell script to call OpenStudio CLI
-    shell = '#!/usr/bin/env bash\nsource {}\nGEM_DEVELOPER_KEY={}\n' \
-        'uo process --reopt-scenario -f {} -s {}'.format(
+    shell = '#!/usr/bin/env bash\nsource "{}"\nGEM_DEVELOPER_KEY={}\n' \
+        'uo process --reopt-scenario -f "{}" -s "{}"'.format(
             folders.urbanopt_env_path, developer_key, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_reopt.sh')
     write_to_file(shell_file, shell, True)
@@ -845,7 +845,7 @@ def _run_rnm_windows(feature_geojson, scenario_csv):
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the batch file to call URBANopt CLI
     working_drive = directory[:2]
-    batch = '{}\ncd {}\ncall {}\nuo rnm --feature {} --scenario {}'.format(
+    batch = '{}\ncd {}\ncall "{}"\nuo rnm --feature "{}" --scenario "{}"'.format(
         working_drive, working_drive, folders.urbanopt_env_path,
         feature_geojson, scenario_csv)
     batch_file = os.path.join(directory, 'run_rnm.bat')
@@ -872,8 +872,8 @@ def _run_rnm_unix(feature_geojson, scenario_csv):
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     # Write the shell script to call URBANopt CLI
-    shell = '#!/usr/bin/env bash\nsource {}\nuo rnm --feature {} -s-scenario {}'.format(
-        folders.urbanopt_env_path, feature_geojson, scenario_csv)
+    shell = '#!/usr/bin/env bash\nsource "{}"\nuo rnm --feature "{}" -s-scenario ' \
+        '"{}"'.format(folders.urbanopt_env_path, feature_geojson, scenario_csv)
     shell_file = os.path.join(directory, 'run_rnm.sh')
     write_to_file(shell_file, shell, True)
     # make the shell script executable using subprocess.check_call
