@@ -550,7 +550,7 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
-    os.system(batch_file)
+    os.system('"{}"'.format(batch_file))
     return directory
 
 
@@ -707,7 +707,7 @@ def _run_default_report_windows(feature_geojson, scenario_csv):
     batch_file = os.path.join(directory, 'run_default_report.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file and return output files
-    os.system(batch_file)
+    os.system('"{}"'.format(batch_file))
     result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
     run_folder = os.path.join(directory, 'run', result_folder)
     return os.path.join(run_folder, 'default_scenario_report.csv'), \
@@ -769,7 +769,7 @@ def _run_reopt_windows(feature_geojson, scenario_csv, developer_key):
     batch_file = os.path.join(directory, 'run_reopt.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
-    os.system(batch_file)
+    os.system('"{}"'.format(batch_file))
     result_folder = os.path.basename(scenario_csv).lower().replace('.csv', '')
     return os.path.join(directory, 'run', result_folder)
 
@@ -851,7 +851,7 @@ def _run_rnm_windows(feature_geojson, scenario_csv):
     batch_file = os.path.join(directory, 'run_rnm.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
-    os.system(batch_file)
+    os.system('"{}"'.format(batch_file))
     return directory
 
 
