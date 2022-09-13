@@ -167,6 +167,7 @@ def model_to_urbanopt(
     for bldg_model in hb_models:
         bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
         model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
+        bldg_model.properties.energy.add_autocal_properties_to_dict(model_dict)
         with open(bld_path, 'w') as fp:
             json.dump(model_dict, fp)
         hb_model_jsons.append(bld_path)
