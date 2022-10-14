@@ -153,11 +153,13 @@ class ColorNetworkResults(object):
         self._network = network
         all_obj = (network.substation,) + network.transformers + network.connectors
         self._min_point, self._max_point = _calculate_min_max(all_obj)
-        geo_dict = {obj.identifier.lower(): obj.geometry for obj in all_obj}
+        geo_dict = {obj.identifier.lower().replace(':', ''): obj.geometry
+                    for obj in all_obj}
         self._matched_geometries, self._matched_data = [], []
         for dat in self._data_collections:
             try:
-                self._matched_geometries.append(geo_dict[dat.header.metadata['name']])
+                self._matched_geometries.append(
+                    geo_dict[dat.header.metadata['name'].replace(':', '')])
                 self._matched_data.append(dat)
             except KeyError:  # data could not be matched
                 pass

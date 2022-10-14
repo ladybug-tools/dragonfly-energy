@@ -44,7 +44,7 @@ class MapperMeasure(Measure):
 
             {
             "type": "MapperMeasure",
-            "identifier": string,  # Measure identifer
+            "identifier": string,  # Measure identifier
             "xml_data": string,  # XML file data as string
             "rb_data": string,  # Ruby file data as string
             "resource_data": {},  # Dictionary of strings for any resource ruby files
@@ -85,13 +85,13 @@ class MapperMeasure(Measure):
     def to_osw_dict(self, full_path=False):
         """Get a Python dictionary that can be written to an OSW JSON.
 
-        Specifcally, this dictionary can be appended to the "steps" key of the
+        Specifically, this dictionary can be appended to the "steps" key of the
         OpenStudio Workflow (.osw) JSON dictionary in order to include the measure
         in the workflow.
 
         Note that this method does not perform any checks to validate that the
         Measure has all required values and only arguments with values will be
-        included in the dictionary. Validation should be done seperately with
+        included in the dictionary. Validation should be done separately with
         the validate method.
 
         Args:
