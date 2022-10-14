@@ -1,77 +1,2391 @@
 {
-"type" : "FeatureCollection",
-"features" :
-[
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "sub_West_Substation_12.47" ,  "Subest" : "n.a." ,  "Feeder" : "n.a." } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8556420276764811, 42.8167800452354825] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "ST_MAT" ,  "Subest" : "n.a." ,  "Feeder" : "n.a." } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8556420276764811, 42.8167800452354825] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDM2" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477390457215819, 42.8137886399091698] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDM3" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8479087748011125, 42.8141740889719244] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT0" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT0LV" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT1" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477390457215819, 42.8137886399091698] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT1LV" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477390457215819, 42.8137886399091698] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT2" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477956218566476, 42.8139171229555728] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT2LV" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477956218566476, 42.8139171229555728] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT3" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8497176789154111, 42.8148331163677369] } },
-{ "type": "Feature", "properties": {  "type" : "DummyNode" ,  "Node" : "honeybee_scenarioDT3LV" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8497176789154111, 42.8148331163677369] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Mixed_use1_27" ,  "Node" : "Mixed_use1_27" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "1711.81" ,  "DemQ_kVAr" : "829.07" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "1711.81" ,  "Qinst_kVAr" : "829.07" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8478680386590014, 42.8146431981362028] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Restaurant1_11" ,  "Node" : "Restaurant1_11" ,  "Phases" : "3" ,  "NVolt_kV" : "0.42" ,  "DemP_kW" : "189.09" ,  "DemQ_kVAr" : "91.58" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "189.09" ,  "Qinst_kVAr" : "91.58" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8500121163842635, 42.8181214693196921] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential1_14" ,  "Node" : "Residential1_14" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "204.88" ,  "DemQ_kVAr" : "99.23" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "204.88" ,  "Qinst_kVAr" : "99.23" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8501566245978012, 42.8144847683195593] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential2_3" ,  "Node" : "Residential2_3" ,  "Phases" : "3" ,  "NVolt_kV" : "0.42" ,  "DemP_kW" : "55.48" ,  "DemQ_kVAr" : "26.87" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "55.48" ,  "Qinst_kVAr" : "26.87" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8486209916310230, 42.8135358844923672] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential4_8" ,  "Node" : "Residential4_8" ,  "Phases" : "1" ,  "NVolt_kV" : "0.42" ,  "DemP_kW" : "15.12" ,  "DemQ_kVAr" : "7.32" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "15.12" ,  "Qinst_kVAr" : "7.32" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8480917478538572, 42.8136700136128354] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential5_8" ,  "Node" : "Residential5_8" ,  "Phases" : "1" ,  "NVolt_kV" : "0.42" ,  "DemP_kW" : "19.77" ,  "DemQ_kVAr" : "9.58" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "19.77" ,  "Qinst_kVAr" : "9.58" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8482684694503462, 42.8140654990000940] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Office1_7" ,  "Node" : "Office1_7" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "724.51" ,  "DemQ_kVAr" : "350.90" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "724.51" ,  "Qinst_kVAr" : "350.90" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8485427557207430, 42.8161762682301088] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Hospital1_7" ,  "Node" : "Hospital1_7" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "1858.52" ,  "DemQ_kVAr" : "900.12" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "1858.52" ,  "Qinst_kVAr" : "900.12" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507825655743346, 42.8158809354106324] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Hospital2_13" ,  "Node" : "Hospital2_13" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "1293.59" ,  "DemQ_kVAr" : "626.51" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "1293.59" ,  "Qinst_kVAr" : "626.51" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8494013402434035, 42.8167711481374980] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Mixeduse2_10" ,  "Node" : "Mixeduse2_10" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "3024.16" ,  "DemQ_kVAr" : "1464.67" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "3024.16" ,  "Qinst_kVAr" : "1464.67" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507730898099624, 42.8198612772326612] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential3_8" ,  "Node" : "Residential3_8" ,  "Phases" : "3" ,  "NVolt_kV" : "0.42" ,  "DemP_kW" : "56.83" ,  "DemQ_kVAr" : "27.52" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "56.83" ,  "Qinst_kVAr" : "27.52" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496117280572832, 42.8146080747125524] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Mall1_4" ,  "Node" : "Mall1_4" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "986.43" ,  "DemQ_kVAr" : "477.75" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "986.43" ,  "Qinst_kVAr" : "477.75" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8491530480288674, 42.8190073481749423] } },
-{ "type": "Feature", "properties": {  "type" : "Consumer" ,  "Code" : "Residential6_4" ,  "Node" : "Residential6_4" ,  "Phases" : "3" ,  "NVolt_kV" : "12.47" ,  "DemP_kW" : "502.70" ,  "DemQ_kVAr" : "243.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" ,  "Pinst_kW" : "502.70" ,  "Qinst_kVAr" : "243.47" ,  "Yearly_kWh" : "0.00" ,  "NumCust" : "1" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8489109673708555, 42.8198928413506721] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Residential4_8-honeybee_scenarioDM2)" ,  "NodeA" : "honeybee_scenarioDM2" ,  "NodeB" : "Residential4_8" ,  "NomV" : "0.42" ,  "Len" : "0.032" ,  "Equip" : "1P_UG_AL_1/0_Brenau_0_416_0" ,  "R" : "0.01717" ,  "X" : "0.00905" ,  "C" : "0.61776" ,  "R0" : "0.02280" ,  "X0" : "0.07146" ,  "C0" : "0.21439" ,  "Imax" : "235" ,  "Status" : "1" ,  "Phases" : "A" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8477390457215819, 42.8137886399091698] , [-78.8480917478538572, 42.8136700136128354] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:honeybee_scenarioDM2-honeybee_scenarioDT2LV)" ,  "NodeA" : "honeybee_scenarioDT2LV" ,  "NodeB" : "honeybee_scenarioDM2" ,  "NomV" : "0.42" ,  "Len" : "0.015" ,  "Equip" : "1P_UG_AL_1/0_Brenau_0_416_0" ,  "R" : "0.00812" ,  "X" : "0.00428" ,  "C" : "0.29227" ,  "R0" : "0.01079" ,  "X0" : "0.03381" ,  "C0" : "0.10143" ,  "Imax" : "235" ,  "Status" : "1" ,  "Phases" : "A" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477390457215819, 42.8137886399091698] , [-78.8477390457215819, 42.8137886399091698] , [-78.8477390457215819, 42.8137886399091698] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Residential5_8-honeybee_scenarioDM3)" ,  "NodeA" : "honeybee_scenarioDM3" ,  "NodeB" : "Residential5_8" ,  "NomV" : "0.42" ,  "Len" : "0.032" ,  "Equip" : "1P_UG_AL_1/0_Brenau_0_416_0" ,  "R" : "0.01721" ,  "X" : "0.00907" ,  "C" : "0.61934" ,  "R0" : "0.02286" ,  "X0" : "0.07165" ,  "C0" : "0.21494" ,  "Imax" : "235" ,  "Status" : "1" ,  "Phases" : "A" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8479087748011125, 42.8141740889719244] , [-78.8482684694503462, 42.8140654990000940] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:honeybee_scenarioDM3-honeybee_scenarioDT2LV)" ,  "NodeA" : "honeybee_scenarioDT2LV" ,  "NodeB" : "honeybee_scenarioDM3" ,  "NomV" : "0.42" ,  "Len" : "0.030" ,  "Equip" : "1P_UG_AL_1/0_Brenau_0_416_0" ,  "R" : "0.01624" ,  "X" : "0.00856" ,  "C" : "0.58454" ,  "R0" : "0.02157" ,  "X0" : "0.06762" ,  "C0" : "0.20287" ,  "Imax" : "235" ,  "Status" : "1" ,  "Phases" : "A" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8478521982165006, 42.8140456059765029] , [-78.8479087748011125, 42.8141740889719244] , [-78.8479087748011125, 42.8141740889719244] , [-78.8479087748011125, 42.8141740889719244] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Residential1_14-honeybee_scenarioDT3)" ,  "NodeA" : "Residential1_14" ,  "NodeB" : "honeybee_scenarioDT3" ,  "NomV" : "12.47" ,  "Len" : "0.070" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.02262" ,  "X" : "0.01812" ,  "C" : "8.48571" ,  "R0" : "0.05296" ,  "X0" : "0.01761" ,  "C0" : "0.01761" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8501566245978012, 42.8144847683195593] , [-78.8502377969033148, 42.8147013297304468] , [-78.8502377969033148, 42.8147013297304468] , [-78.8500644244769262, 42.8147452588779416] , [-78.8498910518142822, 42.8147891877570430] , [-78.8497176789154111, 42.8148331163677369] , [-78.8497176789154111, 42.8148331163677369] , [-78.8497176789154111, 42.8148331163677369] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital1_7-Residential1_14)" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "Residential1_14" ,  "NomV" : "12.47" ,  "Len" : "0.240" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.07770" ,  "X" : "0.06227" ,  "C" : "29.15292" ,  "R0" : "0.18195" ,  "X0" : "0.06051" ,  "C0" : "0.06051" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8507825655743346, 42.8158809354106324] , [-78.8512378156848968, 42.8157540495053865] , [-78.8512378156848968, 42.8157540495053865] , [-78.8511795008276266, 42.8156260758203544] , [-78.8511211862015529, 42.8154981021082151] , [-78.8510628718066613, 42.8153701283689543] , [-78.8510045576429519, 42.8152421546026005] , [-78.8509462437104389, 42.8151141808091182] , [-78.8508879300091081, 42.8149862069885287] , [-78.8508296165389453, 42.8148582331408321] , [-78.8507713032999789, 42.8147302592660139] , [-78.8507129902921662, 42.8146022853640886] , [-78.8505845410473967, 42.8146134706302846] , [-78.8504111690934764, 42.8146574003145588] , [-78.8502377969033148, 42.8147013297304468] , [-78.8502377969033148, 42.8147013297304468] , [-78.8501566245978012, 42.8144847683195593] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital1_7-honeybee_scenarioDT0)" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "honeybee_scenarioDT0" ,  "NomV" : "12.47" ,  "Len" : "0.447" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.14458" ,  "X" : "0.11586" ,  "C" : "54.24629" ,  "R0" : "0.33857" ,  "X0" : "0.11260" ,  "C0" : "0.11260" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8507825655743346, 42.8158809354106324] , [-78.8512378156848968, 42.8157540495053865] , [-78.8512378156848968, 42.8157540495053865] , [-78.8512961307733633, 42.8158820231632902] , [-78.8513544460930262, 42.8160099967940866] , [-78.8514127616438856, 42.8161379703977829] , [-78.8514710774259555, 42.8162659439743294] , [-78.8515293934392076, 42.8163939175238042] , [-78.8515877096836846, 42.8165218910461363] , [-78.8516460261593437, 42.8166498645413611] , [-78.8517043428662419, 42.8167778380094646] , [-78.8517626598043222, 42.8169058114504466] , [-78.8518209769736131, 42.8170337848643143] , [-78.8518792943741573, 42.8171617582510677] , [-78.8517660537650897, 42.8172987583883895] , [-78.8515919914260479, 42.8173412360846086] , [-78.8514179288580834, 42.8173837135105231] , [-78.8512438660611821, 42.8174261906661116] , [-78.8510698030353296, 42.8174686675514096] , [-78.8508957397805830, 42.8175111441663745] , [-78.8507216762969136, 42.8175536205110490] , [-78.8505476125843359, 42.8175960965853974] , [-78.8503735486428212, 42.8176385723894271] , [-78.8501994844723981, 42.8176810479231449] , [-78.8500254200730382, 42.8177235231865509] , [-78.8498513554447840, 42.8177659981796310] , [-78.8496772905876071, 42.8178084729023922] , [-78.8495495935369064, 42.8179000847368627] , [-78.8496061768654499, 42.8180285669665821] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital1_7-sub_West_Substation_12.47)_s0" ,  "NodeA" : "sub_West_Substation_12.47" ,  "NodeB" : "Hospital1_7" ,  "NomV" : "12.47" ,  "Len" : "0.250" ,  "Equip" : "3P_OH_AL_ACSR_4/0_Penguin_12_47_0" ,  "R" : "0.06759" ,  "X" : "0.07985" ,  "C" : "3.57028" ,  "R0" : "0.14848" ,  "X0" : "0.26240" ,  "C0" : "0.26240" ,  "Imax" : "365" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8507825655743346, 42.8158809354106324] , [-78.8512378156848968, 42.8157540495053865] , [-78.8512378156848968, 42.8157540495053865] , [-78.8512961307733633, 42.8158820231632902] , [-78.8513544460930262, 42.8160099967940866] , [-78.8514127616438856, 42.8161379703977829] , [-78.8514710774259555, 42.8162659439743294] , [-78.8515293934392076, 42.8163939175238042] , [-78.8515877096836846, 42.8165218910461363] , [-78.8516460261593437, 42.8166498645413611] , [-78.8529351392255649, 42.8166918762184068] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital1_7-sub_West_Substation_12.47)_s1" ,  "NodeA" : "sub_West_Substation_12.47" ,  "NodeB" : "Hospital1_7" ,  "NomV" : "12.47" ,  "Len" : "0.222" ,  "Equip" : "3P_OH_AL_ACSR_4/0_Penguin_12_47_0" ,  "R" : "0.05983" ,  "X" : "0.07069" ,  "C" : "3.16071" ,  "R0" : "0.13144" ,  "X0" : "0.23230" ,  "C0" : "0.23230" ,  "Imax" : "365" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8529351392255649, 42.8166918762184068] , [-78.8556420276764811, 42.8167800452354825] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Residential3_8-honeybee_scenarioDT3LV)" ,  "NodeA" : "honeybee_scenarioDT3LV" ,  "NodeB" : "Residential3_8" ,  "NomV" : "0.42" ,  "Len" : "0.026" ,  "Equip" : "3P_UG_AL_750kcmil_15_0_416_0" ,  "R" : "0.00391" ,  "X" : "0.00475" ,  "C" : "4.92783" ,  "R0" : "0.00825" ,  "X0" : "0.00284" ,  "C0" : "0.00284" ,  "Imax" : "640" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8497176789154111, 42.8148331163677369] , [-78.8496117280572832, 42.8146080747125524] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Residential2_3-honeybee_scenarioDT1LV)" ,  "NodeA" : "honeybee_scenarioDT1LV" ,  "NodeB" : "Residential2_3" ,  "NomV" : "0.42" ,  "Len" : "0.077" ,  "Equip" : "3P_UG_AL_750kcmil_15_0_416_0" ,  "R" : "0.01145" ,  "X" : "0.01390" ,  "C" : "14.41611" ,  "R0" : "0.02413" ,  "X0" : "0.00831" ,  "C0" : "0.00831" ,  "Imax" : "640" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8477390457215819, 42.8137886399091698] , [-78.8486209916310230, 42.8135358844923672] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:honeybee_scenarioDT1-honeybee_scenarioDT2)" ,  "NodeA" : "honeybee_scenarioDT2" ,  "NodeB" : "honeybee_scenarioDT1" ,  "NomV" : "12.47" ,  "Len" : "0.015" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.00485" ,  "X" : "0.00389" ,  "C" : "1.82036" ,  "R0" : "0.01136" ,  "X0" : "0.00378" ,  "C0" : "0.00378" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477390457215819, 42.8137886399091698] , [-78.8477390457215819, 42.8137886399091698] , [-78.8477390457215819, 42.8137886399091698] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Mixed_use1_27-honeybee_scenarioDT2)" ,  "NodeA" : "Mixed_use1_27" ,  "NodeB" : "honeybee_scenarioDT2" ,  "NomV" : "12.47" ,  "Len" : "0.095" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.03058" ,  "X" : "0.02451" ,  "C" : "11.47510" ,  "R0" : "0.07162" ,  "X0" : "0.02382" ,  "C0" : "0.02382" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8478680386590014, 42.8146431981362028] , [-78.8480785059035583, 42.8145595378050245] , [-78.8480785059035583, 42.8145595378050245] , [-78.8480219286446271, 42.8144310548861782] , [-78.8479653516104975, 42.8143025719417949] , [-78.8479087748011125, 42.8141740889719244] , [-78.8478521982165006, 42.8140456059765029] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] , [-78.8477956218566476, 42.8139171229555728] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Mixed_use1_27-honeybee_scenarioDT3)" ,  "NodeA" : "honeybee_scenarioDT3" ,  "NodeB" : "Mixed_use1_27" ,  "NomV" : "12.47" ,  "Len" : "0.202" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.06547" ,  "X" : "0.05247" ,  "C" : "24.56405" ,  "R0" : "0.15331" ,  "X0" : "0.05099" ,  "C0" : "0.05099" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8497176789154111, 42.8148331163677369] , [-78.8497176789154111, 42.8148331163677369] , [-78.8497176789154111, 42.8148331163677369] , [-78.8495443057802987, 42.8148770447100517] , [-78.8493709324089735, 42.8149209727839661] , [-78.8491975588014071, 42.8149649005894801] , [-78.8490241849576137, 42.8150088281266008] , [-78.8488508108775932, 42.8150527553952998] , [-78.8486774365613599, 42.8150966823956267] , [-78.8485040620088853, 42.8151406091275248] , [-78.8483048171869854, 42.8150734692252186] , [-78.8482482390289476, 42.8149449864084488] , [-78.8481916610957114, 42.8148165035661634] , [-78.8481350833872483, 42.8146880206983482] , [-78.8480785059035583, 42.8145595378050245] , [-78.8480785059035583, 42.8145595378050245] , [-78.8478680386590014, 42.8146431981362028] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Restaurant1_11-honeybee_scenarioDT0LV)" ,  "NodeA" : "honeybee_scenarioDT0LV" ,  "NodeB" : "Restaurant1_11" ,  "NomV" : "0.42" ,  "Len" : "0.029" ,  "Equip" : "3P_UG_AL_750kcmil_15_0_416_0" ,  "R" : "0.00427" ,  "X" : "0.00518" ,  "C" : "5.37183" ,  "R0" : "0.00899" ,  "X0" : "0.00310" ,  "C0" : "0.00310" ,  "Imax" : "640" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8496627604188518, 42.8181570491707433] , [-78.8500121163842635, 42.8181214693196921] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital2_13-Office1_7)" ,  "NodeA" : "Hospital2_13" ,  "NodeB" : "Office1_7" ,  "NomV" : "12.47" ,  "Len" : "0.137" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.04422" ,  "X" : "0.03544" ,  "C" : "16.59303" ,  "R0" : "0.10356" ,  "X0" : "0.03444" ,  "C0" : "0.03444" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8494013402434035, 42.8167711481374980] , [-78.8490969350022652, 42.8168722259802053] , [-78.8490969350022652, 42.8168722259802053] , [-78.8490403536970916, 42.8167437435207603] , [-78.8489837726167622, 42.8166152610357855] , [-78.8489271917612200, 42.8164867785252738] , [-78.8488706111304793, 42.8163582959892537] , [-78.8488140307245544, 42.8162298134276895] , [-78.8487574505434310, 42.8161013308406311] , [-78.8487574505434310, 42.8161013308406311] , [-78.8485427557207430, 42.8161762682301088] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Hospital2_13-honeybee_scenarioDT0)" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Hospital2_13" ,  "NomV" : "12.47" ,  "Len" : "0.178" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.05740" ,  "X" : "0.04600" ,  "C" : "21.53691" ,  "R0" : "0.13442" ,  "X0" : "0.04470" ,  "C0" : "0.04470" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496061768654499, 42.8180285669665821] , [-78.8495032255015218, 42.8178509473548488] , [-78.8494364275543234, 42.8176431202008700] , [-78.8493798449002554, 42.8175146378945755] , [-78.8493232624710174, 42.8173861555627582] , [-78.8492666802666093, 42.8172576732054040] , [-78.8492100982870028, 42.8171291908225271] , [-78.8491535165322261, 42.8170007084141417] , [-78.8490969350022652, 42.8168722259802053] , [-78.8490969350022652, 42.8168722259802053] , [-78.8494013402434035, 42.8167711481374980] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Mixeduse2_10-honeybee_scenarioDT0)" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Mixeduse2_10" ,  "NomV" : "12.47" ,  "Len" : "0.242" ,  "Equip" : "3P_UG_AL_4/0_25_12_47_0" ,  "R" : "0.07833" ,  "X" : "0.06277" ,  "C" : "29.38974" ,  "R0" : "0.18343" ,  "X0" : "0.06100" ,  "C0" : "0.06100" ,  "Imax" : "330" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8497193441970410, 42.8182855313494031] , [-78.8497759282000885, 42.8184140135025046] , [-78.8498325124279802, 42.8185424956301048] , [-78.8498890968806876, 42.8186709777321681] , [-78.8499456815582676, 42.8187994598086874] , [-78.8500022664606774, 42.8189279418596911] , [-78.8501080655496196, 42.8190234899524995] , [-78.8500588515879315, 42.8190564238851366] , [-78.8501154369400439, 42.8191849058850806] , [-78.8501720225169862, 42.8193133878594949] , [-78.8502286083188153, 42.8194418698083368] , [-78.8502851943454601, 42.8195703517316701] , [-78.8503417805970201, 42.8196988336294737] , [-78.8503983670733959, 42.8198273155017333] , [-78.8504549537746442, 42.8199557973484843] , [-78.8504549537746442, 42.8199557973484843] , [-78.8507730898099624, 42.8198612772326612] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Mall1_4-Residential6_4)" ,  "NodeA" : "Mall1_4" ,  "NodeB" : "Residential6_4" ,  "NomV" : "12.47" ,  "Len" : "0.202" ,  "Equip" : "3P_OH_AL_ACSR_4/0_Penguin_12_47_0" ,  "R" : "0.05463" ,  "X" : "0.06455" ,  "C" : "2.88586" ,  "R0" : "0.12001" ,  "X0" : "0.21210" ,  "C0" : "0.21210" ,  "Imax" : "365" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8491530480288674, 42.8190073481749423] , [-78.8492394307736362, 42.8192394964687324] , [-78.8492394307736362, 42.8192394964687324] , [-78.8490657031206013, 42.8192826969638318] , [-78.8488919752349631, 42.8193258971895361] , [-78.8487182471166932, 42.8193690971458665] , [-78.8485445187658485, 42.8194122968327946] , [-78.8483707901824005, 42.8194554962503204] , [-78.8482534642918580, 42.8195582875204650] , [-78.8483084446330054, 42.8196871004158268] , [-78.8483634251927867, 42.8198159132870586] , [-78.8484184059712447, 42.8199447261341959] , [-78.8484184059712447, 42.8199447261341959] , [-78.8489109673708555, 42.8198928413506721] ] } },
-{ "type": "Feature", "properties": {  "type" : "Line" ,  "Code" : "L(R:Mall1_4-honeybee_scenarioDT0)" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Mall1_4" ,  "NomV" : "12.47" ,  "Len" : "0.193" ,  "Equip" : "3P_OH_AL_ACSR_4/0_Penguin_12_47_0" ,  "R" : "0.05215" ,  "X" : "0.06161" ,  "C" : "2.75477" ,  "R0" : "0.11456" ,  "X0" : "0.20247" ,  "C0" : "0.20247" ,  "Imax" : "365" ,  "Status" : "1" ,  "Phases" : "ABC" } ,  "geometry": {  "type": "LineString", "coordinates":  [ [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8496627604188518, 42.8181570491707433] , [-78.8497193441970410, 42.8182855313494031] , [-78.8497759282000885, 42.8184140135025046] , [-78.8498325124279802, 42.8185424956301048] , [-78.8498890968806876, 42.8186709777321681] , [-78.8499456815582676, 42.8187994598086874] , [-78.8500022664606774, 42.8189279418596911] , [-78.8499343390596437, 42.8190666917945180] , [-78.8497606123370645, 42.8191098933671555] , [-78.8495868853818536, 42.8191530946704049] , [-78.8494131581940536, 42.8191962957042591] , [-78.8492394307736362, 42.8192394964687324] , [-78.8492394307736362, 42.8192394964687324] , [-78.8491530480288674, 42.8190073481749423] ] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Residential1_14-honeybee_scenarioDT3)honeybee_scenario_46" ,  "NodeA" : "Residential1_14" ,  "NodeB" : "honeybee_scenarioDT3" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8501566245978012, 42.8144847683195593] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Residential1_14-honeybee_scenarioDT3)honeybee_scenario_47" ,  "NodeA" : "Residential1_14" ,  "NodeB" : "honeybee_scenarioDT3" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8497176789154111, 42.8148331163677369] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital1_7-Residential1_14)honeybee_scenario_48" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "Residential1_14" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507825655743346, 42.8158809354106324] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital1_7-Residential1_14)honeybee_scenario_49" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "Residential1_14" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8501566245978012, 42.8144847683195593] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital1_7-honeybee_scenarioDT0)honeybee_scenario_56" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "honeybee_scenarioDT0" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507825655743346, 42.8158809354106324] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital1_7-honeybee_scenarioDT0)honeybee_scenario_57" ,  "NodeA" : "Hospital1_7" ,  "NodeB" : "honeybee_scenarioDT0" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "Breaker" ,  "Code" : "Breaker(R:Hospital1_7-sub_West_Substation_12.47)honeybee_scenario_58" ,  "NodeA" : "sub_West_Substation_12.47" ,  "NodeB" : "Hospital1_7" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8556420276764811, 42.8167800452354825] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:honeybee_scenarioDT1-honeybee_scenarioDT2)honeybee_scenario_40" ,  "NodeA" : "honeybee_scenarioDT2" ,  "NodeB" : "honeybee_scenarioDT1" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477956218566476, 42.8139171229555728] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:honeybee_scenarioDT1-honeybee_scenarioDT2)honeybee_scenario_41" ,  "NodeA" : "honeybee_scenarioDT2" ,  "NodeB" : "honeybee_scenarioDT1" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477390457215819, 42.8137886399091698] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT2)honeybee_scenario_42" ,  "NodeA" : "Mixed_use1_27" ,  "NodeB" : "honeybee_scenarioDT2" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8478680386590014, 42.8146431981362028] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT2)honeybee_scenario_43" ,  "NodeA" : "Mixed_use1_27" ,  "NodeB" : "honeybee_scenarioDT2" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477956218566476, 42.8139171229555728] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT3)honeybee_scenario_44" ,  "NodeA" : "honeybee_scenarioDT3" ,  "NodeB" : "Mixed_use1_27" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8497176789154111, 42.8148331163677369] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT3)honeybee_scenario_45" ,  "NodeA" : "honeybee_scenarioDT3" ,  "NodeB" : "Mixed_use1_27" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8478680386590014, 42.8146431981362028] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital2_13-Office1_7)honeybee_scenario_50" ,  "NodeA" : "Hospital2_13" ,  "NodeB" : "Office1_7" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8494013402434035, 42.8167711481374980] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital2_13-Office1_7)honeybee_scenario_51" ,  "NodeA" : "Hospital2_13" ,  "NodeB" : "Office1_7" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8485427557207430, 42.8161762682301088] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital2_13-honeybee_scenarioDT0)honeybee_scenario_52" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Hospital2_13" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Hospital2_13-honeybee_scenarioDT0)honeybee_scenario_53" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Hospital2_13" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8494013402434035, 42.8167711481374980] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixeduse2_10-honeybee_scenarioDT0)honeybee_scenario_54" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Mixeduse2_10" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "Switch" ,  "Code" : "PadSwitch(R:Mixeduse2_10-honeybee_scenarioDT0)honeybee_scenario_55" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "Mixeduse2_10" ,  "NomV_kV" : "12.47" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507730898099624, 42.8198612772326612] } },
-{ "type": "Feature", "properties": {  "type" : "Capacitor" ,  "Code" : "honeybee_scenarioC0" ,  "Node" : "Mixeduse2_10" ,  "Phases" : "3" ,  "NomV_kV" : "12.47" ,  "Size_kVAr" : "450.00" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8507730898099624, 42.8198612772326612] } },
-{ "type": "Feature", "properties": {  "type" : "Capacitor" ,  "Code" : "honeybee_scenarioC1" ,  "Node" : "Hospital2_13" ,  "Phases" : "3" ,  "NomV_kV" : "12.47" ,  "Size_kVAr" : "300.00" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8494013402434035, 42.8167711481374980] } },
-{ "type": "Feature", "properties": {  "type" : "HVMVSubstation" ,  "Code" : "sub_West_Substation_MAQ1" ,  "NodeA" : "ST_MAT" ,  "NodeB" : "sub_West_Substation_12.47" ,  "Vnom1" : "69.000" ,  "Vnom2" : "12.470" ,  "Phases" : "3" ,  "Xsc(pu)" : "0.00009288" ,  "TapMin" : "0.9000" ,  "TapMax" : "1.1000" ,  "Subest" : "n.a." ,  "Feeder" : "n.a." } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8556423387583152, 42.8167710461740683] } },
-{ "type": "Feature", "properties": {  "type" : "DistribTransf" ,  "Code" : "Tr(R:honeybee_scenarioDT0-honeybee_scenarioDT0LV)" ,  "NodeA" : "honeybee_scenarioDT0" ,  "NodeB" : "honeybee_scenarioDT0LV" ,  "Vnom1" : "12.470" ,  "Vnom2" : "0.416" ,  "Phases" : "3" ,  "Xsc(pu)" : "0.03290000" ,  "TapMin" : "1.0300" ,  "TapMax" : "1.0300" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8496627604188518, 42.8181570491707433] } },
-{ "type": "Feature", "properties": {  "type" : "DistribTransf" ,  "Code" : "Tr(R:honeybee_scenarioDT1-honeybee_scenarioDT1LV)" ,  "NodeA" : "honeybee_scenarioDT1" ,  "NodeB" : "honeybee_scenarioDT1LV" ,  "Vnom1" : "12.470" ,  "Vnom2" : "0.416" ,  "Phases" : "3" ,  "Xsc(pu)" : "0.04320000" ,  "TapMin" : "1.0300" ,  "TapMax" : "1.0300" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477390457215819, 42.8137886399091698] } },
-{ "type": "Feature", "properties": {  "type" : "DistribTransf" ,  "Code" : "Tr(R:honeybee_scenarioDT2-honeybee_scenarioDT2LV)" ,  "NodeA" : "honeybee_scenarioDT2" ,  "NodeB" : "honeybee_scenarioDT2LV" ,  "Vnom1" : "12.470" ,  "Vnom2" : "0.416" ,  "Phases" : "1" ,  "Xsc(pu)" : "0.16000000" ,  "TapMin" : "1.0300" ,  "TapMax" : "1.0300" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8477956218566476, 42.8139171229555728] } },
-{ "type": "Feature", "properties": {  "type" : "DistribTransf" ,  "Code" : "Tr(R:honeybee_scenarioDT3-honeybee_scenarioDT3LV)" ,  "NodeA" : "honeybee_scenarioDT3" ,  "NodeB" : "honeybee_scenarioDT3LV" ,  "Vnom1" : "12.470" ,  "Vnom2" : "0.416" ,  "Phases" : "3" ,  "Xsc(pu)" : "0.04320000" ,  "TapMin" : "1.0300" ,  "TapMax" : "1.0300" ,  "Subest" : "sub_West_Substation_12.47" ,  "Feeder" : "sub_West_Substation_12.47 -> Hospital1_7" } ,  "geometry": {  "type": "Point", "coordinates": [ -78.8497176789154111, 42.8148331163677369] } }
-]
+    "type": "FeatureCollection", 
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.855642027676481, 
+                    42.816780045235483
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "sub_West_Substation_12.47", 
+                "Subest": "n.a.", 
+                "Feeder": "n.a."
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.855642027676481, 
+                    42.816780045235483
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "ST_MAT", 
+                "Subest": "n.a.", 
+                "Feeder": "n.a."
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847739045721582, 
+                    42.81378863990917
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDM2", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847908774801112, 
+                    42.814174088971924
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDM3", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT0", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT0LV", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847739045721582, 
+                    42.81378863990917
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT1", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847739045721582, 
+                    42.81378863990917
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT1LV", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847795621856648, 
+                    42.813917122955573
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT2", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847795621856648, 
+                    42.813917122955573
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT2LV", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849717678915411, 
+                    42.814833116367737
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT3", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849717678915411, 
+                    42.814833116367737
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "type": "DummyNode", 
+                "Node": "honeybee_scenarioDT3LV", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847868038659001, 
+                    42.814643198136203
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Mixed_use1_27", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "831.09", 
+                "type": "Consumer", 
+                "DemP_kW": "1715.98", 
+                "Phases": "3", 
+                "Pinst_kW": "1715.98", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Mixed_use1_27", 
+                "Qinst_kVAr": "831.09"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850012116384264, 
+                    42.818121469319692
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Restaurant1_11", 
+                "NVolt_kV": "0.42", 
+                "DemQ_kVAr": "91.58", 
+                "type": "Consumer", 
+                "DemP_kW": "189.09", 
+                "Phases": "3", 
+                "Pinst_kW": "189.09", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Restaurant1_11", 
+                "Qinst_kVAr": "91.58"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850156624597801, 
+                    42.814484768319559
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential1_14", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "99.20", 
+                "type": "Consumer", 
+                "DemP_kW": "204.82", 
+                "Phases": "3", 
+                "Pinst_kW": "204.82", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential1_14", 
+                "Qinst_kVAr": "99.20"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848620991631023, 
+                    42.813535884492367
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential2_3", 
+                "NVolt_kV": "0.42", 
+                "DemQ_kVAr": "26.85", 
+                "type": "Consumer", 
+                "DemP_kW": "55.43", 
+                "Phases": "3", 
+                "Pinst_kW": "55.43", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential2_3", 
+                "Qinst_kVAr": "26.85"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848091747853857, 
+                    42.813670013612835
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential4_8", 
+                "NVolt_kV": "0.42", 
+                "DemQ_kVAr": "7.32", 
+                "type": "Consumer", 
+                "DemP_kW": "15.12", 
+                "Phases": "1", 
+                "Pinst_kW": "15.12", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential4_8", 
+                "Qinst_kVAr": "7.32"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848268469450346, 
+                    42.814065499000094
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential5_8", 
+                "NVolt_kV": "0.42", 
+                "DemQ_kVAr": "9.58", 
+                "type": "Consumer", 
+                "DemP_kW": "19.77", 
+                "Phases": "1", 
+                "Pinst_kW": "19.77", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential5_8", 
+                "Qinst_kVAr": "9.58"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848542755720743, 
+                    42.816176268230109
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Office1_7", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "351.02", 
+                "type": "Consumer", 
+                "DemP_kW": "724.77", 
+                "Phases": "3", 
+                "Pinst_kW": "724.77", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Office1_7", 
+                "Qinst_kVAr": "351.02"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850782565574335, 
+                    42.815880935410632
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Hospital1_7", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "896.72", 
+                "type": "Consumer", 
+                "DemP_kW": "1851.49", 
+                "Phases": "3", 
+                "Pinst_kW": "1851.49", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Hospital1_7", 
+                "Qinst_kVAr": "896.72"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849401340243404, 
+                    42.816771148137498
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Hospital2_13", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "626.84", 
+                "type": "Consumer", 
+                "DemP_kW": "1294.26", 
+                "Phases": "3", 
+                "Pinst_kW": "1294.26", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Hospital2_13", 
+                "Qinst_kVAr": "626.84"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850773089809962, 
+                    42.819861277232661
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Mixeduse2_10", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "1465.74", 
+                "type": "Consumer", 
+                "DemP_kW": "3026.38", 
+                "Phases": "3", 
+                "Pinst_kW": "3026.38", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Mixeduse2_10", 
+                "Qinst_kVAr": "1465.74"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849611728057283, 
+                    42.814608074712552
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential3_8", 
+                "NVolt_kV": "0.42", 
+                "DemQ_kVAr": "27.51", 
+                "type": "Consumer", 
+                "DemP_kW": "56.79", 
+                "Phases": "3", 
+                "Pinst_kW": "56.79", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential3_8", 
+                "Qinst_kVAr": "27.51"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849153048028867, 
+                    42.819007348174942
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Mall1_4", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "479.04", 
+                "type": "Consumer", 
+                "DemP_kW": "989.10", 
+                "Phases": "3", 
+                "Pinst_kW": "989.10", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Mall1_4", 
+                "Qinst_kVAr": "479.04"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848910967370855, 
+                    42.819892841350672
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Yearly_kWh": "0.00", 
+                "NumCust": "1", 
+                "Code": "Residential6_4", 
+                "NVolt_kV": "12.47", 
+                "DemQ_kVAr": "243.29", 
+                "type": "Consumer", 
+                "DemP_kW": "502.34", 
+                "Phases": "3", 
+                "Pinst_kW": "502.34", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "Node": "Residential6_4", 
+                "Qinst_kVAr": "243.29"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.848091747853857, 
+                        42.813670013612835
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00905", 
+                "X0": "0.07146", 
+                "Equip": "1P_UG_AL_1/0_Brenau_0_120_0", 
+                "Status": "1", 
+                "C": "0.61776", 
+                "C0": "0.21439", 
+                "Code": "L(R:Residential4_8-honeybee_scenarioDM2)", 
+                "Len": "0.032", 
+                "Imax": "235", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDM2", 
+                "type": "Line", 
+                "NodeB": "Residential4_8", 
+                "R": "0.01717", 
+                "R0": "0.02280", 
+                "Phases": "A"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00428", 
+                "X0": "0.03381", 
+                "Equip": "1P_UG_AL_1/0_Brenau_0_120_0", 
+                "Status": "1", 
+                "C": "0.29227", 
+                "C0": "0.10143", 
+                "Code": "L(R:honeybee_scenarioDM2-honeybee_scenarioDT2LV)", 
+                "Len": "0.015", 
+                "Imax": "235", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDT2LV", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDM2", 
+                "R": "0.00812", 
+                "R0": "0.01079", 
+                "Phases": "A"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847908774801112, 
+                        42.814174088971924
+                    ], 
+                    [
+                        -78.848268469450346, 
+                        42.814065499000094
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00907", 
+                "X0": "0.07165", 
+                "Equip": "1P_UG_AL_1/0_Brenau_0_120_0", 
+                "Status": "1", 
+                "C": "0.61934", 
+                "C0": "0.21494", 
+                "Code": "L(R:Residential5_8-honeybee_scenarioDM3)", 
+                "Len": "0.032", 
+                "Imax": "235", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDM3", 
+                "type": "Line", 
+                "NodeB": "Residential5_8", 
+                "R": "0.01721", 
+                "R0": "0.02286", 
+                "Phases": "A"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847852198216501, 
+                        42.814045605976503
+                    ], 
+                    [
+                        -78.847908774801112, 
+                        42.814174088971924
+                    ], 
+                    [
+                        -78.847908774801112, 
+                        42.814174088971924
+                    ], 
+                    [
+                        -78.847908774801112, 
+                        42.814174088971924
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00856", 
+                "X0": "0.06762", 
+                "Equip": "1P_UG_AL_1/0_Brenau_0_120_0", 
+                "Status": "1", 
+                "C": "0.58454", 
+                "C0": "0.20287", 
+                "Code": "L(R:honeybee_scenarioDM3-honeybee_scenarioDT2LV)", 
+                "Len": "0.030", 
+                "Imax": "235", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDT2LV", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDM3", 
+                "R": "0.01624", 
+                "R0": "0.02157", 
+                "Phases": "A"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.850156624597801, 
+                        42.814484768319559
+                    ], 
+                    [
+                        -78.850237796903315, 
+                        42.814701329730447
+                    ], 
+                    [
+                        -78.850237796903315, 
+                        42.814701329730447
+                    ], 
+                    [
+                        -78.850064424476926, 
+                        42.814745258877942
+                    ], 
+                    [
+                        -78.849891051814282, 
+                        42.814789187757043
+                    ], 
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.01796", 
+                "X0": "0.01637", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "9.67979", 
+                "C0": "0.01637", 
+                "Code": "L(R:Residential1_14-honeybee_scenarioDT3)", 
+                "Len": "0.070", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "Residential1_14", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDT3", 
+                "R": "0.02302", 
+                "R0": "0.05327", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.850782565574335, 
+                        42.815880935410632
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851179500827627, 
+                        42.815626075820354
+                    ], 
+                    [
+                        -78.851121186201553, 
+                        42.815498102108215
+                    ], 
+                    [
+                        -78.851062871806661, 
+                        42.815370128368954
+                    ], 
+                    [
+                        -78.851004557642952, 
+                        42.815242154602601
+                    ], 
+                    [
+                        -78.850946243710439, 
+                        42.815114180809118
+                    ], 
+                    [
+                        -78.850887930009108, 
+                        42.814986206988529
+                    ], 
+                    [
+                        -78.850829616538945, 
+                        42.814858233140832
+                    ], 
+                    [
+                        -78.850771303299979, 
+                        42.814730259266014
+                    ], 
+                    [
+                        -78.850712990292166, 
+                        42.814602285364089
+                    ], 
+                    [
+                        -78.850584541047397, 
+                        42.814613470630285
+                    ], 
+                    [
+                        -78.850411169093476, 
+                        42.814657400314559
+                    ], 
+                    [
+                        -78.850237796903315, 
+                        42.814701329730447
+                    ], 
+                    [
+                        -78.850237796903315, 
+                        42.814701329730447
+                    ], 
+                    [
+                        -78.850156624597801, 
+                        42.814484768319559
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.06170", 
+                "X0": "0.05624", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "33.25525", 
+                "C0": "0.05624", 
+                "Code": "L(R:Hospital1_7-Residential1_14)", 
+                "Len": "0.240", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "Hospital1_7", 
+                "type": "Line", 
+                "NodeB": "Residential1_14", 
+                "R": "0.07909", 
+                "R0": "0.18302", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.850782565574335, 
+                        42.815880935410632
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851296130773363, 
+                        42.81588202316329
+                    ], 
+                    [
+                        -78.851354446093026, 
+                        42.816009996794087
+                    ], 
+                    [
+                        -78.851412761643886, 
+                        42.816137970397783
+                    ], 
+                    [
+                        -78.851471077425956, 
+                        42.816265943974329
+                    ], 
+                    [
+                        -78.851529393439208, 
+                        42.816393917523804
+                    ], 
+                    [
+                        -78.851587709683685, 
+                        42.816521891046136
+                    ], 
+                    [
+                        -78.851646026159344, 
+                        42.816649864541361
+                    ], 
+                    [
+                        -78.851704342866242, 
+                        42.816777838009465
+                    ], 
+                    [
+                        -78.851762659804322, 
+                        42.816905811450447
+                    ], 
+                    [
+                        -78.851820976973613, 
+                        42.817033784864314
+                    ], 
+                    [
+                        -78.851879294374157, 
+                        42.817161758251068
+                    ], 
+                    [
+                        -78.85176605376509, 
+                        42.81729875838839
+                    ], 
+                    [
+                        -78.851591991426048, 
+                        42.817341236084609
+                    ], 
+                    [
+                        -78.851417928858083, 
+                        42.817383713510523
+                    ], 
+                    [
+                        -78.851243866061182, 
+                        42.817426190666112
+                    ], 
+                    [
+                        -78.85106980303533, 
+                        42.81746866755141
+                    ], 
+                    [
+                        -78.850895739780583, 
+                        42.817511144166374
+                    ], 
+                    [
+                        -78.850721676296914, 
+                        42.817553620511049
+                    ], 
+                    [
+                        -78.850547612584336, 
+                        42.817596096585397
+                    ], 
+                    [
+                        -78.850373548642821, 
+                        42.817638572389427
+                    ], 
+                    [
+                        -78.850199484472398, 
+                        42.817681047923145
+                    ], 
+                    [
+                        -78.850025420073038, 
+                        42.817723523186551
+                    ], 
+                    [
+                        -78.849851355444784, 
+                        42.817765998179631
+                    ], 
+                    [
+                        -78.849677290587607, 
+                        42.817808472902392
+                    ], 
+                    [
+                        -78.849549593536906, 
+                        42.817900084736863
+                    ], 
+                    [
+                        -78.84960617686545, 
+                        42.818028566966582
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.11482", 
+                "X0": "0.10465", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "61.87969", 
+                "C0": "0.10465", 
+                "Code": "L(R:Hospital1_7-honeybee_scenarioDT0)", 
+                "Len": "0.447", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "Hospital1_7", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDT0", 
+                "R": "0.14716", 
+                "R0": "0.34056", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.850782565574335, 
+                        42.815880935410632
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851237815684897, 
+                        42.815754049505387
+                    ], 
+                    [
+                        -78.851296130773363, 
+                        42.81588202316329
+                    ], 
+                    [
+                        -78.851354446093026, 
+                        42.816009996794087
+                    ], 
+                    [
+                        -78.851412761643886, 
+                        42.816137970397783
+                    ], 
+                    [
+                        -78.851471077425956, 
+                        42.816265943974329
+                    ], 
+                    [
+                        -78.851529393439208, 
+                        42.816393917523804
+                    ], 
+                    [
+                        -78.851587709683685, 
+                        42.816521891046136
+                    ], 
+                    [
+                        -78.851646026159344, 
+                        42.816649864541361
+                    ], 
+                    [
+                        -78.852935139225565, 
+                        42.816691876218407
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.07985", 
+                "X0": "0.26240", 
+                "Equip": "3P_OH_AL_ACSR_4/0_Penguin_4_0", 
+                "Status": "1", 
+                "C": "3.57028", 
+                "C0": "0.26240", 
+                "Code": "L(R:Hospital1_7-sub_West_Substation_12.47)_s0", 
+                "Len": "0.250", 
+                "Imax": "365", 
+                "NomV": "12.47", 
+                "NodeA": "sub_West_Substation_12.47", 
+                "type": "Line", 
+                "NodeB": "Hospital1_7", 
+                "R": "0.06759", 
+                "R0": "0.14848", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.852935139225565, 
+                        42.816691876218407
+                    ], 
+                    [
+                        -78.855642027676481, 
+                        42.816780045235483
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.07069", 
+                "X0": "0.23230", 
+                "Equip": "3P_OH_AL_ACSR_4/0_Penguin_4_0", 
+                "Status": "1", 
+                "C": "3.16071", 
+                "C0": "0.23230", 
+                "Code": "L(R:Hospital1_7-sub_West_Substation_12.47)_s1", 
+                "Len": "0.222", 
+                "Imax": "365", 
+                "NomV": "12.47", 
+                "NodeA": "sub_West_Substation_12.47", 
+                "type": "Line", 
+                "NodeB": "Hospital1_7", 
+                "R": "0.05983", 
+                "R0": "0.13144", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849611728057283, 
+                        42.814608074712552
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00475", 
+                "X0": "0.00284", 
+                "Equip": "3P_UG_AL_750kcmil_15_0_480_0", 
+                "Status": "1", 
+                "C": "4.92783", 
+                "C0": "0.00284", 
+                "Code": "L(R:Residential3_8-honeybee_scenarioDT3LV)", 
+                "Len": "0.026", 
+                "Imax": "640", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDT3LV", 
+                "type": "Line", 
+                "NodeB": "Residential3_8", 
+                "R": "0.00391", 
+                "R0": "0.00825", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.848620991631023, 
+                        42.813535884492367
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.01390", 
+                "X0": "0.00831", 
+                "Equip": "3P_UG_AL_750kcmil_15_0_480_0", 
+                "Status": "1", 
+                "C": "14.41611", 
+                "C0": "0.00831", 
+                "Code": "L(R:Residential2_3-honeybee_scenarioDT1LV)", 
+                "Len": "0.077", 
+                "Imax": "640", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDT1LV", 
+                "type": "Line", 
+                "NodeB": "Residential2_3", 
+                "R": "0.01145", 
+                "R0": "0.02413", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ], 
+                    [
+                        -78.847739045721582, 
+                        42.81378863990917
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00385", 
+                "X0": "0.00351", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "2.07652", 
+                "C0": "0.00351", 
+                "Code": "L(R:honeybee_scenarioDT1-honeybee_scenarioDT2)", 
+                "Len": "0.015", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "honeybee_scenarioDT2", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDT1", 
+                "R": "0.00494", 
+                "R0": "0.01143", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.847868038659001, 
+                        42.814643198136203
+                    ], 
+                    [
+                        -78.848078505903558, 
+                        42.814559537805025
+                    ], 
+                    [
+                        -78.848078505903558, 
+                        42.814559537805025
+                    ], 
+                    [
+                        -78.848021928644627, 
+                        42.814431054886178
+                    ], 
+                    [
+                        -78.847965351610497, 
+                        42.814302571941795
+                    ], 
+                    [
+                        -78.847908774801112, 
+                        42.814174088971924
+                    ], 
+                    [
+                        -78.847852198216501, 
+                        42.814045605976503
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ], 
+                    [
+                        -78.847795621856648, 
+                        42.813917122955573
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.02429", 
+                "X0": "0.02214", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "13.08984", 
+                "C0": "0.02214", 
+                "Code": "L(R:Mixed_use1_27-honeybee_scenarioDT2)", 
+                "Len": "0.095", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "Mixed_use1_27", 
+                "type": "Line", 
+                "NodeB": "honeybee_scenarioDT2", 
+                "R": "0.03113", 
+                "R0": "0.07204", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849717678915411, 
+                        42.814833116367737
+                    ], 
+                    [
+                        -78.849544305780299, 
+                        42.814877044710052
+                    ], 
+                    [
+                        -78.849370932408974, 
+                        42.814920972783966
+                    ], 
+                    [
+                        -78.849197558801407, 
+                        42.81496490058948
+                    ], 
+                    [
+                        -78.849024184957614, 
+                        42.815008828126601
+                    ], 
+                    [
+                        -78.848850810877593, 
+                        42.8150527553953
+                    ], 
+                    [
+                        -78.84867743656136, 
+                        42.815096682395627
+                    ], 
+                    [
+                        -78.848504062008885, 
+                        42.815140609127525
+                    ], 
+                    [
+                        -78.848304817186985, 
+                        42.815073469225219
+                    ], 
+                    [
+                        -78.848248239028948, 
+                        42.814944986408449
+                    ], 
+                    [
+                        -78.848191661095711, 
+                        42.814816503566163
+                    ], 
+                    [
+                        -78.848135083387248, 
+                        42.814688020698348
+                    ], 
+                    [
+                        -78.848078505903558, 
+                        42.814559537805025
+                    ], 
+                    [
+                        -78.848078505903558, 
+                        42.814559537805025
+                    ], 
+                    [
+                        -78.847868038659001, 
+                        42.814643198136203
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.05199", 
+                "X0": "0.04739", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "28.02064", 
+                "C0": "0.04739", 
+                "Code": "L(R:Mixed_use1_27-honeybee_scenarioDT3)", 
+                "Len": "0.202", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "honeybee_scenarioDT3", 
+                "type": "Line", 
+                "NodeB": "Mixed_use1_27", 
+                "R": "0.06664", 
+                "R0": "0.15421", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.850012116384264, 
+                        42.818121469319692
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.00518", 
+                "X0": "0.00310", 
+                "Equip": "3P_UG_AL_750kcmil_15_0_480_0", 
+                "Status": "1", 
+                "C": "5.37183", 
+                "C0": "0.00310", 
+                "Code": "L(R:Restaurant1_11-honeybee_scenarioDT0LV)", 
+                "Len": "0.029", 
+                "Imax": "640", 
+                "NomV": "0.42", 
+                "NodeA": "honeybee_scenarioDT0LV", 
+                "type": "Line", 
+                "NodeB": "Restaurant1_11", 
+                "R": "0.00427", 
+                "R0": "0.00899", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849401340243404, 
+                        42.816771148137498
+                    ], 
+                    [
+                        -78.849096935002265, 
+                        42.816872225980205
+                    ], 
+                    [
+                        -78.849096935002265, 
+                        42.816872225980205
+                    ], 
+                    [
+                        -78.849040353697092, 
+                        42.81674374352076
+                    ], 
+                    [
+                        -78.848983772616762, 
+                        42.816615261035786
+                    ], 
+                    [
+                        -78.84892719176122, 
+                        42.816486778525274
+                    ], 
+                    [
+                        -78.848870611130479, 
+                        42.816358295989254
+                    ], 
+                    [
+                        -78.848814030724554, 
+                        42.81622981342769
+                    ], 
+                    [
+                        -78.848757450543431, 
+                        42.816101330840631
+                    ], 
+                    [
+                        -78.848757450543431, 
+                        42.816101330840631
+                    ], 
+                    [
+                        -78.848542755720743, 
+                        42.816176268230109
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.03512", 
+                "X0": "0.03201", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "18.92796", 
+                "C0": "0.03201", 
+                "Code": "L(R:Hospital2_13-Office1_7)", 
+                "Len": "0.137", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "Hospital2_13", 
+                "type": "Line", 
+                "NodeB": "Office1_7", 
+                "R": "0.04501", 
+                "R0": "0.10417", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.84960617686545, 
+                        42.818028566966582
+                    ], 
+                    [
+                        -78.849503225501522, 
+                        42.817850947354849
+                    ], 
+                    [
+                        -78.849436427554323, 
+                        42.81764312020087
+                    ], 
+                    [
+                        -78.849379844900255, 
+                        42.817514637894575
+                    ], 
+                    [
+                        -78.849323262471017, 
+                        42.817386155562758
+                    ], 
+                    [
+                        -78.849266680266609, 
+                        42.817257673205404
+                    ], 
+                    [
+                        -78.849210098287003, 
+                        42.817129190822527
+                    ], 
+                    [
+                        -78.849153516532226, 
+                        42.817000708414142
+                    ], 
+                    [
+                        -78.849096935002265, 
+                        42.816872225980205
+                    ], 
+                    [
+                        -78.849096935002265, 
+                        42.816872225980205
+                    ], 
+                    [
+                        -78.849401340243404, 
+                        42.816771148137498
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.04558", 
+                "X0": "0.04155", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "24.56753", 
+                "C0": "0.04155", 
+                "Code": "L(R:Hospital2_13-honeybee_scenarioDT0)", 
+                "Len": "0.178", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "type": "Line", 
+                "NodeB": "Hospital2_13", 
+                "R": "0.05842", 
+                "R0": "0.13521", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849719344197041, 
+                        42.818285531349403
+                    ], 
+                    [
+                        -78.849775928200089, 
+                        42.818414013502505
+                    ], 
+                    [
+                        -78.84983251242798, 
+                        42.818542495630105
+                    ], 
+                    [
+                        -78.849889096880688, 
+                        42.818670977732168
+                    ], 
+                    [
+                        -78.849945681558268, 
+                        42.818799459808687
+                    ], 
+                    [
+                        -78.850002266460677, 
+                        42.818927941859691
+                    ], 
+                    [
+                        -78.85010806554962, 
+                        42.8190234899525
+                    ], 
+                    [
+                        -78.850058851587931, 
+                        42.819056423885137
+                    ], 
+                    [
+                        -78.850115436940044, 
+                        42.819184905885081
+                    ], 
+                    [
+                        -78.850172022516986, 
+                        42.819313387859495
+                    ], 
+                    [
+                        -78.850228608318815, 
+                        42.819441869808337
+                    ], 
+                    [
+                        -78.85028519434546, 
+                        42.81957035173167
+                    ], 
+                    [
+                        -78.85034178059702, 
+                        42.819698833629474
+                    ], 
+                    [
+                        -78.850398367073396, 
+                        42.819827315501733
+                    ], 
+                    [
+                        -78.850454953774644, 
+                        42.819955797348484
+                    ], 
+                    [
+                        -78.850454953774644, 
+                        42.819955797348484
+                    ], 
+                    [
+                        -78.850773089809962, 
+                        42.819861277232661
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.06221", 
+                "X0": "0.05670", 
+                "Equip": "3P_UG_AL_4/0_15_4_0", 
+                "Status": "1", 
+                "C": "33.52539", 
+                "C0": "0.05670", 
+                "Code": "L(R:Mixeduse2_10-honeybee_scenarioDT0)", 
+                "Len": "0.242", 
+                "Imax": "330", 
+                "NomV": "12.47", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "type": "Line", 
+                "NodeB": "Mixeduse2_10", 
+                "R": "0.07973", 
+                "R0": "0.18451", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849153048028867, 
+                        42.819007348174942
+                    ], 
+                    [
+                        -78.849239430773636, 
+                        42.819239496468732
+                    ], 
+                    [
+                        -78.849239430773636, 
+                        42.819239496468732
+                    ], 
+                    [
+                        -78.849065703120601, 
+                        42.819282696963832
+                    ], 
+                    [
+                        -78.848891975234963, 
+                        42.819325897189536
+                    ], 
+                    [
+                        -78.848718247116693, 
+                        42.819369097145866
+                    ], 
+                    [
+                        -78.848544518765848, 
+                        42.819412296832795
+                    ], 
+                    [
+                        -78.8483707901824, 
+                        42.81945549625032
+                    ], 
+                    [
+                        -78.848253464291858, 
+                        42.819558287520465
+                    ], 
+                    [
+                        -78.848308444633005, 
+                        42.819687100415827
+                    ], 
+                    [
+                        -78.848363425192787, 
+                        42.819815913287059
+                    ], 
+                    [
+                        -78.848418405971245, 
+                        42.819944726134196
+                    ], 
+                    [
+                        -78.848418405971245, 
+                        42.819944726134196
+                    ], 
+                    [
+                        -78.848910967370855, 
+                        42.819892841350672
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.06455", 
+                "X0": "0.21210", 
+                "Equip": "3P_OH_AL_ACSR_4/0_Penguin_4_0", 
+                "Status": "1", 
+                "C": "2.88586", 
+                "C0": "0.21210", 
+                "Code": "L(R:Mall1_4-Residential6_4)", 
+                "Len": "0.202", 
+                "Imax": "365", 
+                "NomV": "12.47", 
+                "NodeA": "Mall1_4", 
+                "type": "Line", 
+                "NodeB": "Residential6_4", 
+                "R": "0.05463", 
+                "R0": "0.12001", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849662760418852, 
+                        42.818157049170743
+                    ], 
+                    [
+                        -78.849719344197041, 
+                        42.818285531349403
+                    ], 
+                    [
+                        -78.849775928200089, 
+                        42.818414013502505
+                    ], 
+                    [
+                        -78.84983251242798, 
+                        42.818542495630105
+                    ], 
+                    [
+                        -78.849889096880688, 
+                        42.818670977732168
+                    ], 
+                    [
+                        -78.849945681558268, 
+                        42.818799459808687
+                    ], 
+                    [
+                        -78.850002266460677, 
+                        42.818927941859691
+                    ], 
+                    [
+                        -78.849934339059644, 
+                        42.819066691794518
+                    ], 
+                    [
+                        -78.849760612337064, 
+                        42.819109893367155
+                    ], 
+                    [
+                        -78.849586885381854, 
+                        42.819153094670405
+                    ], 
+                    [
+                        -78.849413158194054, 
+                        42.819196295704259
+                    ], 
+                    [
+                        -78.849239430773636, 
+                        42.819239496468732
+                    ], 
+                    [
+                        -78.849239430773636, 
+                        42.819239496468732
+                    ], 
+                    [
+                        -78.849153048028867, 
+                        42.819007348174942
+                    ]
+                ], 
+                "type": "LineString"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "X": "0.06161", 
+                "X0": "0.20247", 
+                "Equip": "3P_OH_AL_ACSR_4/0_Penguin_4_0", 
+                "Status": "1", 
+                "C": "2.75477", 
+                "C0": "0.20247", 
+                "Code": "L(R:Mall1_4-honeybee_scenarioDT0)", 
+                "Len": "0.193", 
+                "Imax": "365", 
+                "NomV": "12.47", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "type": "Line", 
+                "NodeB": "Mall1_4", 
+                "R": "0.05215", 
+                "R0": "0.11456", 
+                "Phases": "ABC"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850156624597801, 
+                    42.814484768319559
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Residential1_14-honeybee_scenarioDT3)honeybee_scenario_46", 
+                "type": "Switch", 
+                "NodeA": "Residential1_14", 
+                "NodeB": "honeybee_scenarioDT3", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849717678915411, 
+                    42.814833116367737
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Residential1_14-honeybee_scenarioDT3)honeybee_scenario_47", 
+                "type": "Switch", 
+                "NodeA": "Residential1_14", 
+                "NodeB": "honeybee_scenarioDT3", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850782565574335, 
+                    42.815880935410632
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital1_7-Residential1_14)honeybee_scenario_48", 
+                "type": "Switch", 
+                "NodeA": "Hospital1_7", 
+                "NodeB": "Residential1_14", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850156624597801, 
+                    42.814484768319559
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital1_7-Residential1_14)honeybee_scenario_49", 
+                "type": "Switch", 
+                "NodeA": "Hospital1_7", 
+                "NodeB": "Residential1_14", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850782565574335, 
+                    42.815880935410632
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital1_7-honeybee_scenarioDT0)honeybee_scenario_56", 
+                "type": "Switch", 
+                "NodeA": "Hospital1_7", 
+                "NodeB": "honeybee_scenarioDT0", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital1_7-honeybee_scenarioDT0)honeybee_scenario_57", 
+                "type": "Switch", 
+                "NodeA": "Hospital1_7", 
+                "NodeB": "honeybee_scenarioDT0", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.855642027676481, 
+                    42.816780045235483
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "Breaker(R:Hospital1_7-sub_West_Substation_12.47)honeybee_scenario_58", 
+                "type": "Breaker", 
+                "NodeA": "sub_West_Substation_12.47", 
+                "NodeB": "Hospital1_7", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847795621856648, 
+                    42.813917122955573
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:honeybee_scenarioDT1-honeybee_scenarioDT2)honeybee_scenario_40", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT2", 
+                "NodeB": "honeybee_scenarioDT1", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847739045721582, 
+                    42.81378863990917
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:honeybee_scenarioDT1-honeybee_scenarioDT2)honeybee_scenario_41", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT2", 
+                "NodeB": "honeybee_scenarioDT1", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847868038659001, 
+                    42.814643198136203
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT2)honeybee_scenario_42", 
+                "type": "Switch", 
+                "NodeA": "Mixed_use1_27", 
+                "NodeB": "honeybee_scenarioDT2", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847795621856648, 
+                    42.813917122955573
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT2)honeybee_scenario_43", 
+                "type": "Switch", 
+                "NodeA": "Mixed_use1_27", 
+                "NodeB": "honeybee_scenarioDT2", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849717678915411, 
+                    42.814833116367737
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT3)honeybee_scenario_44", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT3", 
+                "NodeB": "Mixed_use1_27", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847868038659001, 
+                    42.814643198136203
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixed_use1_27-honeybee_scenarioDT3)honeybee_scenario_45", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT3", 
+                "NodeB": "Mixed_use1_27", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849401340243404, 
+                    42.816771148137498
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital2_13-Office1_7)honeybee_scenario_50", 
+                "type": "Switch", 
+                "NodeA": "Hospital2_13", 
+                "NodeB": "Office1_7", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.848542755720743, 
+                    42.816176268230109
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital2_13-Office1_7)honeybee_scenario_51", 
+                "type": "Switch", 
+                "NodeA": "Hospital2_13", 
+                "NodeB": "Office1_7", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital2_13-honeybee_scenarioDT0)honeybee_scenario_52", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "NodeB": "Hospital2_13", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849401340243404, 
+                    42.816771148137498
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Hospital2_13-honeybee_scenarioDT0)honeybee_scenario_53", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "NodeB": "Hospital2_13", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixeduse2_10-honeybee_scenarioDT0)honeybee_scenario_54", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "NodeB": "Mixeduse2_10", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850773089809962, 
+                    42.819861277232661
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Code": "PadSwitch(R:Mixeduse2_10-honeybee_scenarioDT0)honeybee_scenario_55", 
+                "type": "Switch", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "NodeB": "Mixeduse2_10", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.850773089809962, 
+                    42.819861277232661
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVAr": "450.00", 
+                "Code": "honeybee_scenarioC0", 
+                "type": "Capacitor", 
+                "Phases": "3", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Node": "Mixeduse2_10", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849401340243404, 
+                    42.816771148137498
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVAr": "300.00", 
+                "Code": "honeybee_scenarioC1", 
+                "type": "Capacitor", 
+                "Phases": "3", 
+                "NomV_kV": "12.47", 
+                "Subest": "sub_West_Substation_12.47", 
+                "Node": "Hospital2_13", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.855642338758315, 
+                    42.816771046174068
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVA": "80000.00", 
+                "Feeder": "n.a.", 
+                "TapMax": "1.1000", 
+                "Code": "sub_West_Substation_MAQ1", 
+                "Vnom1": "69.000", 
+                "Vnom2": "12.470", 
+                "type": "HVMVSubstation", 
+                "NodeA": "ST_MAT", 
+                "NodeB": "sub_West_Substation_12.47", 
+                "Phases": "3", 
+                "LV_R(ohm)": "0.00000", 
+                "TapMin": "0.9000", 
+                "Xsc(pu)": "0.00009288", 
+                "Subest": "n.a."
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849662760418852, 
+                    42.818157049170743
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVA": "100.00", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "TapMax": "1.0300", 
+                "Code": "Tr(R:honeybee_scenarioDT0-honeybee_scenarioDT0LV)", 
+                "Vnom1": "12.470", 
+                "Vnom2": "0.416", 
+                "type": "DistribTransf", 
+                "NodeA": "honeybee_scenarioDT0", 
+                "NodeB": "honeybee_scenarioDT0LV", 
+                "Phases": "3", 
+                "LV_R(ohm)": "0.02788", 
+                "TapMin": "1.0300", 
+                "Xsc(pu)": "0.03290000", 
+                "Subest": "sub_West_Substation_12.47"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847739045721582, 
+                    42.81378863990917
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVA": "75.00", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "TapMax": "1.0300", 
+                "Code": "Tr(R:honeybee_scenarioDT1-honeybee_scenarioDT1LV)", 
+                "Vnom1": "12.470", 
+                "Vnom2": "0.416", 
+                "type": "DistribTransf", 
+                "NodeA": "honeybee_scenarioDT1", 
+                "NodeB": "honeybee_scenarioDT1LV", 
+                "Phases": "3", 
+                "LV_R(ohm)": "0.04024", 
+                "TapMin": "1.0300", 
+                "Xsc(pu)": "0.04320000", 
+                "Subest": "sub_West_Substation_12.47"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.847795621856648, 
+                    42.813917122955573
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVA": "25.00", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "TapMax": "1.0300", 
+                "Code": "Tr(R:honeybee_scenarioDT2-honeybee_scenarioDT2LV)", 
+                "Vnom1": "12.470", 
+                "Vnom2": "0.416", 
+                "type": "DistribTransf", 
+                "NodeA": "honeybee_scenarioDT2", 
+                "NodeB": "honeybee_scenarioDT2LV", 
+                "Phases": "1", 
+                "LV_R(ohm)": "0.03686", 
+                "TapMin": "1.0300", 
+                "Xsc(pu)": "0.16000000", 
+                "Subest": "sub_West_Substation_12.47"
+            }
+        }, 
+        {
+            "geometry": {
+                "coordinates": [
+                    -78.849717678915411, 
+                    42.814833116367737
+                ], 
+                "type": "Point"
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "Size_kVA": "75.00", 
+                "Feeder": "sub_West_Substation_12.47 -> Hospital1_7", 
+                "TapMax": "1.0300", 
+                "Code": "Tr(R:honeybee_scenarioDT3-honeybee_scenarioDT3LV)", 
+                "Vnom1": "12.470", 
+                "Vnom2": "0.416", 
+                "type": "DistribTransf", 
+                "NodeA": "honeybee_scenarioDT3", 
+                "NodeB": "honeybee_scenarioDT3LV", 
+                "Phases": "3", 
+                "LV_R(ohm)": "0.04024", 
+                "TapMin": "1.0300", 
+                "Xsc(pu)": "0.04320000", 
+                "Subest": "sub_West_Substation_12.47"
+            }
+        }
+    ], 
+    "project": {
+        "time_zone": -5.0, 
+        "city": "Buffalo, NY", 
+        "longitude": -78.852466000000007, 
+        "latitude": 42.813153, 
+        "name": "Buffalo New Development RNM", 
+        "id": "BuffaloNewDevelopmentRNM", 
+        "cad_coordinates": [
+            0.0, 
+            0.0
+        ], 
+        "country": "-", 
+        "elevation": 200.0
+    }
 }
