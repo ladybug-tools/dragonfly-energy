@@ -396,8 +396,14 @@ def run_rnm(feature_geojson, scenario_csv, underground_ratio=0.9, lv_only=True,
             geo_dict = json.load(fg)
             project_dict = geo_dict['project']
     # change the GeoJSON to have the RNM inputs
-    if underground_ratio != 0.9 or not lv_only or nodes_per_building != 1:
-        if geo_dict is not None:
+    if geo_dict is not None:
+        proj = geo_dict['project']
+        if 'underground_cables_ratio' not in proj or \
+                proj['underground_cables_ratio'] != underground_ratio or \
+                'only_lv_consumers' not in proj or \
+                proj['only_lv_consumers'] != lv_only or \
+                'max_number_of_lv_nodes_per_building' not in proj or \
+                proj['max_number_of_lv_nodes_per_building'] != nodes_per_building:
             geo_dict['project']['underground_cables_ratio'] = underground_ratio
             geo_dict['project']['only_lv_consumers'] = lv_only
             geo_dict['project']['max_number_of_lv_nodes_per_building'] = \
