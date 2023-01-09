@@ -23,6 +23,7 @@ COPY .git ${LIBRARYDIR}/.git
 COPY setup.py ${LIBRARYDIR}
 COPY setup.cfg ${LIBRARYDIR}
 COPY requirements.txt ${LIBRARYDIR}
+COPY extras-requirements.txt ${LIBRARYDIR}
 COPY README.md ${LIBRARYDIR}
 COPY LICENSE ${LIBRARYDIR}
 
