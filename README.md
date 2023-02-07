@@ -15,7 +15,7 @@ Dragonfly extension for energy simulation.
 
 ## QuickStart
 
-```
+```python
 import dragonfly_energy
 ```
 
@@ -25,7 +25,8 @@ import dragonfly_energy
 Since the building geometry in dragonfly is fundamentally 2D, creating a model of
 a building and assigning energy model properties can be done with a few lines of
 code. Here is an example:
-```
+
+```python
 from dragonfly.model import Model
 from dragonfly.building import Building
 from dragonfly.story import Story
@@ -59,7 +60,8 @@ model = Model('NewDevelopment', [building])
 
 Once a Dragonfly Model has been created, it can be converted to a honeybee Model,
 which can then be converted to IDF format like so:
-```
+
+```python
 # create the dragonfly Model object
 model = Model('NewDevelopment', [building])
 
@@ -68,8 +70,9 @@ hb_models = model.to_honeybee('Building', use_multiplier=False, tolerance=0.01)
 idfs = [hb_model.to.idf(hb_model) for hb_model in hb_models]
 ```
 
-The dragonfly model can also be serialized to a geoJSON to be simulated with URBANopt
-```
+The dragonfly model can also be serialized to a geoJSON to be simulated with URBANopt.
+
+```python
 from ladybug.location import Location
 
 # create the dragonfly Model object
