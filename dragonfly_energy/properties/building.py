@@ -40,6 +40,8 @@ class BuildingEnergyProperties(object):
         '90.1-2007': ('2007', 'ASHRAE_2007'),
         '90.1-2010': ('2010', 'ASHRAE_2010'),
         '90.1-2013': ('2013', 'ASHRAE_2013'),
+        '90.1-2016': ('2016', 'ASHRAE_2016'),
+        '90.1-2019': ('2019', 'ASHRAE_2019')
     }
     __slots__ = ('_host', '_construction_set')
 
@@ -123,7 +125,7 @@ class BuildingEnergyProperties(object):
 
         Args:
             building_type: A text string for the type of building. This must appear
-                under the BUILDING_TYPES contant of the honeybee_energy.lib.programtypes
+                under the BUILDING_TYPES constant of the honeybee_energy.lib.programtypes
                 module to be successful.
         """
         program = building_program_type_by_identifier(building_type)
@@ -294,7 +296,7 @@ class BuildingEnergyProperties(object):
                 a Polygon or MultiPolygon object.
         """
         # determine the vintage of the building
-        template = data['template'] if 'template' in data else '90.1-2013'
+        template = data['template'] if 'template' in data else '90.1-2019'
         vintage = self._VINTAGE_MAP[template]
 
         # assign the construction set based on climate zone
