@@ -56,7 +56,7 @@ def simulate():
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
 @click.option('--measures', '-m', help='Full path to a folder containing an OSW JSON '
-              'be used as the base for the execution of the OpenStuduo CLI. While this '
+              'be used as the base for the execution of the OpenStudio CLI. While this '
               'OSW can contain paths to measures that exist anywhere on the machine, '
               'the best practice is to copy the measures into this measures '
               'folder and use relative paths within the OSW. '

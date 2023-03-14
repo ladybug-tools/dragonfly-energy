@@ -207,7 +207,7 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
                 else os.path.abspath(str(output_file))
             sch_directory = os.path.join(os.path.split(sch_path)[0], 'schedules')
 
-        # create the strings for simulation paramters and model
+        # create the strings for simulation parameters and model
         ver_str = energyplus_idf_version() if folders.energyplus_version \
             is not None else ''
         sim_par_str = sim_par.to_idf()
