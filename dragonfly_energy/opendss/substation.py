@@ -1,6 +1,6 @@
 # coding=utf-8
 """Electrical substation in OpenDSS."""
-from ._base import _GeometryBase
+from .._base import _GeometryBase
 
 from ladybug_geometry.geometry2d.polygon import Polygon2D
 from dragonfly.projection import polygon_to_lon_lat
@@ -31,7 +31,7 @@ class Substation(_GeometryBase):
 
     @classmethod
     def from_dict(cls, data):
-        """Initialize an Substation from a dictionary.
+        """Initialize a Substation from a dictionary.
 
         Args:
             data: A dictionary representation of an Substation object.
@@ -92,6 +92,7 @@ class Substation(_GeometryBase):
         """
         pts = [(pt.x, pt.y) for pt in self.geometry.vertices]
         coords = [polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)]
+        coords[0].append(coords[0][0])
         return {
             'type': 'Feature',
             'properties': {

@@ -2,7 +2,7 @@
 """Electrical connector in OpenDSS."""
 from __future__ import division
 
-from ._base import _GeometryBase
+from .._base import _GeometryBase
 from .powerline import PowerLine
 
 from ladybug_geometry.geometry2d.line import LineSegment2D

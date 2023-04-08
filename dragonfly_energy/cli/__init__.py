@@ -5,6 +5,7 @@ from dragonfly.cli import main
 from .simulate import simulate
 from .translate import translate
 
+
 # command group for all energy extension commands.
 @click.group(help='dragonfly energy commands.')
 def energy():

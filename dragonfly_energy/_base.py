@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Base class for all OpenDSS geometry objects."""
+"""Base class for all GeoJSON geometry objects like DES and OpenDSS connectors."""
 from __future__ import division
 import math
 
@@ -10,7 +10,7 @@ from dragonfly.projection import lon_lat_to_polygon
 
 
 class _GeometryBase(object):
-    """A base class for all OpenDSS geometry objects.
+    """A base class for all GeoJSON geometry objects like DES and OpenDSS connectors.
 
     Args:
         identifier: Text string for a unique object ID.
@@ -169,4 +169,4 @@ class _GeometryBase(object):
         return self.__repr__()
 
     def __repr__(self):
-        return 'OpenDSS Base Object: %s' % self.display_name
+        return 'GeoJSON Geometry Base Object: %s' % self.display_name

@@ -4,8 +4,7 @@ import os
 import uuid
 import json
 
-from ladybug_geometry.geometry2d.pointvector import Point2D
-from ladybug_geometry.geometry2d.polygon import Polygon2D
+from ladybug_geometry.geometry2d import Point2D, Polygon2D
 from ladybug.location import Location
 from honeybee.typing import valid_ep_string
 from honeybee.units import conversion_factor_to_meters
@@ -99,12 +98,12 @@ class ElectricalNetwork(object):
         """Get an ElectricalNetwork from a dictionary as it appears in an RNM GeoJSON.
 
         Args:
-            geojson_file_path: Text for the full path to the geojson file to load as
-                Model.
+            geojson_file_path: Text for the full path to the geojson file to load
+                as a ElectricalNetwork.
             location: An optional ladybug location object with longitude and
                 latitude data defining the origin of the geojson file. If None,
                 an attempt will be made to sense the location from the project
-                point in the GeoJSON (if it sexists). If nothing is found, the
+                point in the GeoJSON (if it exists). If nothing is found, the
                 origin is autocalcualted as the bottom-left corner of the bounding
                 box of all building footprints in the geojson file. (Default: None).
             point: A ladybug_geometry Point2D for where the location object exists
@@ -200,7 +199,7 @@ class ElectricalNetwork(object):
 
         Args:
             connector_data: a list of dictionaries containing geojson geometries that
-                represent power lines.
+                represent electrical connectors.
 
         Returns:
             The bottom-left most corner of the bounding box around the coordinates.
@@ -338,7 +337,7 @@ class ElectricalNetwork(object):
                 that exist across the network.
 
             -   connector_junction_ids - A list of lists that align with the connectors
-                in the network. Each sub-list contains two sting values for the junction
+                in the network. Each sub-list contains two string values for the junction
                 IDs for each of the start and end of each of the connectors.
         """
         # loop through the connectors and find all unique junction objects
@@ -472,7 +471,7 @@ class ElectricalNetwork(object):
                 within the space of a scene. The coordinates of this point are
                 expected to be in the units of this Model. (Default: (0, 0)).
             tolerance: The minimum difference between the coordinate values of two
-                faces at which they can be considered centered adjacent. (Default: 0.01,
+                geometries at which they are considered co-located. (Default: 0.01,
                 suitable for objects in meters).
         """
         # get the conversion factors over to (longitude, latitude)
@@ -530,7 +529,7 @@ class ElectricalNetwork(object):
             buildings: An array of Dragonfly Building objects in the same units
                 system as the ElectricalNetwork geometry.
             tolerance: The minimum difference between the coordinate values of two
-                faces at which they can be considered centered adjacent. (Default: 0.01,
+                geometries at which they are considered co-located. (Default: 0.01,
                 suitable for objects in meters).
         """
         # get the footprints of the Buildings in 2D space

@@ -6,7 +6,7 @@ from ladybug_geometry.geometry2d.line import LineSegment2D
 from ladybug_geometry.geometry2d.polyline import Polyline2D
 from dragonfly.projection import polygon_to_lon_lat
 
-from ._base import _GeometryBase
+from .._base import _GeometryBase
 
 
 class Road(_GeometryBase):
