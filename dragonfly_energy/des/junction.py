@@ -1,5 +1,5 @@
 # coding=utf-8
-"""Electrical junction in OpenDSS."""
+"""Thermal junction in a District Energy System (DES)."""
 from __future__ import division
 
 from .._base import _GeometryBase
@@ -9,18 +9,18 @@ from honeybee.typing import valid_ep_string
 from dragonfly.projection import polygon_to_lon_lat
 
 
-class ElectricalJunction(_GeometryBase):
-    """Represents an electrical junction connecting two or more objects in OpenDSS.
+class ThermalJunction(_GeometryBase):
+    """Represents an thermal junction connecting two objects in a DES.
 
     Args:
-        identifier: Text string for a unique electrical junction ID. Must contain only
-            characters that are acceptable in OpenDSS. This will be used to
-            identify the object across the exported geoJSON and OpenDSS files.
+        identifier: Text string for a unique thermal junction ID. Must contain only
+            characters that are acceptable in a DED. This will be used to
+            identify the object across the exported geoJSON and DES files.
         geometry: A LineSegment2D or Polyline2D representing the geometry of the
-            electrical junction.
+            thermal junction.
         system_identifier: An optional text string for the identifier of a district
             system object associated with the junction. District system objects
-            include Transformers and Substations. (Default: None).
+            include Ground Heat Exchangers. (Default: None).
         building_identifier: An optional text string for the identifier of a Building
             object associated with the junction. (Default: None).
 
@@ -35,17 +35,17 @@ class ElectricalJunction(_GeometryBase):
 
     def __init__(self, identifier, geometry, system_identifier=None,
                  building_identifier=None):
-        """Initialize ElectricalJunction."""
+        """Initialize ThermalJunction."""
         _GeometryBase.__init__(self, identifier)  # process the identifier
         assert isinstance(geometry, Point2D), 'Expected ladybug_geometry ' \
-            'Point2D for ElectricalJunction. Got {}'.format(type(geometry))
+            'Point2D for ThermalJunction. Got {}'.format(type(geometry))
         self._geometry = geometry
         self.system_identifier = system_identifier
         self.building_identifier = building_identifier
 
     @property
     def geometry(self):
-        """Get a Point2D representing the ElectricalJunction."""
+        """Get a Point2D representing the ThermalJunction."""
         return self._geometry
 
     @property
@@ -69,7 +69,7 @@ class ElectricalJunction(_GeometryBase):
             if value is not None else None
 
     def to_geojson_dict(self, origin_lon_lat, conversion_factors):
-        """Get an ElectricalJunction dictionary as it appears in an URBANopt geoJSON.
+        """Get an ThermalJunction dictionary as it appears in an URBANopt geoJSON.
 
         Args:
             origin_lon_lat: An array of two numbers in degrees. The first value
@@ -86,7 +86,7 @@ class ElectricalJunction(_GeometryBase):
             'type': 'Feature',
             'properties': {
                 'id': self.identifier,
-                'type': 'ElectricalJunction'
+                'type': 'ThermalJunction'
             },
             'geometry': {
                 'type': 'Point',
@@ -100,11 +100,11 @@ class ElectricalJunction(_GeometryBase):
         return geo_dict
 
     def __copy__(self):
-        new_jct = ElectricalJunction(
+        new_jct = ThermalJunction(
             self.identifier, self.geometry, self._system_identifier,
             self._building_identifier)
         new_jct._display_name = self._display_name
         return new_jct
 
     def __repr__(self):
-        return 'ElectricalJunction: {}'.format(self.display_name)
+        return 'ThermalJunction: {}'.format(self.display_name)

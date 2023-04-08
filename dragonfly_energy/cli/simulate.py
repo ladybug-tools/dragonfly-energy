@@ -27,10 +27,11 @@ def simulate():
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.argument('epw-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
-@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
-              'SimulationParameter JSON that describes all of the settings for '
-              'the simulation.',default=None, show_default=True,
-              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option(
+    '--sim-par-json', '-sp', help='Full path to a honeybee energy '
+    'SimulationParameter JSON that describes all of the settings for '
+    'the simulation.', default=None, show_default=True,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
               'should be divided across the output Models. Choose from: District, '
               'Building, Story.', type=str, default="Building", show_default=True)
@@ -44,9 +45,9 @@ def simulate():
 @click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
               'buildings should be capped with a top face.',
               default=True, show_default=True)
-@click.option('--shade-dist', '-sd', help='An optional number to note the distance beyond'
-              ' which other buildings shade should not be exported into a given Model. '
-              'If None, all other buildings will be included as context shade in '
+@click.option('--shade-dist', '-sd', help='An optional number to note the distance '
+              'beyond which other buildings shade should not be exported into a given '
+              'Model. If None, all other buildings will be included as context shade in '
               'each and every Model. Set to 0 to exclude all neighboring buildings '
               'from the resulting models.', type=float, default=None, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '

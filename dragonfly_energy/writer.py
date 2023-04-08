@@ -12,8 +12,9 @@ import json
 
 def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
-    add_plenum=False, solve_ceiling_adjacencies=False, electrical_network=None,
-    road_network=None, ground_pv=None, folder=None, tolerance=0.01
+    add_plenum=False, solve_ceiling_adjacencies=False,
+    des_loop=None, electrical_network=None, road_network=None, ground_pv=None,
+    folder=None, tolerance=0.01
 ):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
@@ -44,6 +45,8 @@ def model_to_urbanopt(
             another in their floor plate. This ensures that Surface boundary
             conditions are used instead of Adiabatic ones. Note that this input
             has no effect when the object_per_model is Story. (Default: False).
+        des_loop: An optional District Energy System (DES) ThermalLoop that's
+            associated with the dragonfly Model. (Default: None).
         electrical_network: An optional OpenDSS ElectricalNetwork that's associated
             with the dragonfly Model. (Default: None).
         road_network: An optional RNM RoadNetwork that's associated with the
@@ -80,6 +83,8 @@ def model_to_urbanopt(
         tolerance = tolerance * conversion_factor
         model = model.duplicate()  # duplicate the model to avoid mutating the input
         model.convert_to_units('Meters')
+        if des_loop is not None:
+            des_loop.scale(conversion_factor)
         if electrical_network is not None:
             electrical_network.scale(conversion_factor)
         if road_network is not None:
@@ -127,6 +132,18 @@ def model_to_urbanopt(
             bldg_id = feature_dict['properties']['id']
             feature_dict['properties']['detailed_model_filename'] = \
                 os.path.join(hb_model_folder, '{}.json'.format(bldg_id))
+
+    # add the DES to the GeoJSON dictionary
+    if des_loop is not None:
+        des_features = des_loop.to_geojson_dict(
+            model.buildings, location, point, tolerance=tolerance)
+        geojson_dict['features'].extend(des_features)
+        sys_p_json = os.path.join(folder, 'system_params.json')
+        with open(sys_p_json, 'w') as fp:
+            des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)
+            json.dump(des_dict, fp, indent=4)
+        if conversion_factor is not None:
+            des_loop.scale(1 / conversion_factor)
 
     # add the electrical network to the GeoJSON dictionary
     if electrical_network is not None:

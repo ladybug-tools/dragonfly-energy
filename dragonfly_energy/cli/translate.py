@@ -27,11 +27,12 @@ def translate():
 @translate.command('model-to-osm')
 @click.argument('model-json', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
-@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
-              'SimulationParameter JSON that describes all of the settings for '
-              'the simulation. If None default parameters will be generated.',
-              default=None, show_default=True,
-              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option(
+    '--sim-par-json', '-sp', help='Full path to a honeybee energy '
+    'SimulationParameter JSON that describes all of the settings for '
+    'the simulation. If None default parameters will be generated.',
+    default=None, show_default=True,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
@@ -60,7 +61,7 @@ def translate():
               'generated OSM and IDF files if they were successfully created. '
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_osm(model_json, sim_par_json,  multiplier, no_plenum, no_ceil_adjacency,
+def model_to_osm(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
                  folder, osm_file, idf_file, log_file):
     """Translate a Model DFJSON to an OpenStudio Model.
 
@@ -133,11 +134,12 @@ def model_to_osm(model_json, sim_par_json,  multiplier, no_plenum, no_ceil_adjac
 @translate.command('model-to-idf')
 @click.argument('model-json', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
-@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
-              'SimulationParameter JSON that describes all of the settings for the '
-              'simulation. If None default parameters will be generated.',
-              default=None, show_default=True,
-              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option(
+    '--sim-par-json', '-sp', help='Full path to a honeybee energy '
+    'SimulationParameter JSON that describes all of the settings for the '
+    'simulation. If None default parameters will be generated.',
+    default=None, show_default=True,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
@@ -264,7 +266,7 @@ def model_to_gbxml(model_json, multiplier, no_plenum, no_ceil_adjacency,
         # set the default folder if it's not specified
         out_path = None
         out_directory = os.path.join(
-                hb_folders.default_simulation_folder, 'temp_translate')
+            hb_folders.default_simulation_folder, 'temp_translate')
         if output_file.endswith('-'):
             f_name = os.path.basename(model_json).lower()
             f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
