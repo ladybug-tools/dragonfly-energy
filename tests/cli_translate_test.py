@@ -37,7 +37,7 @@ def test_model_to_gbxml():
     input_df_model = './tests/json/model_complete_simple.dfjson'
 
     output_df_folder = './tests/json/gbxml'
-    output_df_model = os.path.join(output_df_folder, 'in.gbxml')
+    output_df_model = os.path.join(output_df_folder, 'in.xml')
     result = runner.invoke(model_to_gbxml, [input_df_model, '-f', output_df_model])
     assert result.exit_code == 0
 
