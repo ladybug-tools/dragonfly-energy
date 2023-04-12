@@ -466,7 +466,7 @@ class GHEThermalLoop(object):
         base = {'type': 'GHEThermalLoop'}
         base['identifier'] = self.identifier
         base['ground_heat_exchanger'] = self.ground_heat_exchanger.to_dict()
-        base['connectors'] = [c.to_dict(True) for c in self.connectors]
+        base['connectors'] = [c.to_dict() for c in self.connectors]
         base['clockwise_flow'] = self.clockwise_flow
         if self._display_name is not None:
             base['display_name'] = self.display_name

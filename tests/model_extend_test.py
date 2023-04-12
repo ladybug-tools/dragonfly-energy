@@ -3,18 +3,16 @@ import pytest
 import os
 import json
 
-from dragonfly.model import Model
-from dragonfly.building import Building
-from dragonfly.story import Story
-from dragonfly.room2d import Room2D
-from dragonfly.context import ContextShade
-from dragonfly.windowparameter import SimpleWindowRatio
-
-from dragonfly_energy.properties.model import ModelEnergyProperties
-from dragonfly_energy.opendss.network import ElectricalNetwork
+from ladybug_geometry.geometry3d.pointvector import Point3D
+from ladybug_geometry.geometry3d.plane import Plane
+from ladybug_geometry.geometry3d.face import Face3D
+from ladybug.location import Location
+from ladybug.futil import nukedir
 
 import honeybee.model as hb_model
-
+from honeybee_energy.lib.programtypes import office_program, plenum_program
+import honeybee_energy.lib.scheduletypelimits as schedule_types
+from honeybee_energy.lib.materials import roof_membrane, wood, insulation
 from honeybee_energy.constructionset import ConstructionSet
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.window import WindowConstruction
@@ -25,16 +23,16 @@ from honeybee_energy.material.opaque import EnergyMaterial
 from honeybee_energy.schedule.ruleset import ScheduleRuleset
 from honeybee_energy.load.lighting import Lighting
 
-from honeybee_energy.lib.programtypes import office_program, plenum_program
-import honeybee_energy.lib.scheduletypelimits as schedule_types
-from honeybee_energy.lib.materials import roof_membrane, wood, insulation
+from dragonfly.model import Model
+from dragonfly.building import Building
+from dragonfly.story import Story
+from dragonfly.room2d import Room2D
+from dragonfly.context import ContextShade
+from dragonfly.windowparameter import SimpleWindowRatio
 
-from ladybug.location import Location
-from ladybug.futil import nukedir
-
-from ladybug_geometry.geometry3d.pointvector import Point3D
-from ladybug_geometry.geometry3d.plane import Plane
-from ladybug_geometry.geometry3d.face import Face3D
+from dragonfly_energy.properties.model import ModelEnergyProperties
+from dragonfly_energy.opendss.network import ElectricalNetwork
+from dragonfly_energy.des.loop import GHEThermalLoop
 
 
 def test_energy_properties():
@@ -407,6 +405,36 @@ def test_to_urbanopt_electric_network():
     for h_model in hb_models:
         assert isinstance(h_model, hb_model.Model)
     assert os.path.isfile(os.path.join(sim_folder, 'electrical_database.json'))
+
+    # clean up the files
+    nukedir(sim_folder, True)
+
+
+def test_to_urbanopt_des_loop():
+    """Test the Model.to.urbanopt method with an GHEThermalLoop."""
+    model_json = './tests/json/buffalo_test_district.dfjson'
+    with open(model_json) as json_file:
+        data = json.load(json_file)
+    model = Model.from_dict(data)
+
+    loop_json = './tests/json/buffalo_ghe_des.json'
+    with open(loop_json) as json_file:
+        data = json.load(json_file)
+    des_loop = GHEThermalLoop.from_dict(data)
+
+    # create the urbanopt folder
+    location = Location('Buffalo', 'NY', 'USA', 42.813153, -78.852466)
+    sim_folder = './tests/urbanopt_model_buffalo_ghe'
+    geojson, hb_model_jsons, hb_models = \
+        model.to.urbanopt(model, location, des_loop=des_loop, folder=sim_folder)
+
+    # check that the appropriate files were generated
+    assert os.path.isfile(geojson)
+    for model_json in hb_model_jsons:
+        assert os.path.isfile(model_json)
+    for h_model in hb_models:
+        assert isinstance(h_model, hb_model.Model)
+    assert os.path.isfile(os.path.join(sim_folder, 'system_params.json'))
 
     # clean up the files
     nukedir(sim_folder, True)

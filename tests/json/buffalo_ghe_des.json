@@ -1,0 +1,166 @@
+{
+    "display_name": "Hospital GHE Loop", 
+    "identifier": "Hospital GHE Loop", 
+    "ground_heat_exchanger": {
+        "display_name": "Dona Street Borehole Field", 
+        "identifier": "DonaStreetBoreholeField", 
+        "geometry": {
+            "vertices": [
+                [
+                    -68.202158129112135, 
+                    411.42332095526609
+                ], 
+                [
+                    -43.418139571347439, 
+                    328.75228919529042
+                ], 
+                [
+                    25.850605199802395, 
+                    349.51628223017184
+                ], 
+                [
+                    1.0665866408790241, 
+                    432.18706423191259
+                ]
+            ], 
+            "type": "Polygon2D"
+        }, 
+        "soil_parameters": {
+            "conductivity": 2.2999999999999998, 
+            "type": "SoilParameter", 
+            "heat_capacity": 2343500.0
+        }, 
+        "borehole_parameters": {
+            "type": "BoreholeParameter", 
+            "length": 96.0, 
+            "buried_depth": 2.0, 
+            "diameter": 0.14999999999999999
+        }, 
+        "pipe_parameters": {
+            "outer_diameter": 0.026599999999999999, 
+            "conductivity": 0.40000000000000002, 
+            "type": "PipeParameter", 
+            "roughness": 9.9999999999999995e-07, 
+            "heat_capacity": 1542000.0, 
+            "inner_diameter": 0.021600000000000001, 
+            "shank_spacing": 0.032300000000000002
+        }, 
+        "type": "GroundHeatExchanger"
+    }, 
+    "clockwise_flow": true, 
+    "type": "GHEThermalLoop", 
+    "connectors": [
+        {
+            "geometry": {
+                "v": [
+                    24.94444251569287, 
+                    -73.674528254395852
+                ], 
+                "p": [
+                    88.823447129524482, 
+                    517.22340196737912
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_1_fc33affd", 
+            "display_name": "ThermalConnector_1"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    4.179432193915261, 
+                    -14.170547867910557
+                ], 
+                "p": [
+                    144.31080202966785, 
+                    321.06049637198953
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_2_ec17cf22", 
+            "display_name": "ThermalConnector_2"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    7.2824352159348109, 
+                    -20.732146954270036
+                ], 
+                "p": [
+                    177.59797284767203, 
+                    239.50052405445555
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_3_61fbf294", 
+            "display_name": "ThermalConnector_3"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -121.37633337078157, 
+                    -45.801084817221806
+                ], 
+                "p": [
+                    184.88040806360684, 
+                    218.76837710018552
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_4_712deace", 
+            "display_name": "ThermalConnector_4"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -66.72703360650992, 
+                    167.83390848262692
+                ], 
+                "p": [
+                    63.504074692825277, 
+                    172.96729228296371
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_5_6a2cb7bf", 
+            "display_name": "ThermalConnector_5"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    -51.845027968348276, 
+                    149.14509850716155
+                ], 
+                "p": [
+                    -35.798784177147752, 
+                    421.13644454564206
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_6_bafb7bdb", 
+            "display_name": "ThermalConnector_6"
+        }, 
+        {
+            "geometry": {
+                "v": [
+                    123.05727818957084, 
+                    37.581760751538809
+                ], 
+                "p": [
+                    -87.643812145496028, 
+                    570.28154305280361
+                ], 
+                "type": "LineSegment2D"
+            }, 
+            "type": "ThermalConnector", 
+            "identifier": "ThermalConnector_7_2e44093e", 
+            "display_name": "ThermalConnector_7"
+        }
+    ]
+}
