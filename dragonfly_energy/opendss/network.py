@@ -266,7 +266,6 @@ class ElectricalNetwork(object):
         for t in values:
             assert isinstance(t, Transformer), 'Expected Transformer object' \
                 ' for electrical network transformers. Got {}.'.format(type(t))
-        assert len(values) > 0, 'ElectricalNetwork must have at least one transformer.'
         self._transformers = values
 
     @property
