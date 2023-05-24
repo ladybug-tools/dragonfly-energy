@@ -223,7 +223,8 @@ class Folders(object):
                 'but the URBANopt executable is not accessible.\n{}'.format(
                     self.urbanopt_cli_path, stderr)
             raise ValueError(msg)
-        assert uo_version == self.URBANOPT_VERSION, \
+        assert uo_version[0] == self.URBANOPT_VERSION[0] and \
+            uo_version[1] == self.URBANOPT_VERSION[1], \
             'The installed URBANopt is version {}.\nMust be version {} to work ' \
             'with dragonfly.\n{}'.format(
                 '.'.join(str(v) for v in uo_version),
