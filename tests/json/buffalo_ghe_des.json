@@ -1,54 +1,55 @@
 {
     "display_name": "Hospital GHE Loop", 
     "identifier": "Hospital GHE Loop", 
-    "ground_heat_exchanger": {
-        "display_name": "Dona Street Borehole Field", 
-        "identifier": "DonaStreetBoreholeField", 
-        "geometry": {
-            "vertices": [
-                [
-                    -68.202158129112135, 
-                    411.42332095526609
+    "ground_heat_exchangers": [
+        {
+            "type": "GroundHeatExchanger",
+            "display_name": "Dona Street Borehole Field", 
+            "identifier": "DonaStreetBoreholeField", 
+            "geometry": {
+                "vertices": [
+                    [
+                        -68.202158129112135, 
+                        411.42332095526609
+                    ], 
+                    [
+                        -43.418139571347439, 
+                        328.75228919529042
+                    ], 
+                    [
+                        25.850605199802395, 
+                        349.51628223017184
+                    ], 
+                    [
+                        1.0665866408790241, 
+                        432.18706423191259
+                    ]
                 ], 
-                [
-                    -43.418139571347439, 
-                    328.75228919529042
-                ], 
-                [
-                    25.850605199802395, 
-                    349.51628223017184
-                ], 
-                [
-                    1.0665866408790241, 
-                    432.18706423191259
-                ]
-            ], 
-            "type": "Polygon2D"
-        }, 
-        "soil_parameters": {
-            "conductivity": 2.2999999999999998, 
-            "type": "SoilParameter", 
-            "heat_capacity": 2343500.0
-        }, 
-        "borehole_parameters": {
-            "type": "BoreholeParameter", 
-            "length": 96.0, 
-            "buried_depth": 2.0, 
-            "diameter": 0.14999999999999999
-        }, 
-        "pipe_parameters": {
-            "outer_diameter": 0.026599999999999999, 
-            "conductivity": 0.40000000000000002, 
-            "type": "PipeParameter", 
-            "roughness": 9.9999999999999995e-07, 
-            "heat_capacity": 1542000.0, 
-            "inner_diameter": 0.021600000000000001, 
-            "shank_spacing": 0.032300000000000002
-        }, 
-        "type": "GroundHeatExchanger"
-    }, 
+                "type": "Polygon2D"
+            }
+        }
+    ], 
     "clockwise_flow": true, 
     "type": "GHEThermalLoop", 
+    "soil_parameters": {
+        "conductivity": 2.3, 
+        "type": "SoilParameter", 
+        "heat_capacity": 2343500.0
+    }, 
+    "borehole_parameters": {
+        "type": "BoreholeParameter", 
+        "buried_depth": 2.0, 
+        "diameter": 0.15
+    }, 
+    "pipe_parameters": {
+        "outer_diameter": 0.026599999999999999, 
+        "conductivity": 0.40000000000000002, 
+        "type": "PipeParameter", 
+        "roughness": 9.9999999999999995e-07, 
+        "heat_capacity": 1542000.0, 
+        "inner_diameter": 0.021600000000000001, 
+        "shank_spacing": 0.032300000000000002
+    },
     "connectors": [
         {
             "geometry": {

@@ -3,7 +3,6 @@ from ladybug_geometry.geometry2d.pointvector import Point2D
 from ladybug_geometry.geometry2d.polygon import Polygon2D
 from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
 from ladybug_geometry.geometry3d.plane import Plane
-from honeybee.altnumber import autocalculate
 
 from dragonfly_energy.des.ghe import GroundHeatExchanger
 
@@ -19,18 +18,6 @@ def test_ghe_init():
 
     assert ghe.identifier == 'GroundHeatExchanger_1'
     assert ghe.geometry == polygon
-    assert ghe.soil_parameters.conductivity == 2.3
-    assert ghe.soil_parameters.heat_capacity == 2343500
-    assert ghe.soil_parameters.undisturbed_temperature == autocalculate
-    assert ghe.pipe_parameters.inner_diameter == 0.0216
-    assert ghe.pipe_parameters.outer_diameter == 0.0266
-    assert ghe.pipe_parameters.shank_spacing == 0.0323
-    assert ghe.pipe_parameters.roughness == 1e-06
-    assert ghe.pipe_parameters.conductivity == 0.4
-    assert ghe.pipe_parameters.heat_capacity == 1542000
-    assert ghe.borehole_parameters.length == 96
-    assert ghe.borehole_parameters.buried_depth == 2
-    assert ghe.borehole_parameters.diameter == 0.15
 
 
 def test_ghe_transform():
