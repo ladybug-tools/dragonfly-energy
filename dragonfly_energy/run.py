@@ -118,6 +118,25 @@ def base_honeybee_osw(
             }
             osw_dict['steps'].append(emissions_measure_dict)
 
+    # if there is a DES system parameter, specify any autocalculated ground temperatures
+    sys_param_file = os.path.join(project_directory, 'system_params.json')
+    if os.path.isfile(sys_param_file):
+        with open(sys_param_file, 'r') as spf:
+            sys_dict = json.load(spf)
+        if 'district_system' in sys_dict:
+            if 'fifth_generation' in sys_dict['district_system']:
+                g5_par = sys_dict['district_system']['fifth_generation']
+                if 'ghe_parameters' in g5_par:
+                    ghe_par = g5_par['ghe_parameters']
+                    if 'soil' in ghe_par and 'undisturbed_temp' in ghe_par['soil']:
+                        soil_par = ghe_par['soil']
+                        if soil_par['undisturbed_temp'] == 'Autocalculate':
+                            epw_obj = EPW(epw_file)
+                            soil_par['undisturbed_temp'] = \
+                                epw_obj.dry_bulb_temperature.average
+                            with open(sys_param_file, 'w') as fp:
+                                json.dump(sys_dict, fp, indent=4)
+
     # add any additional measures to the osw_dict
     if additional_measures or additional_mapper_measures:
         measures = []

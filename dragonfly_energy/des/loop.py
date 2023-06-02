@@ -11,7 +11,8 @@ from honeybee.units import conversion_factor_to_meters
 from dragonfly.projection import meters_to_long_lat_factors, \
     origin_long_lat_from_location
 
-from .ghe import GroundHeatExchanger
+from .ghe import GroundHeatExchanger, SoilParameter, FluidParameter, \
+    PipeParameter, BoreholeParameter
 from .connector import ThermalConnector
 from .junction import ThermalJunction
 
@@ -26,38 +27,56 @@ class GHEThermalLoop(object):
         identifier: Text string for a unique thermal loop ID. Must contain only
             characters that are acceptable in OpenDSS. This will be used to
             identify the object across the exported geoJSON and OpenDSS files.
-        ground_heat_exchanger: A GroundHeatExchanger object representing the field
-            of boreholes that supplies the loop with thermal capacity.
+        ground_heat_exchangers: An array of GroundHeatExchanger objects representing
+            the fields of boreholes that supply the loop with thermal capacity.
         connectors: An array of ThermalConnector objects that are included
             within the thermal loop. In order for a given connector to be
             valid within the loop, each end of the connector must touch either
-            another connector, a building footprint, or the ground_heat_exchanger. In
+            another connector, a building footprint, or the ground_heat_exchangers. In
             order for the loop as a whole to be valid, the connectors must form a
             single continuous loop when passed through the buildings and the heat
             exchanger field.
         clockwise_flow: A boolean to note whether the direction of flow through the
             loop is clockwise (True) when viewed from above in the GeoJSON or it
             is counterclockwise (False). (Default: False).
+        soil_parameters: Optional SoilParameter object to specify the properties
+            of the soil in which the loop is operating.
+        fluid_parameters: Optional FluidParameter object to specify the properties
+            of the fluid that is circulating through the loop.
+        pipe_parameters: Optional PipeParameter object to specify the properties
+            of the ground-heat-exchanging pipes used across the loop.
+        borehole_parameters: Optional BoreholeParameter object to specify the
+            properties of the boreholes used across the loop.
 
     Properties:
         * identifier
         * display_name
-        * ground_heat_exchanger
+        * ground_heat_exchangers
         * connectors
         * clockwise_flow
+        * soil_parameters
+        * fluid_parameters
+        * pipe_parameters
+        * borehole_parameters
     """
     __slots__ = (
-        '_identifier', '_display_name', '_ground_heat_exchanger', '_connectors',
-        '_clockwise_flow')
+        '_identifier', '_display_name', '_ground_heat_exchangers', '_connectors',
+        '_clockwise_flow', '_soil_parameters', '_fluid_parameters', '_pipe_parameters',
+        '_borehole_parameters')
 
-    def __init__(self, identifier, ground_heat_exchanger, connectors,
-                 clockwise_flow=False):
+    def __init__(self, identifier, ground_heat_exchangers, connectors,
+                 clockwise_flow=False, soil_parameters=None, fluid_parameters=None,
+                 pipe_parameters=None, borehole_parameters=None):
         """Initialize GHEThermalLoop."""
         self.identifier = identifier
         self._display_name = None
-        self.ground_heat_exchanger = ground_heat_exchanger
+        self.ground_heat_exchangers = ground_heat_exchangers
         self.connectors = connectors
         self.clockwise_flow = clockwise_flow
+        self.soil_parameters = soil_parameters
+        self.fluid_parameters = fluid_parameters
+        self.pipe_parameters = pipe_parameters
+        self.borehole_parameters = borehole_parameters
 
     @classmethod
     def from_dict(cls, data):
@@ -70,10 +89,18 @@ class GHEThermalLoop(object):
         assert data['type'] == 'GHEThermalLoop', 'Expected GHEThermalLoop ' \
             'dictionary. Got {}.'.format(data['type'])
         # re-serialize geometry objects
-        ghe = GroundHeatExchanger.from_dict(data['ground_heat_exchanger'])
+        ghe = [GroundHeatExchanger.from_dict(g) for g in data['ground_heat_exchangers']]
         conns = [ThermalConnector.from_dict(c) for c in data['connectors']]
         clock = data['clockwise_flow'] if 'clockwise_flow' in data else False
-        loop = cls(data['identifier'], ghe, conns, clock)
+        soil = SoilParameter.from_dict(data['soil_parameters']) \
+            if 'soil_parameters' in data else None
+        fluid = FluidParameter.from_dict(data['fluid_parameters']) \
+            if 'fluid_parameters' in data else None
+        pipe = PipeParameter.from_dict(data['pipe_parameters']) \
+            if 'pipe_parameters' in data else None
+        bore = BoreholeParameter.from_dict(data['borehole_parameters']) \
+            if 'borehole_parameters' in data else None
+        loop = cls(data['identifier'], ghe, conns, clock, soil, fluid, pipe, bore)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -128,7 +155,7 @@ class GHEThermalLoop(object):
             point = Point2D(0, 0)
 
         # Get the list of thermal connector and GHE data
-        connector_data, ghe_data = [], None
+        connector_data, ghe_data = [], []
         for obj_data in data['features']:
             if 'type' in obj_data['properties']:
                 if obj_data['properties']['type'] == 'ThermalConnector':
@@ -136,7 +163,7 @@ class GHEThermalLoop(object):
                 elif obj_data['properties']['type'] == 'District System' and \
                         obj_data['properties']['district_system_type'] == \
                         'Ground Heat Exchanger':
-                    ghe_data = obj_data
+                    ghe_data.append(obj_data)
 
         # if model units is not Meters, convert non-meter user inputs to meters
         scale_to_meters = conversion_factor_to_meters(units)
@@ -220,16 +247,25 @@ class GHEThermalLoop(object):
             self._display_name = value  # keep it as unicode
 
     @property
-    def ground_heat_exchanger(self):
-        """Get or set a GroundHeatExchanger object for the loop's ground heat exchanger.
+    def ground_heat_exchangers(self):
+        """Get or set a tuple of GroundHeatExchanger objects for the loop's GHEs.
         """
-        return self._ground_heat_exchanger
+        return self._ground_heat_exchangers
 
-    @ground_heat_exchanger.setter
-    def ground_heat_exchanger(self, value):
-        assert isinstance(value, GroundHeatExchanger), \
-            'Expected GroundHeatExchanger for thermal loop. Got {}.'.format(type(value))
-        self._ground_heat_exchanger = value
+    @ground_heat_exchangers.setter
+    def ground_heat_exchangers(self, values):
+        try:
+            if not isinstance(values, tuple):
+                values = tuple(values)
+        except TypeError:
+            raise TypeError(
+                'Expected list or tuple for thermal loop ground_heat_exchangers. '
+                'Got {}'.format(type(values)))
+        for g in values:
+            assert isinstance(g, GroundHeatExchanger), 'Expected GroundHeatExchanger ' \
+                'object for thermal loop ground_heat_exchangers. Got {}.'.format(type(g))
+        assert len(values) > 0, 'ThermalLoop must possess at least one GHE.'
+        self._ground_heat_exchangers = values
 
     @property
     def connectors(self):
@@ -258,6 +294,62 @@ class GHEThermalLoop(object):
     @clockwise_flow.setter
     def clockwise_flow(self, value):
         self._clockwise_flow = bool(value)
+
+    @property
+    def soil_parameters(self):
+        """Get or set a SoilParameter object for the heat exchanger field."""
+        return self._soil_parameters
+
+    @soil_parameters.setter
+    def soil_parameters(self, value):
+        if value is None:
+            value = SoilParameter()
+        assert isinstance(value, SoilParameter), \
+            'Expected SoilParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._soil_parameters = value
+
+    @property
+    def fluid_parameters(self):
+        """Get or set a FluidParameter object for the heat exchanger field."""
+        return self._fluid_parameters
+
+    @fluid_parameters.setter
+    def fluid_parameters(self, value):
+        if value is None:
+            value = FluidParameter()
+        assert isinstance(value, FluidParameter), \
+            'Expected FluidParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._fluid_parameters = value
+
+    @property
+    def pipe_parameters(self):
+        """Get or set a PipeParameter object for the heat exchanger field."""
+        return self._pipe_parameters
+
+    @pipe_parameters.setter
+    def pipe_parameters(self, value):
+        if value is None:
+            value = PipeParameter()
+        assert isinstance(value, PipeParameter), \
+            'Expected PipeParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._pipe_parameters = value
+
+    @property
+    def borehole_parameters(self):
+        """Get or set a BoreholeParameter object for the heat exchanger field."""
+        return self._borehole_parameters
+
+    @borehole_parameters.setter
+    def borehole_parameters(self, value):
+        if value is None:
+            value = BoreholeParameter()
+        assert isinstance(value, BoreholeParameter), \
+            'Expected BoreholeParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._borehole_parameters = value
 
     def junctions(self, tolerance=0.01):
         """Get a list of ThermalJunction objects for the unique thermal loop junctions.
@@ -289,7 +381,7 @@ class GHEThermalLoop(object):
         """Get a Polygon2D for the single continuous loop formed by connectors.
 
         This method will raise an exception if the ThermalConnectors do not form
-        a single continuous loop through the Buildings and the ground_heat_exchanger.
+        a single continuous loop through the Buildings and the ground_heat_exchangers.
         The Polygon2D will have the correct clockwise ordering according to this
         object's clockwise_flow property.
 
@@ -303,8 +395,9 @@ class GHEThermalLoop(object):
         # get the footprints of the Buildings in 2D space and the GHE field
         footprint_2d, bldg_ids = GHEThermalLoop._building_footprints(
             buildings, tolerance)
-        footprint_2d.append(self.ground_heat_exchanger.geometry)
-        bldg_ids.append('Ground Heat Exchanger')
+        for ghe in self.ground_heat_exchangers:
+            footprint_2d.append(ghe.geometry)
+            bldg_ids.append('Ground Heat Exchanger')
 
         # determine which ThermalConnectors are linked to the buildings
         feat_dict = {}
@@ -360,7 +453,7 @@ class GHEThermalLoop(object):
         with the clockwise_flow property on this object.
 
         This method will raise an exception if the ThermalConnectors do not form
-        a single continuous loop through the Buildings and the ground_heat_exchanger.
+        a single continuous loop through the Buildings and the ground_heat_exchangers.
 
         Args:
             buildings: An array of Dragonfly Building objects in the same units
@@ -402,7 +495,8 @@ class GHEThermalLoop(object):
             moving_vec: A ladybug_geometry Vector3D with the direction and distance
                 to move the object.
         """
-        self._ground_heat_exchanger.move(moving_vec)
+        for ghe in self.ground_heat_exchangers:
+            ghe.move(moving_vec)
         for connector in self.connectors:
             connector.move(moving_vec)
 
@@ -414,7 +508,8 @@ class GHEThermalLoop(object):
             origin: A ladybug_geometry Point3D for the origin around which the
                 object will be rotated.
         """
-        self._ground_heat_exchanger.rotate_xy(angle, origin)
+        for ghe in self.ground_heat_exchangers:
+            ghe.rotate_xy(angle, origin)
         for connector in self.connectors:
             connector.rotate_xy(angle, origin)
 
@@ -424,7 +519,8 @@ class GHEThermalLoop(object):
         Args:
             plane: A ladybug_geometry Plane across which the object will be reflected.
         """
-        self._ground_heat_exchanger.reflect(plane)
+        for ghe in self.ground_heat_exchangers:
+            ghe.reflect(plane)
         for connector in self.connectors:
             connector.reflect(plane)
 
@@ -436,7 +532,8 @@ class GHEThermalLoop(object):
             origin: A ladybug_geometry Point3D representing the origin from which
                 to scale. If None, it will be scaled from the World origin (0, 0, 0).
         """
-        self._ground_heat_exchanger.scale(factor, origin)
+        for ghe in self.ground_heat_exchangers:
+            ghe.scale(factor, origin)
         for connector in self.connectors:
             connector.scale(factor, origin)
 
@@ -465,9 +562,14 @@ class GHEThermalLoop(object):
         """GHEThermalLoop dictionary representation."""
         base = {'type': 'GHEThermalLoop'}
         base['identifier'] = self.identifier
-        base['ground_heat_exchanger'] = self.ground_heat_exchanger.to_dict()
+        base['ground_heat_exchangers'] = \
+            [g.to_dict() for g in self.ground_heat_exchangers]
         base['connectors'] = [c.to_dict() for c in self.connectors]
         base['clockwise_flow'] = self.clockwise_flow
+        base['soil_parameters'] = self.soil_parameters.to_dict()
+        base['fluid_parameters'] = self.fluid_parameters.to_dict()
+        base['pipe_parameters'] = self.pipe_parameters.to_dict()
+        base['borehole_parameters'] = self.borehole_parameters.to_dict()
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -482,8 +584,10 @@ class GHEThermalLoop(object):
         the to_des_param_dict method.
 
         Args:
-            buildings: An array of Dragonfly Building objects in the same units
-                system as the GHEThermalLoop geometry.
+            buildings: An array of Dragonfly Building objects that are along
+                the GHEThermalLoop. Buildings that do not have their footprint
+                touching the loop's ThermalConnectors are automatically excluded
+                in the result.
             location: A ladybug Location object possessing longitude and latitude data.
             point: A ladybug_geometry Point2D for where the location object exists
                 within the space of a scene. The coordinates of this point are
@@ -496,16 +600,16 @@ class GHEThermalLoop(object):
         origin_lon_lat = origin_long_lat_from_location(location, point)
         convert_facs = meters_to_long_lat_factors(origin_lon_lat)
 
-        # translate ground heat exchanger into the GeoJSON features list
+        # translate ground heat exchangers into the GeoJSON features list
         features_list = []
-        ghe = self.ground_heat_exchanger.to_geojson_dict(origin_lon_lat, convert_facs)
-        features_list.append(ghe)
+        for ghe in self.ground_heat_exchangers:
+            features_list.append(ghe.to_geojson_dict(origin_lon_lat, convert_facs))
 
         # get the footprints of the Buildings in 2D space
         footprint_2d, bldg_ids = GHEThermalLoop._building_footprints(
             buildings, tolerance)
-        all_feat = footprint_2d + [self.ground_heat_exchanger.geometry]
-        feat_ids = bldg_ids + [self.ground_heat_exchanger.identifier]
+        all_feat = footprint_2d + [ghe.geometry for ghe in self.ground_heat_exchangers]
+        feat_ids = bldg_ids + [ghe.identifier for ghe in self.ground_heat_exchangers]
 
         # order the connectors correctly on the loop and translate them to features
         ordered_conns = self.ordered_connectors(buildings, tolerance)
@@ -536,8 +640,10 @@ class GHEThermalLoop(object):
         """Get the DES System Parameter dictionary for the ThermalLoop.
 
         Args:
-            buildings: An array of Dragonfly Building objects in the same units
-                system as the GHEThermalLoop geometry.
+            buildings: An array of Dragonfly Building objects that are along
+                the GHEThermalLoop. Buildings that do not have their footprint
+                touching the loop's ThermalConnectors are automatically excluded
+                in the result.
             tolerance: The minimum difference between the coordinate values of two
                 geometries at which they are considered co-located. (Default: 0.01,
                 suitable for objects in meters).
@@ -559,52 +665,127 @@ class GHEThermalLoop(object):
             b_dict = {
                 'geojson_id': bldg_id,
                 'load_model': 'time_series',
-                'ets_model': 'Indirect Heating and Cooling'
+                'load_model_parameters': {
+                    'time_series': {
+                        'filepath': 'To be populated',
+                        'delta_temp_air_cooling': 10,
+                        'delta_temp_air_heating': 18,
+                        'has_liquid_cooling': True,
+                        'has_liquid_heating': True,
+                        'has_electric_cooling': False,
+                        'has_electric_heating': False,
+                        'max_electrical_load': 0,
+                        'temp_chw_return': 12,
+                        'temp_chw_supply': 7,
+                        'temp_hw_return': 35,
+                        'temp_hw_supply': 40,
+                        'temp_setpoint_cooling': 24,
+                        'temp_setpoint_heating': 20
+                    }
+                },
+                'ets_model': 'Fifth Gen Heat Pump',
+                'fifth_gen_ets_parameters': {
+                    'supply_water_temperature_building': 15,
+                    'chilled_water_supply_temp': 5,
+                    'hot_water_supply_temp': 50,
+                    'cop_heat_pump_heating': 2.5,
+                    'cop_heat_pump_cooling': 3.5,
+                    'pump_flow_rate': 0.01,
+                    'pump_design_head': 150000,
+                    'ets_pump_flow_rate': 0.0005,
+                    'ets_pump_head': 10000,
+                    'fan_design_flow_rate': 0.25,
+                    'fan_design_head': 150
+                }
             }
             bldg_array.append(b_dict)
         des_dict['buildings'] = bldg_array
 
-        # TODO: Figure out if these system parameters have any meaning
-        # add some dummy system parameters for now
+        # add the ground loop parameters
         des_param = {
-            'fourth_generation': {
-                'central_cooling_plant_parameters': {
-                    'heat_flow_nominal': 7999,
-                    'cooling_tower_fan_power_nominal': 4999,
-                    'mass_chw_flow_nominal': 9.9,
-                    'chiller_water_flow_minimum': 9.9,
-                    'mass_cw_flow_nominal': 9.9,
-                    'chw_pump_head': 300000,
-                    'cw_pump_head': 200000,
-                    'pressure_drop_chw_nominal': 5999,
-                    'pressure_drop_cw_nominal': 5999,
-                    'pressure_drop_setpoint': 49999,
-                    'temp_setpoint_chw': 6,
-                    'pressure_drop_chw_valve_nominal': 5999,
-                    'pressure_drop_cw_pum_nominal': 5999,
-                    'temp_air_wb_nominal': 24.9,
-                    'temp_cw_in_nominal': 34.9,
-                    'cooling_tower_water_temperature_difference_nominal': 6.56,
-                    'delta_temp_approach': 3.25,
-                    'ratio_water_air_nominal': 0.6
-                },
-                'central_heating_plant_parameters': {
-                    'heat_flow_nominal': 8001,
-                    'mass_hhw_flow_nominal': 11,
-                    'boiler_water_flow_minimum': 11,
-                    'pressure_drop_hhw_nominal': 55001,
-                    'pressure_drop_setpoint': 50000,
-                    'temp_setpoint_hhw': 54,
-                    'pressure_drop_hhw_valve_nominal': 6001,
-                    'chp_installed': False
-                }
+            'fifth_generation': {
+                'ghe_parameters': self.to_ghe_param_dict(tolerance)
             }
         }
         des_dict['district_system'] = des_param
-
-        # add the ground loop parameters
-        des_dict.update(self.ground_heat_exchanger.to_des_param_dict())
         return des_dict
+
+    def to_ghe_param_dict(self, tolerance=0.01):
+        """Get the GroundHeatExchanger as it appears in a System Parameter dictionary.
+
+        Args:
+            tolerance: The minimum difference between the coordinate values of two
+                geometries at which they are considered co-located. (Default: 0.01,
+                suitable for objects in meters).
+        """
+        # compute the geometric constraints of the borehole fields
+        geo_pars = []
+        for ghe in self.ground_heat_exchangers:
+            ghe_geo = ghe.geometry
+            max_dim = max((ghe_geo.max.x - ghe_geo.min.x, ghe_geo.max.y - ghe_geo.min.y))
+            ang_tol = tolerance / max_dim
+            if ghe_geo.is_rectangle(ang_tol):
+                ghe_dims = (ghe_geo.segments[0].length, ghe_geo.segments[1].length)
+            else:
+                rect_geo = ghe_geo.rectangular_approximation()
+                ghe_dims = (rect_geo.segments[0].length, rect_geo.segments[1].length)
+            geo_par = {
+                'ghe_id': ghe.identifier,
+                'length': max(ghe_dims),
+                'width': min(ghe_dims)
+            }
+            geo_pars.append(geo_par)
+        # handle autocalculated soil temperatures
+        u_temp = self.soil_parameters.undisturbed_temperature \
+            if self.soil_parameters._undisturbed_temperature is not None \
+            else 'Autocalculate'
+        # return a dictionary with all of the information
+        return {
+            'fluid': {
+                'fluid_name': self.fluid_parameters.fluid_type,
+                'concentration_percent': self.fluid_parameters.concentration,
+                'temperature': self.fluid_parameters.temperature
+            },
+            'grout': {
+                'conductivity': 1.0,
+                'rho_cp': 3901000,
+            },
+            'soil': {
+                'conductivity': self.soil_parameters.conductivity,
+                'rho_cp': self.soil_parameters.heat_capacity,
+                'undisturbed_temp': u_temp
+            },
+            'pipe': {
+                'inner_diameter': self.pipe_parameters.inner_diameter,
+                'outer_diameter': self.pipe_parameters.outer_diameter,
+                'shank_spacing': self.pipe_parameters.shank_spacing,
+                'roughness': self.pipe_parameters.roughness,
+                'conductivity': self.pipe_parameters.conductivity,
+                'rho_cp': self.pipe_parameters.heat_capacity,
+                'arrangement': 'singleutube'
+            },
+            'borehole': {
+                'buried_depth': self.borehole_parameters.buried_depth,
+                'diameter': self.borehole_parameters.diameter
+            },
+            'simulation': {
+                'num_months': 240
+            },
+            'geometric_constraints': {
+                'ghe_geometric_params': geo_pars,
+                'b_min': self.borehole_parameters.min_spacing,
+                'b_max': self.borehole_parameters.max_spacing,
+                'max_height': self.borehole_parameters.max_spacing,
+                'min_height': self.borehole_parameters.min_depth,
+                'method': 'rectangle'
+            },
+            'design': {
+                'flow_rate': 0.2,
+                'flow_type': 'borehole',
+                'max_eft': 35.0,
+                'min_eft': 5.0
+            }
+        }
 
     def duplicate(self):
         """Get a copy of this object."""
@@ -658,9 +839,8 @@ class GHEThermalLoop(object):
             connector_junction_ids.append(jct_ids)
 
         # loop through district system objects to determine adjacent junctions
-        all_ds_objs = (self.ground_heat_exchanger,)
         for jct in junctions:
-            for ds_obj in all_ds_objs:
+            for ds_obj in self.ground_heat_exchangers:
                 if ds_obj.geometry.is_point_on_edge(jct.geometry, tolerance):
                     jct.system_identifier = ds_obj.identifier
                     break
@@ -681,8 +861,11 @@ class GHEThermalLoop(object):
 
     def __copy__(self):
         new_loop = GHEThermalLoop(
-            self.identifier, self.ground_heat_exchanger.duplicate(),
-            tuple(conn.duplicate() for conn in self.connectors), self.clockwise_flow)
+            self.identifier,
+            tuple(ghe.duplicate() for ghe in self.ground_heat_exchangers),
+            tuple(conn.duplicate() for conn in self.connectors), self.clockwise_flow,
+            self.soil_parameters.duplicate(), self.fluid_parameters.duplicate(),
+            self.pipe_parameters.duplicate(), self.borehole_parameters.duplicate())
         new_loop._display_name = self._display_name
         return new_loop
 
