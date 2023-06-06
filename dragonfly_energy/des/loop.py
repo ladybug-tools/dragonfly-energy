@@ -731,8 +731,14 @@ class GHEThermalLoop(object):
                 ghe_dims = (rect_geo.segments[0].length, rect_geo.segments[1].length)
             geo_par = {
                 'ghe_id': ghe.identifier,
-                'length': max(ghe_dims),
-                'width': min(ghe_dims)
+                'ghe_geometric_params': {
+                    'length_of_ghe': max(ghe_dims),
+                    'width_of_ghe': min(ghe_dims)
+                },
+                'borehole': {
+                    'buried_depth': self.borehole_parameters.buried_depth,
+                    'diameter': self.borehole_parameters.diameter
+                }
             }
             geo_pars.append(geo_par)
         # handle autocalculated soil temperatures
@@ -764,15 +770,10 @@ class GHEThermalLoop(object):
                 'rho_cp': self.pipe_parameters.heat_capacity,
                 'arrangement': 'singleutube'
             },
-            'borehole': {
-                'buried_depth': self.borehole_parameters.buried_depth,
-                'diameter': self.borehole_parameters.diameter
-            },
             'simulation': {
                 'num_months': 240
             },
             'geometric_constraints': {
-                'ghe_geometric_params': geo_pars,
                 'b_min': self.borehole_parameters.min_spacing,
                 'b_max': self.borehole_parameters.max_spacing,
                 'max_height': self.borehole_parameters.max_spacing,
@@ -784,7 +785,8 @@ class GHEThermalLoop(object):
                 'flow_type': 'borehole',
                 'max_eft': 35.0,
                 'min_eft': 5.0
-            }
+            },
+            'ghe_specific_params': geo_pars
         }
 
     def duplicate(self):
