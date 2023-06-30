@@ -74,8 +74,9 @@ def model_to_urbanopt(
             process of writing the URBANopt files.
     """
     # make sure the model is in meters and, if it's not, duplicate and scale it
-    conversion_factor = None
+    conversion_factor, original_units = None, 'Meters'
     if model.units != 'Meters':
+        original_units = model.units
         conversion_factor = hb_model.conversion_factor_to_meters(model.units)
         point = point.scale(conversion_factor)
         if shade_distance is not None:
@@ -176,15 +177,21 @@ def model_to_urbanopt(
     with open(feature_geojson, 'w') as fp:
         json.dump(geojson_dict, fp, indent=4)
 
-    # write out the honeybee Model JSONS from the model
+    # write out the honeybee Model JSONs from the model
     hb_model_jsons = []
     hb_models = model.to_honeybee(
         'Building', shade_distance, use_multiplier, add_plenum,
         solve_ceiling_adjacencies=solve_ceiling_adjacencies, tolerance=tolerance)
     for bldg_model in hb_models:
-        bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
+        try:
+            bldg_model.remove_degenerate_geometry(0.01)
+        except ValueError:
+            error = 'Failed to remove degenerate Geometry.\nYour Model units system is: {}. ' \
+                'Is this correct?'.format(original_units)
+            raise ValueError(error)
         model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
         bldg_model.properties.energy.add_autocal_properties_to_dict(model_dict)
+        bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
         with open(bld_path, 'w') as fp:
             json.dump(model_dict, fp)
         hb_model_jsons.append(bld_path)
