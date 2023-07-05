@@ -235,7 +235,7 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
         'max_datapoints': 1000000000,
         'num_parallel': cpu_count,
         'run_simulations': True,
-        'verbose': False
+        'verbose': verbose
     }
     runner_conf = os.path.join(uo_folder, 'runner.conf')
     with open(runner_conf, 'w') as fp:
@@ -251,10 +251,10 @@ def run_urbanopt(feature_geojson, scenario_csv, cpu_count=None):
     Args:
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
-        cpu_count: A positive integer for the number of CPUs to use in the
-            simulation. If None, the simulation will default to whatever is
-            specified in the runner.conf. (Default: None).
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        cpu_count: This input is deprecated and currently not used given that
+            the runner.conf generated in the prepare_urbanopt_folder step
+            correctly identifies the number of CPUs to be used.
 
     Returns:
         A series of file paths to the simulation output files
@@ -280,12 +280,14 @@ def run_urbanopt(feature_geojson, scenario_csv, cpu_count=None):
     folders.check_urbanopt_version()
     # run the simulation
     if os.name == 'nt':  # we are on Windows
-        directory = _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count)
+        directory, stderr = \
+            _run_urbanopt_windows(feature_geojson, scenario_csv)
     else:  # we are on Mac, Linux, or some other unix-based system
-        directory = _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count)
+        directory, stderr = \
+            _run_urbanopt_unix(feature_geojson, scenario_csv)
 
     # output the simulation files
-    return _output_urbanopt_files(directory)
+    return _output_urbanopt_files(directory, stderr)
 
 
 def run_default_report(feature_geojson, scenario_csv):
@@ -551,7 +553,7 @@ def _recommended_processor_count():
     return 1 if cpu_count is None or cpu_count <= 1 else cpu_count - 1
 
 
-def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
+def _run_urbanopt_windows(feature_geojson, scenario_csv):
     """Run a feature and scenario file through URBANopt on a Windows-based os.
 
     A batch file will be used to run the simulation.
@@ -560,10 +562,14 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
-        cpu_count: A positive integer for the number of processors to use.
 
     Returns:
-        Path to the folder out of which the simulation was run.
+        A tuple with two values.
+
+        -   directory -- Path to the folder out of which the simulation was run.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
@@ -575,11 +581,14 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv, cpu_count):
     batch_file = os.path.join(directory, 'run_simulation.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
-    os.system('"{}"'.format(batch_file))
-    return directory
+    process = subprocess.Popen(
+        '"{}"'.format(batch_file), stderr=subprocess.PIPE)
+    result = process.communicate()
+    stderr = result[1]
+    return directory, stderr
 
 
-def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
+def _run_urbanopt_unix(feature_geojson, scenario_csv):
     """Run a feature and scenario file through URBANopt on a Unix-based os.
 
     This includes both Mac OS and Linux since a shell will be used to run
@@ -589,10 +598,14 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
-        cpu_count: A positive integer for the number of processors to use.
 
     Returns:
-        Path to the folder out of which the simulation was run.
+        A tuple with two values.
+
+        -   directory -- Path to the folder out of which the simulation was run.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
     """
     # check the input file
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
@@ -605,8 +618,11 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv, cpu_count):
     # this is more reliable than native Python chmod on Mac
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
-    subprocess.call(shell_file)
-    return directory
+    process = subprocess.Popen(
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE)
+    result = process.communicate()
+    stderr = result[1]
+    return directory, stderr
 
 
 def _check_urbanopt_file(feature_geojson, scenario_csv):
@@ -629,12 +645,14 @@ def _check_urbanopt_file(feature_geojson, scenario_csv):
     return os.path.split(feature_geojson)[0]
 
 
-def _output_urbanopt_files(directory):
+def _output_urbanopt_files(directory, stderr=''):
     """Get the paths to the simulation output files given the urbanopt directory.
 
     Args:
         directory: The path to where the URBANopt feature and scenario files
             were simulated.
+        stderr: The URBANopt standard error message, which will be returned to
+            the user in the event that no simulation folder was found.
 
     Returns:
         A series of file paths to the simulation output files
@@ -668,8 +686,11 @@ def _output_urbanopt_files(directory):
 
     # parse the GeoJSON so that we can get the correct order of result files
     sim_dir = os.path.join(directory, 'run', 'honeybee_scenario')
-    assert os.path.isdir(sim_dir), 'The URBANopt simulation failed to run.\n' \
-        'No results were found at:\n{}'.format(sim_dir)
+    if not os.path.isdir(sim_dir):
+        msg = 'The URBANopt simulation failed to run.\n' \
+            'No results were found at:\n{}\n{}'.format(sim_dir, stderr)
+        print(msg)
+        raise Exception(msg)
     geojson = [f for f in os.listdir(directory) if f.endswith('.geojson')]
     if len(geojson) == 1:
         geo_file = os.path.join(directory, geojson[0])
