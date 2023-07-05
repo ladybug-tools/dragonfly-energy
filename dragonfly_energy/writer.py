@@ -67,7 +67,7 @@ def model_to_urbanopt(
         feature_geojson -- The path to an URBANopt feature geoJSON that has
             been written by this method.
 
-        hb_model_jsons -- An array of file paths to honeybee Model JSONS that
+        hb_model_jsons -- An array of file paths to honeybee Model JSONs that
             correspond to the detailed_model_filename keys in the feature_geojson.
 
         hb_models -- An array of honeybee Model objects that were generated in
