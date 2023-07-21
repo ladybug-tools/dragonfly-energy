@@ -225,23 +225,72 @@ class ModelEnergyProperties(object):
             raise ValueError(full_msg)
         return full_msg
 
-    def check_duplicate_construction_set_identifiers(self, raise_exception=True):
-        """Check that there are no duplicate ConstructionSet identifiers in the model."""
+    def check_duplicate_construction_set_identifiers(
+            self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate ConstructionSet identifiers in the model.
+        
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
         return check_duplicate_identifiers(
-            self.construction_sets, raise_exception, 'ConstructionSet')
+            self.construction_sets, raise_exception, 'ConstructionSet',
+            detailed, '020003', 'Energy',
+            error_type='Duplicate ConstructionSet Identifier')
 
-    def check_duplicate_program_type_identifiers(self, raise_exception=True):
-        """Check that there are no duplicate ProgramType identifiers in the model."""
+    def check_duplicate_program_type_identifiers(
+            self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate ProgramType identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
         return check_duplicate_identifiers(
-            self.program_types, raise_exception, 'ProgramType')
+            self.program_types, raise_exception, 'ProgramType',
+            detailed, '020006', 'Energy', error_type='Duplicate ProgramType Identifier')
 
-    def check_duplicate_hvac_identifiers(self, raise_exception=True):
-        """Check that there are no duplicate HVAC identifiers in the model."""
-        return check_duplicate_identifiers(self.hvacs, raise_exception, 'HVAC')
+    def check_duplicate_hvac_identifiers(self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate HVAC identifiers in the model.
 
-    def check_duplicate_shw_identifiers(self, raise_exception=True):
-        """Check that there are no duplicate SHW identifiers in the model."""
-        return check_duplicate_identifiers(self.shws, raise_exception, 'SHW')
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.hvacs, raise_exception, 'HVAC',detailed, '020007', 'Energy',
+            error_type='Duplicate HVAC Identifier')
+
+    def check_duplicate_shw_identifiers(self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate SHW identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.shws, raise_exception, 'SHW', detailed, '020008', 'Energy',
+            error_type='Duplicate SHW Identifier')
 
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.

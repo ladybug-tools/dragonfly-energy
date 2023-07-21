@@ -781,6 +781,7 @@ class GHEThermalLoop(object):
                 'method': 'rectangle'
             },
             'design': {
+                'method': 'AREAPROPORTIONAL',
                 'flow_rate': 0.2,
                 'flow_type': 'borehole',
                 'max_eft': 35.0,
