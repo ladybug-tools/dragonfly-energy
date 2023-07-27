@@ -1,13 +1,14 @@
 # coding=utf-8
 """Methods to write files for URBANopt simulation from a Model."""
+import sys
+import os
+import re
+import json
+
 from ladybug_geometry.geometry2d import Point2D
 from ladybug.futil import nukedir, preparedir
 from honeybee.config import folders
 from honeybee.model import Model as hb_model
-
-import os
-import re
-import json
 
 
 def model_to_urbanopt(
@@ -174,8 +175,13 @@ def model_to_urbanopt(
 
     # write out the GeoJSON file
     feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
-    with open(feature_geojson, 'w') as fp:
-        json.dump(geojson_dict, fp, indent=4)
+    if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
+        with open(feature_geojson, 'wb') as fp:
+            obj_str = json.dumps(geojson_dict, indent=4, ensure_ascii=False)
+            fp.write(obj_str.encode('utf-8'))
+    else:
+        with open(feature_geojson, 'w', encoding='utf-8') as fp:
+            obj_str = json.dump(geojson_dict, fp, indent=4, ensure_ascii=False)
 
     # write out the honeybee Model JSONs from the model
     hb_model_jsons = []
@@ -192,8 +198,13 @@ def model_to_urbanopt(
         model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
         bldg_model.properties.energy.add_autocal_properties_to_dict(model_dict)
         bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
-        with open(bld_path, 'w') as fp:
-            json.dump(model_dict, fp)
+        if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
+            with open(bld_path, 'wb') as fp:
+                obj_str = json.dumps(model_dict, indent=4, ensure_ascii=False)
+                fp.write(obj_str.encode('utf-8'))
+        else:
+            with open(bld_path, 'w', encoding='utf-8') as fp:
+                obj_str = json.dump(model_dict, fp, indent=4, ensure_ascii=False)
         hb_model_jsons.append(bld_path)
 
     return feature_geojson, hb_model_jsons, hb_models
