@@ -4,6 +4,7 @@ import click
 from dragonfly.cli import main
 from .simulate import simulate
 from .translate import translate
+from .install import install
 
 
 # command group for all energy extension commands.
@@ -15,6 +16,7 @@ def energy():
 # add sub-commands for energy
 energy.add_command(simulate)
 energy.add_command(translate)
+energy.add_command(install)
 
 # add energy sub-commands to dragonfly CLI
 main.add_command(energy)
