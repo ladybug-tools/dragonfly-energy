@@ -137,9 +137,10 @@ def model_to_urbanopt(
 
     # add the DES to the GeoJSON dictionary
     if des_loop is not None:
-        des_features = des_loop.to_geojson_dict(
-            model.buildings, location, point, tolerance=tolerance)
-        geojson_dict['features'].extend(des_features)
+        if hasattr(des_loop, 'to_geojson_dict'):
+            des_features = des_loop.to_geojson_dict(
+                model.buildings, location, point, tolerance=tolerance)
+            geojson_dict['features'].extend(des_features)
         sys_p_json = os.path.join(folder, 'system_params.json')
         with open(sys_p_json, 'w') as fp:
             des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)

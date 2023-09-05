@@ -86,7 +86,9 @@ class ThermalJunction(_GeometryBase):
             'type': 'Feature',
             'properties': {
                 'id': self.identifier,
-                'type': 'ThermalJunction'
+                'type': 'ThermalJunction',
+                'junction_type': 'DES',
+                'connection_type': 'Series'
             },
             'geometry': {
                 'type': 'Point',

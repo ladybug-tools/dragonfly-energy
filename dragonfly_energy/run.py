@@ -118,24 +118,66 @@ def base_honeybee_osw(
             }
             osw_dict['steps'].append(emissions_measure_dict)
 
-    # if there is a DES system parameter, specify any autocalculated ground temperatures
-    sys_param_file = os.path.join(project_directory, 'system_params.json')
-    if os.path.isfile(sys_param_file):
-        with open(sys_param_file, 'r') as spf:
-            sys_dict = json.load(spf)
-        if 'district_system' in sys_dict:
-            if 'fifth_generation' in sys_dict['district_system']:
-                g5_par = sys_dict['district_system']['fifth_generation']
-                if 'ghe_parameters' in g5_par:
-                    ghe_par = g5_par['ghe_parameters']
-                    if 'soil' in ghe_par and 'undisturbed_temp' in ghe_par['soil']:
-                        soil_par = ghe_par['soil']
-                        if soil_par['undisturbed_temp'] == 'Autocalculate':
-                            epw_obj = EPW(epw_file)
-                            soil_par['undisturbed_temp'] = \
-                                epw_obj.dry_bulb_temperature.average
-                            with open(sys_param_file, 'w') as fp:
-                                json.dump(sys_dict, fp, indent=4)
+    # if there is a system parameter JSON, make sure the EPW is copied and referenced
+    if epw_file is not None:
+        sys_param_file = os.path.join(project_directory, 'system_params.json')
+        if os.path.isfile(sys_param_file):
+            # make sure the Modelica measure runs as part of the simulation
+            modelica_measures = [
+                {
+                    'measure_dir_name': 'export_time_series_modelica',
+                    'arguments': {'__SKIP__': False}
+                },
+                {
+                    'measure_dir_name': 'export_modelica_loads',
+                    'arguments': {'__SKIP__': False}
+                },
+            ]
+            osw_dict['steps'].extend(modelica_measures)
+
+            # copy the EPW to the project directory
+            epw_f_name = os.path.split(epw_file)[-1]
+            target_epw = os.path.join(project_directory, epw_f_name)
+            shutil.copy(epw_file, target_epw)
+            # create a MOS file from the EPW
+            epw_obj = EPW(target_epw)
+            mos_file = os.path.join(
+                project_directory, epw_f_name.replace('.epw', '.mos'))
+            epw_obj.to_mos(mos_file)
+            # find the path to the feature GeoJSON
+            feature_geojson = None
+            for fp in os.listdir(project_directory):
+                if fp.endswith('.geojson'):
+                    feature_geojson = os.path.join(project_directory, fp)
+                    break
+            if not feature_geojson:
+                raise ValueError(
+                    'No feature geojson file was found in: {}'.format(project_directory))
+            # write the EPW path into the GeoJSON
+            with open(feature_geojson, 'r') as gjf:
+                geo_dict = json.load(gjf)
+            if 'project' in geo_dict:
+                if 'weather_filename' not in geo_dict['project']:
+                    geo_dict['project']['weather_filename'] = epw_f_name
+                    with open(feature_geojson, 'w') as fp:
+                        json.dump(geo_dict, fp, indent=4)
+
+            # if the DES system is GSHP, specify any autocalculated ground temperatures
+            with open(sys_param_file, 'r') as spf:
+                sys_dict = json.load(spf)
+            if 'district_system' in sys_dict:
+                if 'fifth_generation' in sys_dict['district_system']:
+                    g5_par = sys_dict['district_system']['fifth_generation']
+                    if 'ghe_parameters' in g5_par:
+                        ghe_par = g5_par['ghe_parameters']
+                        if 'soil' in ghe_par and 'undisturbed_temp' in ghe_par['soil']:
+                            soil_par = ghe_par['soil']
+                            if soil_par['undisturbed_temp'] == 'Autocalculate':
+                                epw_obj = EPW(epw_file)
+                                soil_par['undisturbed_temp'] = \
+                                    epw_obj.dry_bulb_temperature.average
+                                with open(sys_param_file, 'w') as fp:
+                                    json.dump(sys_dict, fp, indent=4)
 
     # add any additional measures to the osw_dict
     if additional_measures or additional_mapper_measures:
