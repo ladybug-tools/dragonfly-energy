@@ -6,7 +6,7 @@ import json
 
 from ladybug_geometry.geometry2d import Point2D, LineSegment2D, Polyline2D, Polygon2D
 from ladybug.location import Location
-from honeybee.typing import valid_ep_string
+from honeybee.typing import valid_ep_string, float_in_range
 from honeybee.units import conversion_factor_to_meters
 from dragonfly.projection import meters_to_long_lat_factors, \
     origin_long_lat_from_location
@@ -877,3 +877,223 @@ class GHEThermalLoop(object):
 
     def __repr__(self):
         return 'GHEThermalLoop: {}'.format(self.display_name)
+
+
+class FourthGenThermalLoop(object):
+    """Represents a Fourth Generation Heating/Cooling Thermal Loop in a DES.
+
+    Args:
+        identifier: Text string for a unique thermal loop ID. Must contain only
+            characters that are acceptable in OpenDSS. This will be used to
+            identify the object across the exported geoJSON and OpenDSS files.
+        chilled_water_setpoint: A number for the temperature of chilled water
+            in the DES in degrees C. (Default: 6).
+        hot_water_setpoint: A number for the temperature of hot water in the DES
+            in degrees C. (Default: 54).
+
+    Properties:
+        * identifier
+        * display_name
+        * chilled_water_setpoint
+        * hot_water_setpoint
+    """
+    __slots__ = (
+        '_identifier', '_display_name', '_chilled_water_setpoint', '_hot_water_setpoint')
+
+    def __init__(self, identifier, chilled_water_setpoint=6, hot_water_setpoint=54):
+        """Initialize GHEThermalLoop."""
+        self.identifier = identifier
+        self._display_name = None
+        self.chilled_water_setpoint = chilled_water_setpoint
+        self.hot_water_setpoint = hot_water_setpoint
+
+    @classmethod
+    def from_dict(cls, data):
+        """Initialize an FourthGenThermalLoop from a dictionary.
+
+        Args:
+            data: A dictionary representation of an FourthGenThermalLoop object.
+        """
+        # check the type of dictionary
+        assert data['type'] == 'FourthGenThermalLoop', 'Expected FourthGenThermalLoop ' \
+            'dictionary. Got {}.'.format(data['type'])
+        cwt = data['chilled_water_setpoint'] if 'chilled_water_setpoint' in data \
+            and data['chilled_water_setpoint']  is not None else 6
+        hwt = data['hot_water_setpoint'] if 'hot_water_setpoint' in data \
+            and data['hot_water_setpoint']  is not None else 54
+        loop = cls(data['identifier'], cwt, hwt)
+        if 'display_name' in data and data['display_name'] is not None:
+            loop.display_name = data['display_name']
+        return loop
+
+    @property
+    def identifier(self):
+        """Get or set the text string for unique object identifier."""
+        return self._identifier
+
+    @identifier.setter
+    def identifier(self, identifier):
+        self._identifier = valid_ep_string(identifier, 'identifier')
+
+    @property
+    def display_name(self):
+        """Get or set a string for the object name without any character restrictions.
+
+        If not set, this will be equal to the identifier.
+        """
+        if self._display_name is None:
+            return self._identifier
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, value):
+        try:
+            self._display_name = str(value)
+        except UnicodeEncodeError:  # Python 2 machine lacking the character set
+            self._display_name = value  # keep it as unicode
+
+    @property
+    def chilled_water_setpoint(self):
+        """Get or set a number for the chilled water setpoint in degrees C."""
+        return self._chilled_water_setpoint
+
+    @chilled_water_setpoint.setter
+    def chilled_water_setpoint(self, value):
+        self._chilled_water_setpoint = \
+            float_in_range(value, 0, 20, 'chilled water setpoint')
+
+    @property
+    def hot_water_setpoint(self):
+        """Get or set a number for the hot water setpoint in degrees C."""
+        return self._hot_water_setpoint
+
+    @hot_water_setpoint.setter
+    def hot_water_setpoint(self, value):
+        self._hot_water_setpoint = \
+            float_in_range(value, 24, 100, 'hot water setpoint')
+
+    def to_dict(self):
+        """FourthGenThermalLoop dictionary representation."""
+        base = {'type': 'FourthGenThermalLoop'}
+        base['identifier'] = self.identifier
+        base['chilled_water_setpoint'] = self.chilled_water_setpoint
+        base['hot_water_setpoint'] = self.hot_water_setpoint
+        if self._display_name is not None:
+            base['display_name'] = self.display_name
+        return base
+
+    def to_des_param_dict(self, buildings, tolerance=0.01):
+        """Get the DES System Parameter dictionary for the ThermalLoop.
+
+        Args:
+            buildings: An array of Dragonfly Building objects that are along the
+                FourthGenThermalLoop. Buildings that do not have their footprint
+                touching the loop's ThermalConnectors are automatically excluded
+                in the result.
+            tolerance: The minimum difference between the coordinate values of two
+                geometries at which they are considered co-located. (Default: 0.01,
+                suitable for objects in meters).
+        """
+        # set up a dictionary to be updated with the params
+        des_dict = {}
+        # add the relevant buildings to the DES parameter dictionary
+        bldg_array = []
+        for bldg in buildings:
+            b_dict = {
+                'geojson_id': bldg.identifier,
+                'load_model': 'time_series',
+                'load_model_parameters': {
+                    'time_series': {
+                        'filepath': 'To be populated',
+                        'delta_temp_air_cooling': 10,
+                        'delta_temp_air_heating': 18,
+                        'has_liquid_cooling': True,
+                        'has_liquid_heating': True,
+                        'has_electric_cooling': False,
+                        'has_electric_heating': False,
+                        'max_electrical_load': 0,
+                        'temp_chw_return': 12,
+                        'temp_chw_supply': 7,
+                        'temp_hw_return': 35,
+                        'temp_hw_supply': 40,
+                        'temp_setpoint_cooling': 24,
+                        'temp_setpoint_heating': 20
+                    }
+                },
+                'ets_model': 'Indirect Heating and Cooling',
+                'ets_indirect_parameters': {
+                    'heat_flow_nominal': 8000,
+                    'heat_exchanger_efficiency': 0.8,
+                    'nominal_mass_flow_district': 0,
+                    'nominal_mass_flow_building': 0,
+                    'valve_pressure_drop': 6000,
+                    'heat_exchanger_secondary_pressure_drop': 500,
+                    'heat_exchanger_primary_pressure_drop': 500,
+                    'cooling_supply_water_temperature_building': 7,
+                    'heating_supply_water_temperature_building': 50,
+                    'delta_temp_chw_building': 5,
+                    'delta_temp_chw_district': 8,
+                    'delta_temp_hw_building': 15,
+                    'delta_temp_hw_district': 20,
+                    'cooling_controller_y_max': 1,
+                    'cooling_controller_y_min': 0,
+                    'heating_controller_y_max': 1,
+                    'heating_controller_y_min': 0
+                }
+            }
+            bldg_array.append(b_dict)
+        des_dict['buildings'] = bldg_array
+
+        # add the ground loop parameters
+        des_param = {
+            'fourth_generation': {
+                'central_cooling_plant_parameters': {
+                    'heat_flow_nominal': 7999,
+                    'cooling_tower_fan_power_nominal': 4999,
+                    'mass_chw_flow_nominal': 9.9,
+                    'chiller_water_flow_minimum': 9.9,
+                    'mass_cw_flow_nominal': 9.9,
+                    'chw_pump_head': 300000,
+                    'cw_pump_head': 200000,
+                    'pressure_drop_chw_nominal': 5999,
+                    'pressure_drop_cw_nominal': 5999,
+                    'pressure_drop_setpoint': 49999,
+                    'temp_setpoint_chw': self.chilled_water_setpoint,
+                    'pressure_drop_chw_valve_nominal': 5999,
+                    'pressure_drop_cw_pum_nominal': 5999,
+                    'temp_air_wb_nominal': 24.9,
+                    'temp_cw_in_nominal': 34.9,
+                    'cooling_tower_water_temperature_difference_nominal': 6.56,
+                    'delta_temp_approach': 3.25,
+                    'ratio_water_air_nominal': 0.6
+                },
+                'central_heating_plant_parameters': {
+                    'heat_flow_nominal': 8001,
+                    'mass_hhw_flow_nominal': 11,
+                    'boiler_water_flow_minimum': 11,
+                    'pressure_drop_hhw_nominal': 55001,
+                    'pressure_drop_setpoint': 50000,
+                    'temp_setpoint_hhw': self.hot_water_setpoint,
+                    'pressure_drop_hhw_valve_nominal': 6001,
+                    'chp_installed': False
+                }
+            }
+        }
+        des_dict['district_system'] = des_param
+        return des_dict
+
+    def duplicate(self):
+        """Get a copy of this object."""
+        return self.__copy__()
+
+    def __copy__(self):
+        new_loop = FourthGenThermalLoop(
+            self.identifier, self.chilled_water_setpoint, self.hot_water_setpoint)
+        new_loop._display_name = self._display_name
+        return new_loop
+
+    def ToString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return 'FourthGenThermalLoop: {}'.format(self.display_name)

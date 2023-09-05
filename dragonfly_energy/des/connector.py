@@ -134,7 +134,11 @@ class ThermalConnector(_GeometryBase):
             'name': self.display_name,
             'startJunctionId': start_id,
             'endJunctionId': end_id,
-            'total_length': round(self.geometry.length, 2)
+            'total_length': round(self.geometry.length, 2),
+            'connector_type': 'OnePipe',
+            'fluid_temperature_type': 'Ambient',
+            'flow_direction': 'Unspecified'
+
         }
         if start_feature_id is not None:
             conn_props['startFeatureId'] = start_feature_id
