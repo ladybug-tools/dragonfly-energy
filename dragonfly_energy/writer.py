@@ -144,7 +144,7 @@ def model_to_urbanopt(
         sys_p_json = os.path.join(folder, 'system_params.json')
         with open(sys_p_json, 'w') as fp:
             des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)
-            json.dump(des_dict, fp, indent=4)
+            json.dump(des_dict, fp, indent=2)
         if conversion_factor is not None:
             des_loop.scale(1 / conversion_factor)
 
