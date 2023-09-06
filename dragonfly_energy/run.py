@@ -9,6 +9,8 @@ import subprocess
 
 from ladybug.futil import preparedir, write_to_file
 from ladybug.epw import EPW
+from ladybug.config import folders as lb_folders
+from honeybee.config import folders as hb_folders
 from honeybee_energy.config import folders as hb_energy_folders
 from honeybee_energy.result.emissions import emissions_region
 
@@ -493,6 +495,106 @@ def run_rnm(feature_geojson, scenario_csv, underground_ratio=0.9, lv_only=True,
         return rnm_path
 
 
+def run_des_sys_param(feature_geojson, scenario_csv):
+    """Run the GMT command to add the time series building loads to the sys param JSON.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+    """
+    # get the directory and parse the system parameter file
+    directory = os.path.dirname(feature_geojson)
+    sys_param_file = os.path.join(directory, 'system_params.json')
+    assert os.path.isfile(sys_param_file), \
+        'No DES system parameter was found for this model.\n' \
+        'Make sure that the des_loop_ was assigned in the GeoJSON export\n' \
+        'before running the URBANopt simulation.'
+
+    # parse the system parameter file to understand the type of system
+    with open(sys_param_file, 'r') as spf:
+        sp_dict = json.load(spf)
+    des_dict = sp_dict['district_system']
+    ghe_sys = True if 'fifth_generation' in des_dict and \
+        'ghe_parameters' in des_dict['fifth_generation'] else False
+
+    # run the command that adds the building loads to the system parameter
+    ext = '.exe' if os.name == 'nt' else ''
+    shell = True if os.name == 'nt' else False
+    uo_des_exe = os.path.join(
+        hb_folders.python_scripts_path, 'uo_des{}'.format(ext))
+    build_cmd = '"{des_exe}" "{sp_file}" "{scenario}" "{feature}" time_series -o'.format(
+            des_exe=uo_des_exe, sp_file=sys_param_file,
+            scenario=scenario_csv, feature=feature_geojson)
+    if ghe_sys:
+        build_cmd = '{} --ghe'.format(build_cmd)
+    process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=shell)
+    stderr = process.communicate()
+    if not os.path.isfile(sys_param_file):
+        msg = 'Failed to add building loads to the DES system parameter file.\n' \
+            'No file found at:\n{}\n{}'.format(sys_param_file, stderr[1])
+        print(msg)
+        raise Exception(msg)
+
+    # after the loads have been added, put pack the properties of the DES
+    with open(sys_param_file, 'r') as spf:
+        sp_dict = json.load(spf)
+    if ghe_sys:
+        original_ghe_par = des_dict['fifth_generation']['ghe_parameters']
+        ghe_par = sp_dict['district_system']['fifth_generation']['ghe_parameters']
+        ghe_par['fluid'] = original_ghe_par['fluid']
+        ghe_par['grout'] = original_ghe_par['grout']
+        ghe_par['soil'] = original_ghe_par['soil']
+        ghe_par['pipe'] = original_ghe_par['pipe']
+        ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
+    else:
+        sp_dict['district_system'] = des_dict
+    with open(sys_param_file, 'w') as spf:
+        json.dump(sp_dict, spf, indent=2)
+
+    # if the DES system has a ground heat exchanger, run the thermal network package
+    if ghe_sys:
+        tn_exe = os.path.join(
+            hb_folders.python_scripts_path, 'thermalnetwork{}'.format(ext))
+        scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+        ghe_dir = os.path.join(directory, 'run', scn_name, 'ghe_dir')
+        build_cmd = \
+            '"{tn_exe}" -y "{sp_file}" -s "{scenario}" -f "{feature}" -o {out_p}'.format(
+                tn_exe=tn_exe, sp_file=sys_param_file,
+                scenario=scenario_csv, feature=feature_geojson, out_p=ghe_dir)
+        #process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
+        #stderr = process.communicate()
+    return sys_param_file
+
+
+def run_des_modelica(sys_param_json, feature_geojson, scenario_csv):
+    """Run the GMT command to create the Modelica files from the system param JSON.
+
+    Args:
+        sys_param_json: The full path to a system parameter JSON from which the
+            Modelica files will be generated.
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+    
+    Returns:
+        The path to the folder where the Modelica files have been written.
+    """
+    # run the simulation
+    if os.name == 'nt':  # we are on Windows
+        modelica_dir, stderr = \
+            _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv)
+    else:  # we are on Mac, Linux, or some other unix-based system
+        modelica_dir, stderr = \
+            _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv)
+    if not os.path.isdir(modelica_dir):
+        msg = 'Failed to translate DES to Modelica.\n' \
+            'No results were found at:\n{}\n{}'.format(modelica_dir, stderr)
+        print(msg)
+        raise Exception(msg)
+    return modelica_dir
+
+
 def _add_mapper_measure(project_directory, mapper_measure):
     """Add mapper measure arguments to a geoJSON and the mapper_measures.json.
 
@@ -970,3 +1072,99 @@ def _run_rnm_unix(feature_geojson, scenario_csv):
     # run the shell script
     subprocess.call(shell_file)
     return directory
+
+
+def _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv):
+    """Generate Modelica files for a DES on a Windows-based os.
+
+    A batch file will be used to run the simulation.
+
+    Args:
+        sys_param_json: The full path to a system parameter JSON from which the
+            Modelica files will be generated.
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        A tuple with two values.
+
+        -   modelica_dir -- Path to the folder in which the Modelica files were written.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # get the path to the MBL installation
+    install_directory = os.path.join(lb_folders.ladybug_tools_folder, 'resources')
+    mbl_dir = os.path.join(install_directory, 'mbl')
+    assert os.path.isdir(mbl_dir), \
+        'No Modelica Buildings Library installation was found on this machine.'
+    # get the paths to the output files
+    scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+    modelica_dir = os.path.join(directory, 'run', scn_name, 'des_modelica')
+    uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des.exe')
+    # Write the batch file to call the GMT
+    working_drive = directory[:2]
+    batch = '{}\ncd {}\ncall "{}"\nSET "MODELICAPATH={}"\n"{}" create-model ' \
+        '"{}" "{}" "{}"'.format(
+            working_drive, working_drive, folders.urbanopt_env_path, mbl_dir,
+            uo_des_exe, sys_param_json, feature_geojson, modelica_dir)
+    batch_file = os.path.join(directory, 'generate_modelica.bat')
+    write_to_file(batch_file, batch, True)
+    # run the batch file
+    process = subprocess.Popen('"{}"'.format(batch_file), stderr=subprocess.PIPE)
+    result = process.communicate()
+    stderr = result[1]
+    return modelica_dir, stderr
+
+
+def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
+    """Generate Modelica files for a DES on a Unix-based os.
+
+    This includes both Mac OS and Linux since a shell will be used to run
+    the simulation.
+
+    Args:
+        sys_param_json: The full path to a system parameter JSON from which the
+            Modelica files will be generated.
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+
+    Returns:
+        A tuple with two values.
+
+        -   directory -- Path to the folder out of which the simulation was run.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
+    """
+    # check the input file
+    directory = _check_urbanopt_file(feature_geojson, scenario_csv)
+    # get the path to the MBL installation
+    install_directory = os.path.join(lb_folders.ladybug_tools_folder, 'resources')
+    mbl_dir = os.path.join(install_directory, 'mbl')
+    assert os.path.isdir(mbl_dir), \
+        'No Modelica Buildings Library installation was found on this machine.'
+    # get the paths to the output files
+    scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+    modelica_dir = os.path.join(directory, 'run', scn_name, 'des_modelica')
+    uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des')
+    # write the shell script to call the GMT
+    shell = '#!/usr/bin/env bash\nsource "{}"\nexport MODELICAPATH="{}"\n' \
+        '"{}" create-model "{}" "{}" "{}"'.format(
+            folders.urbanopt_env_path, mbl_dir,
+            uo_des_exe, sys_param_json, feature_geojson, modelica_dir)
+    shell_file = os.path.join(directory, 'generate_modelica.sh')
+    write_to_file(shell_file, shell, True)
+    # make the shell script executable using subprocess.check_call
+    # this is more reliable than native Python chmod on Mac
+    subprocess.check_call(['chmod', 'u+x', shell_file])
+    # run the shell script
+    process = subprocess.Popen(
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE)
+    result = process.communicate()
+    stderr = result[1]
+    return modelica_dir, stderr

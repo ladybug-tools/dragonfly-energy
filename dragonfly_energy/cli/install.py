@@ -3,8 +3,6 @@ import click
 import sys
 import os
 import logging
-import json
-import shutil
 
 from ladybug.futil import nukedir, download_file, unzip_file
 from ladybug.config import folders as lb_folders
@@ -53,7 +51,8 @@ def install_mbl(version, install_directory):
             mbl_url = 'https://github.com/lbl-srg/modelica-buildings/releases/' \
                 'download/v{}/Buildings-v{}.zip'.format(version, version)
             mbl_zip_file = os.path.join(install_directory, 'mbl.zip')
-            click.echo('Downloading Modelica Buildings Library from:\n{}'.format(mbl_url))
+            click.echo('Downloading Modelica Buildings Library from:\n{}\n'
+                       'This may take a few minutes...'.format(mbl_url))
             download_file(mbl_url, mbl_zip_file)
             click.echo('Unzipping Modelica Buildings Library to:\n{}\n'
                        'This may take a few minutes...'.format(final_dir))
