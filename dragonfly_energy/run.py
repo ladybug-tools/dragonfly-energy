@@ -523,7 +523,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
     shell = True if os.name == 'nt' else False
     uo_des_exe = os.path.join(
         hb_folders.python_scripts_path, 'uo_des{}'.format(ext))
-    build_cmd = '"{des_exe}" "{sp_file}" "{scenario}" "{feature}" time_series -o'.format(
+    build_cmd = '"{des_exe}" build-sys-param "{sp_file}" "{scenario}" "{feature}" ' \
+        'time_series -o'.format(
             des_exe=uo_des_exe, sp_file=sys_param_file,
             scenario=scenario_csv, feature=feature_geojson)
     if ghe_sys:
@@ -535,6 +536,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             'No file found at:\n{}\n{}'.format(sys_param_file, stderr[1])
         print(msg)
         raise Exception(msg)
+    else:
+        print(stderr[1])
 
     # after the loads have been added, put pack the properties of the DES
     with open(sys_param_file, 'r') as spf:
