@@ -484,7 +484,7 @@ class GHEThermalLoop(object):
                     if not conn.geometry.p1.is_equivalent(loop_seg.p1, tol):
                         conn.reverse()
                     ord_conns.append(conn)
-                    skip_count = len(conn.geometry.vertices) - 2
+                    skip_count = len(conn.geometry.vertices) - 1
                     break
         return ord_conns
 
@@ -632,8 +632,11 @@ class GHEThermalLoop(object):
                 if bldg_poly.is_point_on_edge(jct.geometry, tolerance):
                     jct.building_identifier = bldg_id
                     break
-        for jct in junctions:
-            features_list.append(jct.to_geojson_dict(origin_lon_lat, convert_facs))
+        for i, jct in enumerate(junctions):
+            jct_dict = jct.to_geojson_dict(origin_lon_lat, convert_facs)
+            if i == 0:
+                jct_dict['properties']['is_ghe_start_loop'] = True
+            features_list.append(jct_dict)
         return features_list
 
     def to_des_param_dict(self, buildings, tolerance=0.01):
@@ -655,7 +658,7 @@ class GHEThermalLoop(object):
         footprint_2d, bldg_ids = GHEThermalLoop._building_footprints(
             buildings, tolerance)
         rel_bldg_ids = set()
-        junctions, connector_jct_ids = self.junctions(tolerance)
+        junctions, _ = self.junctions(tolerance)
         for jct in junctions:
             for bldg_poly, bldg_id in zip(footprint_2d, bldg_ids):
                 if bldg_poly.is_point_on_edge(jct.geometry, tolerance):
@@ -738,7 +741,8 @@ class GHEThermalLoop(object):
                 'borehole': {
                     'buried_depth': self.borehole_parameters.buried_depth,
                     'diameter': self.borehole_parameters.diameter
-                }
+                },
+                'ground_loads': []
             }
             geo_pars.append(geo_par)
         # handle autocalculated soil temperatures

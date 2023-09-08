@@ -550,6 +550,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         ghe_par['soil'] = original_ghe_par['soil']
         ghe_par['pipe'] = original_ghe_par['pipe']
         ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
+        ghe_par['ghe_specific_params'] = original_ghe_par['ghe_specific_params']
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -560,13 +561,14 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         tn_exe = os.path.join(
             hb_folders.python_scripts_path, 'thermalnetwork{}'.format(ext))
         scn_name = os.path.basename(scenario_csv).replace('.csv', '')
-        ghe_dir = os.path.join(directory, 'run', scn_name, 'ghe_dir')
+        scn_dir = os.path.join(directory, 'run', scn_name)
+        ghe_dir = os.path.join(scn_dir, 'ghe_dir')
         build_cmd = \
             '"{tn_exe}" -y "{sp_file}" -s "{scenario}" -f "{feature}" -o {out_p}'.format(
                 tn_exe=tn_exe, sp_file=sys_param_file,
-                scenario=scenario_csv, feature=feature_geojson, out_p=ghe_dir)
-        #process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
-        #stderr = process.communicate()
+                scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
+        process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
+        stderr = process.communicate()
     return sys_param_file
 
 
