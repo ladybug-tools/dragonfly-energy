@@ -780,7 +780,7 @@ class GHEThermalLoop(object):
             'geometric_constraints': {
                 'b_min': self.borehole_parameters.min_spacing,
                 'b_max': self.borehole_parameters.max_spacing,
-                'max_height': self.borehole_parameters.max_spacing,
+                'max_height': self.borehole_parameters.max_depth,
                 'min_height': self.borehole_parameters.min_depth,
                 'method': 'rectangle'
             },
