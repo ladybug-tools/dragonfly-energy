@@ -568,7 +568,12 @@ def run_des_sys_param(feature_geojson, scenario_csv):
                 tn_exe=tn_exe, sp_file=sys_param_file,
                 scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
         process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
-        stderr = process.communicate()
+        stderr = process.communicate()[1]
+        stderr_str = str(stderr.strip())
+        print(stderr_str)
+        if 'ValueError' in stderr_str:  # pass the exception onto the user
+            msg = stderr_str.split('ValueError: ')[-1].strip()
+            raise ValueError(msg)
     return sys_param_file
 
 
