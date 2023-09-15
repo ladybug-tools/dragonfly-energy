@@ -554,6 +554,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         ghe_par['pipe'] = original_ghe_par['pipe']
         ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
         ghe_par['ghe_specific_params'] = original_ghe_par['ghe_specific_params']
+        # overwrite the ghe_dir because it seems only one GHE is allowed
         ghe_par['ghe_dir'] = os.path.join(
             ghe_par['ghe_dir'], original_ghe_par['ghe_specific_params'][0]['ghe_id'])
     else:
@@ -588,12 +589,28 @@ def run_des_sys_param(feature_geojson, scenario_csv):
                 tn_exe=tn_exe, sp_file=sys_param_file,
                 scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
         process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
+        # if any errors were found in the sizing simulation, raise them to the user
         stderr = process.communicate()[1]
         stderr_str = str(stderr.strip())
         print(stderr_str)
         if 'ValueError' in stderr_str:  # pass the exception onto the user
             msg = stderr_str.split('ValueError: ')[-1].strip()
             raise ValueError(msg)
+        # add the borehole length and count to the system parameter file
+        with open(sys_param_file, 'r') as spf:
+            sp_dict = json.load(spf)
+        ghe_par_dict = sp_dict['district_system']['fifth_generation']['ghe_parameters']
+        for ghe_s_par in ghe_par_dict['ghe_specific_params']:
+            r_dir = os.path.split(ghe_par['ghe_dir'])[0]
+            res_file = os.path.join(r_dir, ghe_s_par['ghe_id'], 'SimulationSummary.json')
+            with open(res_file, 'r') as rf:
+                res_dict = json.load(rf)
+            ghe_s_par['borehole']['length_of_boreholes'] = \
+                res_dict['ghe_system']['active_borehole_length']['value']
+            ghe_s_par['borehole']['number_of_boreholes'] = \
+                res_dict['ghe_system']['number_of_boreholes']
+        with open(sys_param_file, 'w') as spf:
+            json.dump(sp_dict, spf, indent=2)
     return sys_param_file
 
 
