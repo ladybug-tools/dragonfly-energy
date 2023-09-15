@@ -18,6 +18,9 @@ from .config import folders
 from .measure import MapperMeasure
 from .reopt import REoptParameter
 
+# Number to prevent GHE Designer simulations that would max out the memory
+MAX_BOREHOLES = 10000
+
 
 def base_honeybee_osw(
         project_directory, sim_par_json=None, additional_measures=None,
@@ -551,6 +554,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         ghe_par['pipe'] = original_ghe_par['pipe']
         ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
         ghe_par['ghe_specific_params'] = original_ghe_par['ghe_specific_params']
+        ghe_par['ghe_dir'] = os.path.join(
+            ghe_par['ghe_dir'], original_ghe_par['ghe_specific_params'][0]['ghe_id'])
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -558,6 +563,21 @@ def run_des_sys_param(feature_geojson, scenario_csv):
 
     # if the DES system has a ground heat exchanger, run the thermal network package
     if ghe_sys:
+        # check to be sure the user will not max out their RAM
+        total_area = 0
+        for ghe_sp in ghe_par['ghe_specific_params']:
+            ghe_len = ghe_sp['ghe_geometric_params']['length_of_ghe']
+            ghe_wth = ghe_sp['ghe_geometric_params']['width_of_ghe']
+            total_area += ghe_len * ghe_wth
+        bh_count = int(total_area / (ghe_par['geometric_constraints']['b_min'] ** 2))
+        if bh_count > MAX_BOREHOLES:
+            msg = 'The inputs suggest that there may be as many as {} boreholes in the ' \
+                'GHE field\nand this will cause your machine to run out of memory.\n' \
+                'A smaller GHE field or a larger minimum borehole spacing is needed ' \
+                'such that fewer\nthan {} boreholes are generated and the sizing ' \
+                'simulation can succeed.'.format(bh_count, MAX_BOREHOLES)
+            raise ValueError(msg)
+        # run the GHE Designer to size the system
         tn_exe = os.path.join(
             hb_folders.python_scripts_path, 'thermalnetwork{}'.format(ext))
         scn_name = os.path.basename(scenario_csv).replace('.csv', '')
@@ -1118,7 +1138,7 @@ def _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv):
     # Write the batch file to call the GMT
     working_drive = directory[:2]
     batch = '{}\ncd {}\ncall "{}"\nSET "MODELICAPATH={}"\n"{}" create-model ' \
-        '"{}" "{}" "{}"'.format(
+        '"{}" "{}" "{}" --overwrite'.format(
             working_drive, working_drive, folders.urbanopt_env_path, mbl_dir,
             uo_des_exe, sys_param_json, feature_geojson, modelica_dir)
     batch_file = os.path.join(directory, 'generate_modelica.bat')
@@ -1164,7 +1184,7 @@ def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
     uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des')
     # write the shell script to call the GMT
     shell = '#!/usr/bin/env bash\nsource "{}"\nexport MODELICAPATH="{}"\n' \
-        '"{}" create-model "{}" "{}" "{}"'.format(
+        '"{}" create-model "{}" "{}" "{}" --overwrite'.format(
             folders.urbanopt_env_path, mbl_dir,
             uo_des_exe, sys_param_json, feature_geojson, modelica_dir)
     shell_file = os.path.join(directory, 'generate_modelica.sh')
