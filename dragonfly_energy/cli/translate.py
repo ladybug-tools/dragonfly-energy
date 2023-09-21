@@ -25,7 +25,7 @@ def translate():
 
 
 @translate.command('model-to-osm')
-@click.argument('model-json', type=click.Path(
+@click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option(
     '--sim-par-json', '-sp', help='Full path to a honeybee energy '
@@ -61,18 +61,19 @@ def translate():
               'generated OSM and IDF files if they were successfully created. '
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_osm(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
+def model_to_osm(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
                  folder, osm_file, idf_file, log_file):
     """Translate a Model DFJSON to an OpenStudio Model.
 
     \b
     Args:
-        model_json: Full path to a Dragonfly Model JSON file.
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
         # set the default folder to the default if it's not specified
         if folder is None:
-            folder = os.path.dirname(os.path.abspath(model_json))
+            folder = os.path.dirname(os.path.abspath(model_file))
         preparedir(folder, remove_content=False)
 
         # generate default simulation parameters
@@ -86,7 +87,7 @@ def model_to_osm(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
                 json.dump(sim_par_dict, fp)
 
         # re-serialize the Dragonfly Model
-        model = Model.from_dfjson(model_json)
+        model = Model.from_file(model_file)
         model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
@@ -132,7 +133,7 @@ def model_to_osm(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 
 
 @translate.command('model-to-idf')
-@click.argument('model-json', type=click.Path(
+@click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option(
     '--sim-par-json', '-sp', help='Full path to a honeybee energy '
@@ -168,7 +169,7 @@ def model_to_osm(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 @click.option('--output-file', '-f', help='Optional IDF file to output the IDF string '
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
+def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
                  additional_str, compact_schedules, hvac_to_ideal_air, output_file):
     """Translate a Model JSON file to an IDF using direct-to-idf translators.
 
@@ -177,7 +178,8 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 
     \b
     Args:
-        model_json: Full path to a Dragonfly Model JSON file.
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
         # check that the simulation parameters are there and load them
@@ -191,7 +193,7 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
             sim_par.output.add_hvac_energy_use()
 
         # re-serialize the Dragonfly Model
-        model = Model.from_dfjson(model_json)
+        model = Model.from_file(model_file)
         model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
@@ -205,7 +207,7 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
         # set the schedule directory in case it is needed
         sch_directory = None
         if not compact_schedules:
-            sch_path = os.path.abspath(model_json) if 'stdout' in str(output_file) \
+            sch_path = os.path.abspath(model_file) if 'stdout' in str(output_file) \
                 else os.path.abspath(str(output_file))
             sch_directory = os.path.join(os.path.split(sch_path)[0], 'schedules')
 
@@ -228,7 +230,7 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 
 
 @translate.command('model-to-gbxml')
-@click.argument('model-json', type=click.Path(
+@click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
@@ -254,13 +256,14 @@ def model_to_idf(model_json, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 @click.option('--output-file', '-f', help='Optional gbXML file to output the string '
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
-def model_to_gbxml(model_json, multiplier, no_plenum, no_ceil_adjacency,
+def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
                    osw_folder, minimal, output_file):
     """Translate a Model DFJSON to a gbXML file.
 
     \b
     Args:
-        model_json: Full path to a Dragonfly Model JSON file.
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
         # set the default folder if it's not specified
@@ -268,13 +271,17 @@ def model_to_gbxml(model_json, multiplier, no_plenum, no_ceil_adjacency,
         out_directory = os.path.join(
             hb_folders.default_simulation_folder, 'temp_translate')
         if output_file.endswith('-'):
-            f_name = os.path.basename(model_json).lower()
+            f_name = os.path.basename(model_file).lower()
             f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
+            f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
+            f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
             out_path = os.path.join(out_directory, f_name)
+        elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+            f_name = f_name.replace('.gbxml', '.xml')
         preparedir(out_directory)
 
         # re-serialize the Dragonfly Model
-        model = Model.from_dfjson(model_json)
+        model = Model.from_dfjson(model_file)
         model.convert_to_units('Meters')
 
         # convert Dragonfly Model to Honeybee
