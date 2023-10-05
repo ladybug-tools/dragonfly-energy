@@ -123,8 +123,48 @@ def base_honeybee_osw(
             }
             osw_dict['steps'].append(emissions_measure_dict)
 
+    # add any additional measures to the osw_dict
+    if additional_measures or additional_mapper_measures:
+        measures = []
+        if additional_measures is not None:
+            measures.extend(additional_measures)
+        if additional_mapper_measures is not None:
+            measures.extend(additional_mapper_measures)
+        measure_paths = set()  # set of all unique measure paths
+        # ensure measures are correctly ordered
+        m_dict = {'ModelMeasure': [], 'EnergyPlusMeasure': [], 'ReportingMeasure': []}
+        for measure in measures:
+            m_dict[measure.type].append(measure)
+        sorted_measures = m_dict['ModelMeasure'] + m_dict['EnergyPlusMeasure'] + \
+            m_dict['ReportingMeasure']
+        for measure in sorted_measures:
+            measure.validate()  # ensure that all required arguments have values
+            measure_paths.add(os.path.dirname(measure.folder))
+            osw_dict['steps'].append(measure.to_osw_dict())  # add measure to workflow
+            if isinstance(measure, MapperMeasure):
+                _add_mapper_measure(project_directory, measure)
+        for m_path in measure_paths:  # add outside measure paths
+            osw_dict['measure_paths'].append(m_path)
+
+    # add default feature reports if they aren't in the steps
+    all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
+    if 'default_feature_reports' not in all_measures:
+        report_measure_dict = {
+            'arguments': {
+                'feature_id': None,
+                'feature_name': None,
+                'feature_type': None,
+                'feature_location': None
+            },
+            'measure_dir_name': 'default_feature_reports'
+        }
+        if skip_report:
+            report_measure_dict['arguments']['__SKIP__'] = True
+        osw_dict['steps'].append(report_measure_dict)
+
     # if there is a system parameter JSON, make sure the EPW is copied and referenced
     if epw_file is not None:
+        osw_dict['weather_file'] = epw_file
         sys_param_file = os.path.join(project_directory, 'system_params.json')
         if os.path.isfile(sys_param_file):
             # make sure the Modelica measure runs as part of the simulation
@@ -183,49 +223,6 @@ def base_honeybee_osw(
                                     epw_obj.dry_bulb_temperature.average
                                 with open(sys_param_file, 'w') as fp:
                                     json.dump(sys_dict, fp, indent=4)
-
-    # add any additional measures to the osw_dict
-    if additional_measures or additional_mapper_measures:
-        measures = []
-        if additional_measures is not None:
-            measures.extend(additional_measures)
-        if additional_mapper_measures is not None:
-            measures.extend(additional_mapper_measures)
-        measure_paths = set()  # set of all unique measure paths
-        # ensure measures are correctly ordered
-        m_dict = {'ModelMeasure': [], 'EnergyPlusMeasure': [], 'ReportingMeasure': []}
-        for measure in measures:
-            m_dict[measure.type].append(measure)
-        sorted_measures = m_dict['ModelMeasure'] + m_dict['EnergyPlusMeasure'] + \
-            m_dict['ReportingMeasure']
-        for measure in sorted_measures:
-            measure.validate()  # ensure that all required arguments have values
-            measure_paths.add(os.path.dirname(measure.folder))
-            osw_dict['steps'].append(measure.to_osw_dict())  # add measure to workflow
-            if isinstance(measure, MapperMeasure):
-                _add_mapper_measure(project_directory, measure)
-        for m_path in measure_paths:  # add outside measure paths
-            osw_dict['measure_paths'].append(m_path)
-
-    # add default feature reports if they aren't in the steps
-    all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
-    if 'default_feature_reports' not in all_measures:
-        report_measure_dict = {
-            'arguments': {
-                'feature_id': None,
-                'feature_name': None,
-                'feature_type': None,
-                'feature_location': None
-            },
-            'measure_dir_name': 'default_feature_reports'
-        }
-        if skip_report:
-            report_measure_dict['arguments']['__SKIP__'] = True
-        osw_dict['steps'].append(report_measure_dict)
-
-    # assign the epw_file to the osw if it is input
-    if epw_file is not None:
-        osw_dict['weather_file'] = epw_file
 
     # write the dictionary to a honeybee_workflow.osw
     mappers_dir = os.path.join(project_directory, 'mappers')
