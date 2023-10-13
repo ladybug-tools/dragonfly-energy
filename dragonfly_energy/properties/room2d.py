@@ -42,7 +42,9 @@ class Room2DEnergyProperties(object):
         * window_vent_control
         * window_vent_opening
         * process_loads
+        * total_process_load
         * is_conditioned
+        * has_window_opening
     """
 
     __slots__ = ('_host', '_program_type', '_construction_set', '_hvac', '_shw',
@@ -153,8 +155,6 @@ class Room2DEnergyProperties(object):
         if value is not None:
             assert isinstance(value, VentilationControl), 'Expected VentilationControl' \
                 ' object for Room2D window_vent_control. Got {}'.format(type(value))
-            assert value.schedule.identifier == 'Always On', 'VentilationControl ' \
-                'schedule must be default in order to apply it to dragonfly Room2D.'
             value.lock()   # lock because we don't duplicate the object
         self._window_vent_control = value
 
@@ -188,9 +188,19 @@ class Room2DEnergyProperties(object):
         self._process_loads = list(value)
 
     @property
+    def total_process_load(self):
+        """Get a number for the total process load in W within the room."""
+        return sum([load.watts for load in self._process_loads])
+
+    @property
     def is_conditioned(self):
         """Boolean to note whether the Room is conditioned."""
         return self._hvac is not None
+
+    @property
+    def has_window_opening(self):
+        """Boolean to note whether the Room has operable windows with controls."""
+        return self._window_vent_opening is not None
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to this Room2D.
@@ -256,11 +266,10 @@ class Room2DEnergyProperties(object):
             new_prop.hvac = hvac_class.from_dict(data['hvac'])
         if 'shw' in data and data['shw'] is not None:
             new_prop.shw = SHWSystem.from_dict(data['shw'])
-        cls._deserialize_window_vent(new_prop, data)
+        cls._deserialize_window_vent(new_prop, data, {})
         if 'process_loads' in data and data['process_loads'] is not None:
             new_prop.process_loads = \
                 [Process.from_dict(dat) for dat in data['process_loads']]
-
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets,
@@ -290,15 +299,16 @@ class Room2DEnergyProperties(object):
             self.hvac = hvacs[abridged_data['hvac']]
         if 'shw' in abridged_data and abridged_data['shw'] is not None:
             self.shw = shws[abridged_data['shw']]
-        self._deserialize_window_vent(self, abridged_data)
+        self._deserialize_window_vent(self, abridged_data, schedules)
         if 'process_loads' in abridged_data and \
                 abridged_data['process_loads'] is not None:
-            self.process_loads = []
             for dat in abridged_data['process_loads']:
                 if dat['type'] == 'Process':
-                    self.process_loads.append(Process.from_dict(dat))
+                    self._process_loads.append(Process.from_dict(dat))
                 else:
-                    self.process_loads.append(Process.from_dict_abridged(dat, schedules))
+                    self._process_loads.append(
+                        Process.from_dict_abridged(dat, schedules)
+                    )
 
     def to_dict(self, abridged=False):
         """Return Room2D energy properties as a dictionary.
@@ -336,8 +346,7 @@ class Room2DEnergyProperties(object):
         # write the window_vent_control and window_vent_opening into the dictionary
         if self._window_vent_control is not None:
             base['energy']['window_vent_control'] = \
-                self.window_vent_control.to_dict(abridged=True)
-            base['energy']['window_vent_control']['schedule'] = None
+                self.window_vent_control.to_dict(abridged)
         if self._window_vent_opening is not None:
             base['energy']['window_vent_opening'] = self.window_vent_opening.to_dict()
 
@@ -389,7 +398,7 @@ class Room2DEnergyProperties(object):
                     if ap.properties.energy.vent_opening is not None:
                         self._window_vent_opening = ap.properties.energy.vent_opening
                         break
-                if self._window_vent_control is not None:
+                if self._window_vent_opening is not None:
                     break
 
     def duplicate(self, new_host=None):
@@ -408,7 +417,7 @@ class Room2DEnergyProperties(object):
         return hb_prop
 
     @staticmethod
-    def _deserialize_window_vent(new_prop, data):
+    def _deserialize_window_vent(new_prop, data, schedules):
         """Re-serialize window ventilation objects from a dict and apply to new_prop.
 
         Args:
@@ -416,8 +425,11 @@ class Room2DEnergyProperties(object):
             data: A dictionary representation of Room2DEnergyProperties.
         """
         if 'window_vent_control' in data and data['window_vent_control'] is not None:
+            wvc = data['window_vent_control']
             new_prop.window_vent_control = \
-                VentilationControl.from_dict_abridged(data['window_vent_control'], {})
+                VentilationControl.from_dict_abridged(wvc, schedules) \
+                if wvc['type'] == 'VentilationControlAbridged' else \
+                VentilationControl.from_dict(wvc)
         if 'window_vent_opening' in data and data['window_vent_opening'] is not None:
             new_prop.window_vent_opening = \
                 VentilationOpening.from_dict(data['window_vent_opening'])

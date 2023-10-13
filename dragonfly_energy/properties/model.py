@@ -31,6 +31,7 @@ class ModelEnergyProperties(object):
         * shade_schedules
         * program_type_schedules
         * hvac_schedules
+        * misc_room_schedules
         * program_types
         * hvacs
         * shws
@@ -47,7 +48,7 @@ class ModelEnergyProperties(object):
 
     @property
     def materials(self):
-        """List of all unique materials contained within the model.
+        """Get a list of all unique materials contained within the model.
 
         This includes materials across all Room2Ds, Stories, and Building
         ConstructionSets but it does NOT include the Honeybee generic default
@@ -63,7 +64,7 @@ class ModelEnergyProperties(object):
 
     @property
     def constructions(self):
-        """A list of all unique constructions in the model.
+        """Get a list of all unique constructions in the model.
 
         This includes materials across all Room2Ds, Stories, and Building
         ConstructionSets but it does NOT include the Honeybee generic default
@@ -77,7 +78,8 @@ class ModelEnergyProperties(object):
 
     @property
     def shade_constructions(self):
-        """A list of all unique constructions assigned to ContextShades in the model."""
+        """Get a list of all unique constructions assigned to ContextShades in the model.
+        """
         constructions = []
         for shade in self.host.context_shades:
             if shade.properties.energy.is_construction_set_by_user:
@@ -88,7 +90,7 @@ class ModelEnergyProperties(object):
 
     @property
     def construction_sets(self):
-        """A list of all unique Building-Assigned ConstructionSets in the Model.
+        """Get a list of all unique Building-Assigned ConstructionSets in the Model.
 
         Note that this includes ConstructionSets assigned to individual Stories and
         Room2Ds in the Building.
@@ -113,7 +115,7 @@ class ModelEnergyProperties(object):
 
     @property
     def schedule_type_limits(self):
-        """List of all unique schedule type limits contained within the model.
+        """Get a list of all unique schedule type limits contained within the model.
 
         This includes schedules across all ContextShades and Room2Ds.
         """
@@ -126,17 +128,17 @@ class ModelEnergyProperties(object):
 
     @property
     def schedules(self):
-        """A list of all unique schedules in the model.
+        """Get a list of all unique schedules in the model.
 
         This includes schedules across all ProgramTypes and ContextShades.
         """
         all_scheds = self.hvac_schedules + self.program_type_schedules + \
-            self.shade_schedules
+            self.misc_room_schedules + self.shade_schedules
         return list(set(all_scheds))
 
     @property
     def shade_schedules(self):
-        """A list of all unique schedules assigned to ContextShades in the model.
+        """Get a list of all unique schedules assigned to ContextShades in the model.
         """
         schedules = []
         for shade in self.host._context_shades:
@@ -154,7 +156,7 @@ class ModelEnergyProperties(object):
 
     @property
     def hvac_schedules(self):
-        """A list of all unique HVAC-assigned schedules in the model."""
+        """Get a list of all unique HVAC-assigned schedules in the model."""
         schedules = []
         for hvac in self.hvacs:
             for sched in hvac.schedules:
@@ -162,8 +164,29 @@ class ModelEnergyProperties(object):
         return list(set(schedules))
 
     @property
+    def misc_room_schedules(self):
+        """Get a list of all unique schedules assigned directly to Rooms in the model.
+
+        This includes schedules for process loads and window ventilation control.
+        Note that this does not include schedules from ProgramTypes assigned to the
+        rooms. For this, use the program_type_schedules property.
+        """
+        scheds = []
+        for bldg in self.host._buildings:
+            for story in bldg:
+                for room in story:
+                    window_vent = room.properties.energy._window_vent_control
+                    processes = room.properties.energy._process_loads
+                    if window_vent is not None:
+                        self._check_and_add_schedule(window_vent.schedule, scheds)
+                    if len(processes) != 0:
+                        for process in processes:
+                            self._check_and_add_schedule(process.schedule, scheds)
+        return list(set(scheds))
+
+    @property
     def program_types(self):
-        """A list of all unique ProgramTypes in the Model."""
+        """Get a list of all unique ProgramTypes in the Model."""
         program_types = []
         for bldg in self.host._buildings:
             for story in bldg:
@@ -176,7 +199,7 @@ class ModelEnergyProperties(object):
 
     @property
     def hvacs(self):
-        """A list of all unique HVAC systems in the Model."""
+        """Get a list of all unique HVAC systems in the Model."""
         hvacs = []
         for bldg in self.host._buildings:
             for story in bldg:
@@ -189,7 +212,7 @@ class ModelEnergyProperties(object):
 
     @property
     def shws(self):
-        """A list of all unique Service Hot Water (SHW) systems in the Model."""
+        """Get a list of all unique Service Hot Water (SHW) systems in the Model."""
         shws = []
         for bldg in self.host._buildings:
             for story in bldg:
@@ -451,7 +474,8 @@ class ModelEnergyProperties(object):
         for hvac in hvacs:
             for sched in hvac.schedules:
                 self._check_and_add_schedule(sched, hvac_scheds)
-        all_scheds = hvac_scheds + p_type_scheds + self.shade_schedules + schs
+        all_scheds = hvac_scheds + p_type_scheds + self.misc_room_schedules + \
+            self.shade_schedules + schs
         schedules = tuple(set(all_scheds))
         base['energy']['schedules'] = []
         for sched in schedules:
