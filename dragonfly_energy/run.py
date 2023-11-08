@@ -557,9 +557,6 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         ghe_par['pipe'] = original_ghe_par['pipe']
         ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
         ghe_par['ghe_specific_params'] = original_ghe_par['ghe_specific_params']
-        # overwrite the ghe_dir because it seems only one GHE is allowed
-        ghe_par['ghe_dir'] = os.path.join(
-            ghe_par['ghe_dir'], original_ghe_par['ghe_specific_params'][0]['ghe_id'])
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -606,7 +603,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             sp_dict = json.load(spf)
         ghe_par_dict = sp_dict['district_system']['fifth_generation']['ghe_parameters']
         for ghe_s_par in ghe_par_dict['ghe_specific_params']:
-            r_dir = os.path.split(ghe_par['ghe_dir'])[0]
+            r_dir = ghe_par['ghe_dir']
             res_file = os.path.join(r_dir, ghe_s_par['ghe_id'], 'SimulationSummary.json')
             with open(res_file, 'r') as rf:
                 res_dict = json.load(rf)
