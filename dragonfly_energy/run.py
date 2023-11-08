@@ -18,6 +18,10 @@ from .config import folders
 from .measure import MapperMeasure
 from .reopt import REoptParameter
 
+# Custom environment used to run Python packages without conflicts
+PYTHON_ENV = os.environ.copy()
+PYTHON_ENV['PYTHONHOME'] = ''
+
 # Number to prevent GHE Designer simulations that would max out the memory
 MAX_BOREHOLES = 10000
 
@@ -529,7 +533,9 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             scenario=scenario_csv, feature=feature_geojson)
     if ghe_sys:
         build_cmd = '{} --ghe'.format(build_cmd)
-    process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=shell)
+    process = subprocess.Popen(
+        build_cmd, stderr=subprocess.PIPE, shell=shell, env=PYTHON_ENV
+    )
     stderr = process.communicate()
     if not os.path.isfile(sys_param_file):
         msg = 'Failed to add building loads to the DES system parameter file.\n' \
@@ -585,7 +591,9 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             '"{tn_exe}" -y "{sp_file}" -s "{scenario}" -f "{feature}" -o {out_p}'.format(
                 tn_exe=tn_exe, sp_file=sys_param_file,
                 scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
-        process = subprocess.Popen(build_cmd, stderr=subprocess.PIPE, shell=False)
+        process = subprocess.Popen(
+            build_cmd, stderr=subprocess.PIPE, shell=False, env=PYTHON_ENV
+        )
         # if any errors were found in the sizing simulation, raise them to the user
         stderr = process.communicate()[1]
         stderr_str = str(stderr.strip())
@@ -770,7 +778,8 @@ def _run_urbanopt_windows(feature_geojson, scenario_csv):
     write_to_file(batch_file, batch, True)
     # run the batch file
     process = subprocess.Popen(
-        '"{}"'.format(batch_file), stderr=subprocess.PIPE)
+        '"{}"'.format(batch_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
     result = process.communicate()
     stderr = result[1]
     return directory, stderr
@@ -807,7 +816,8 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     process = subprocess.Popen(
-        '"{}"'.format(shell_file), stderr=subprocess.PIPE)
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
     result = process.communicate()
     stderr = result[1]
     return directory, stderr
@@ -1158,7 +1168,9 @@ def _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv):
     batch_file = os.path.join(directory, 'generate_modelica.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
-    process = subprocess.Popen('"{}"'.format(batch_file), stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+        '"{}"'.format(batch_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
     result = process.communicate()
     stderr = result[1]
     return modelica_dir, stderr
@@ -1208,7 +1220,8 @@ def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     process = subprocess.Popen(
-        '"{}"'.format(shell_file), stderr=subprocess.PIPE)
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
     result = process.communicate()
     stderr = result[1]
     return modelica_dir, stderr
