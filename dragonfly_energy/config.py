@@ -38,6 +38,8 @@ class Folders(object):
         * urbanopt_version
         * urbanopt_version_str
         * reopt_assumptions_path
+        * docker_version
+        * docker_version_str
         * config_file
         * mute
     """
@@ -108,6 +110,8 @@ class Folders(object):
         self._urbanopt_env_path = None
         self._urbanopt_version = None
         self._urbanopt_version_str = None
+        self._docker_version = None
+        self._docker_version_str = None
         if path and not self.mute:
             print("Path to URBANopt CLI is set to: %s" % path)
 
@@ -164,6 +168,28 @@ class Folders(object):
         self._reopt_assumptions_path = path  # set the reopt_assumptions_path
         if path and not self.mute:
             print("Path to REopt assumptions is set to: %s" % path)
+
+    @property
+    def docker_version(self):
+        """Get a tuple for the version of Docker installed (eg. (24, 0, 7)).
+
+        This will be None if the version could not be sensed or if no Docker
+        installation was found.
+        """
+        if self._docker_version_str is None:
+            self._docker_version_from_cli()
+        return self._docker_version
+
+    @property
+    def docker_version_str(self):
+        """Get text for the full version of Docker (eg. "24.0.7").
+
+        This will be None if the version could not be sensed or if no Docker
+        installation was found.
+        """
+        if self._docker_version_str is None:
+            self._docker_version_from_cli()
+        return self._docker_version_str
 
     @property
     def config_file(self):
@@ -303,6 +329,20 @@ class Folders(object):
             ver_nums = base_str.split('.')
             self._urbanopt_version = tuple(int(i) for i in ver_nums)
             self._urbanopt_version_str = base_str
+        except Exception:
+            pass  # failed to parse the version into integers
+
+    def _docker_version_from_cli(self):
+        """Set this object's Docker version by making a call to Docker CLI."""
+        cmds = ['docker', '--version']
+        use_shell = True if os.name == 'nt' else False
+        process = subprocess.Popen(cmds, stdout=subprocess.PIPE, shell=use_shell)
+        stdout = process.communicate()
+        base_str = str(stdout[0]).replace("b'", '').replace(r"\n'", '')
+        try:
+            self._docker_version_str = base_str.split(',')[0].split(' ')[-1]
+            ver_nums = self._docker_version_str.split('.')
+            self._docker_version = tuple(int(i) for i in ver_nums)
         except Exception:
             pass  # failed to parse the version into integers
 

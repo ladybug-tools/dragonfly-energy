@@ -644,6 +644,29 @@ def run_des_modelica(sys_param_json, feature_geojson, scenario_csv):
     return modelica_dir
 
 
+def run_modelica_docker(modelica_project_dir):
+    """Execute Modelica files of a DES.
+
+    Args:
+        modelica_project_dir: The full path to the folder in which the Modelica
+            files were written.
+    
+    Returns:
+        The path to where the results have been written.
+    """
+    # run the simulation
+    if os.name == 'nt':  # we are on Windows
+        modelica_dir, stderr = _run_modelica_windows(modelica_project_dir)
+    else:  # we are on Mac, Linux, or some other unix-based system
+        modelica_dir, stderr = _run_modelica_unix(modelica_project_dir)
+    if not os.path.isdir(modelica_dir):
+        msg = 'Failed to execute Modelica simulation.\n' \
+            'No results were found at:\n{}\n{}'.format(modelica_dir, stderr)
+        print(msg)
+        raise Exception(msg)
+    return modelica_dir
+
+
 def _add_mapper_measure(project_directory, mapper_measure):
     """Add mapper measure arguments to a geoJSON and the mapper_measures.json.
 
@@ -1222,3 +1245,93 @@ def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
     result = process.communicate()
     stderr = result[1]
     return modelica_dir, stderr
+
+
+def _run_modelica_windows(modelica_project_dir):
+    """Execute Modelica files of a DES on a Windows-based OS.
+
+    A batch file will be used to run the simulation.
+
+    Args:
+        modelica_project_dir: The full path to the folder in which the Modelica
+            files were written.
+
+    Returns:
+        A tuple with two values.
+
+        -   results -- Path to where the results were written.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
+    """
+    # make sure that docker is installed
+    assert folders.docker_version_str is not None, \
+        'No Docker installation was found on this machine.\n' \
+        'This is needed to execute Modelica simulations.'
+    # get the paths to the output files
+    directory = os.path.dirname(modelica_project_dir)
+    project_name = os.path.basename(modelica_project_dir)
+    results = os.path.join(
+        modelica_project_dir,
+        '{}.Districts.DistrictEnergySystem_results'.format(project_name))
+    uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des.exe')
+    # Write the batch file to call the GMT
+    working_drive = modelica_project_dir[:2]
+    batch = '{}\ncd {}\ncall "{}"\n"{}" run-model "{}"'.format(
+        working_drive, working_drive, folders.urbanopt_env_path,
+        uo_des_exe, modelica_project_dir)
+    batch_file = os.path.join(directory, 'run_modelica.bat')
+    write_to_file(batch_file, batch, True)
+    # run the batch file
+    process = subprocess.Popen(
+        '"{}"'.format(batch_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
+    result = process.communicate()
+    stderr = result[1]
+    return results, stderr
+
+
+def _run_modelica_unix(modelica_project_dir):
+    """Execute Modelica files of a DES on a Unix-based OS.
+
+    This includes both Mac OS and Linux since a shell will be used to run
+    the simulation.
+
+    Args:
+        modelica_project_dir: The full path to the folder in which the Modelica
+            files were written.
+
+    Returns:
+        A tuple with two values.
+
+        -   results -- Path to where the results were written.
+
+        -   stderr -- The standard error message, which should get to the user
+            in the event of simulation failure.
+    """
+    # make sure that docker is installed
+    assert folders.docker_version_str is not None, \
+        'No Docker installation was found on this machine.\n' \
+        'This is needed to execute Modelica simulations.'
+    # get the paths to the output files
+    directory = os.path.dirname(modelica_project_dir)
+    project_name = os.path.basename(modelica_project_dir)
+    results = os.path.join(
+        modelica_project_dir,
+        '{}.Districts.DistrictEnergySystem_results'.format(project_name))
+    uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des')
+    # write the shell script to call the GMT
+    shell = '#!/usr/bin/env bash\nsource "{}"\n"{}" run-model "{}"'.format(
+        folders.urbanopt_env_path, uo_des_exe, modelica_project_dir)
+    shell_file = os.path.join(directory, 'run_modelica.sh')
+    write_to_file(shell_file, shell, True)
+    # make the shell script executable using subprocess.check_call
+    # this is more reliable than native Python chmod on Mac
+    subprocess.check_call(['chmod', 'u+x', shell_file])
+    # run the shell script
+    process = subprocess.Popen(
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+    )
+    result = process.communicate()
+    stderr = result[1]
+    return results, stderr
