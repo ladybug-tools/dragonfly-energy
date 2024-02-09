@@ -1,16 +1,20 @@
 # coding=utf-8
 """Model Energy Properties."""
-from dragonfly.extensionutil import model_extension_dicts
-
-from honeybee_energy.construction.air import AirBoundaryConstruction
-import honeybee_energy.properties.model as hb_model_properties
-from honeybee_energy.lib.constructionsets import generic_construction_set
-from honeybee.checkdup import check_duplicate_identifiers
-
 try:
     from itertools import izip as zip  # python 2
 except ImportError:
     pass   # python 3
+
+from honeybee.extensionutil import room_extension_dicts
+from honeybee_energy.construction.windowshade import WindowConstructionShade
+from honeybee_energy.construction.dynamic import WindowConstructionDynamic
+from honeybee_energy.construction.air import AirBoundaryConstruction
+import honeybee_energy.properties.model as hb_model_properties
+from honeybee_energy.lib.constructions import generic_context
+from honeybee_energy.lib.constructionsets import generic_construction_set
+from honeybee.checkdup import check_duplicate_identifiers
+
+from dragonfly.extensionutil import model_extension_dicts
 
 
 class ModelEnergyProperties(object):
@@ -23,11 +27,13 @@ class ModelEnergyProperties(object):
         * host
         * materials
         * constructions
+        * face_constructions
         * shade_constructions
         * construction_sets
         * global_construction_set
         * schedule_type_limits
         * schedules
+        * construction_schedules
         * shade_schedules
         * program_type_schedules
         * hvac_schedules
@@ -58,6 +64,13 @@ class ModelEnergyProperties(object):
         for constr in self.constructions:
             try:
                 materials.extend(constr.materials)
+                if constr.has_frame:
+                    materials.append(constr.frame)
+                if isinstance(constr, WindowConstructionShade):
+                    if constr.is_switchable_glazing:
+                        materials.append(constr.switched_glass_material)
+                    if constr.shade_location == 'Between':
+                        materials.append(constr.window_construction.materials[-2])
             except AttributeError:
                 pass  # ShadeConstruction
         return list(set(materials))
@@ -73,27 +86,46 @@ class ModelEnergyProperties(object):
         bldg_constrs = []
         for cnstr_set in self.construction_sets:
             bldg_constrs.extend(cnstr_set.modified_constructions_unique)
-        all_constrs = bldg_constrs + self.shade_constructions
+        all_constrs = bldg_constrs + self.face_constructions + self.shade_constructions
         return list(set(all_constrs))
+
+    @property
+    def face_constructions(self):
+        """Get a list of all unique constructions assigned to Faces, Apertures and Doors.
+
+        These objects only exist under the Building.room_3ds property
+        """
+        constructions = []
+        for bldg in self.host.buildings:
+            for face in bldg.room_3d_faces:
+                self._check_and_add_obj_construction(face, constructions)
+                for ap in face.apertures:
+                    self._check_and_add_obj_construction(ap, constructions)
+                for dr in face.doors:
+                    self._check_and_add_obj_construction(dr, constructions)
+        return list(set(constructions))
 
     @property
     def shade_constructions(self):
         """Get a list of all unique constructions assigned to ContextShades in the model.
+
+        This will also include any Shade objects assigned to the 3D Honeybee Rooms
+        of any Model Buildings.
         """
         constructions = []
         for shade in self.host.context_shades:
-            if shade.properties.energy.is_construction_set_by_user:
-                if not self._instance_in_array(
-                        shade.properties.energy.construction, constructions):
-                    constructions.append(shade.properties.energy.construction)
+            self._check_and_add_obj_construction(shade, constructions)
+        for bldg in self.host.buildings:
+            for shd in bldg.room_3d_shades:
+                self._check_and_add_obj_construction(shd, constructions)
         return list(set(constructions))
 
     @property
     def construction_sets(self):
-        """Get a list of all unique Building-Assigned ConstructionSets in the Model.
+        """Get a list of all unique ConstructionSets in the Model.
 
-        Note that this includes ConstructionSets assigned to individual Stories and
-        Room2Ds in the Building.
+        Note that this includes ConstructionSets assigned to individual Stories,
+        Room2Ds and 3D Honeybee Rooms in the Model's Buildings.
         """
         construction_sets = []
         for bldg in self.host.buildings:
@@ -102,6 +134,8 @@ class ModelEnergyProperties(object):
                 self._check_and_add_obj_constr_set(story, construction_sets)
                 for room in story.room_2ds:
                     self._check_and_add_obj_constr_set(room, construction_sets)
+            for room in bldg.room_3ds:
+                self._check_and_add_obj_constr_set(room, construction_sets)
         return list(set(construction_sets))  # catch equivalent construction sets
 
     @property
@@ -133,8 +167,26 @@ class ModelEnergyProperties(object):
         This includes schedules across all ProgramTypes and ContextShades.
         """
         all_scheds = self.hvac_schedules + self.program_type_schedules + \
-            self.misc_room_schedules + self.shade_schedules
+            self.misc_room_schedules + self.shade_schedules + self.construction_schedules
         return list(set(all_scheds))
+
+    @property
+    def construction_schedules(self):
+        """Get a list of all unique schedules assigned to constructions in the model.
+
+        This includes schedules on al AirBoundaryConstructions, WindowConstructionShade,
+        and WindowConstructionDynamic.
+        """
+        schedules = []
+        for constr in self.constructions:
+            if isinstance(constr, AirBoundaryConstruction):
+                self._check_and_add_schedule(constr.air_mixing_schedule, schedules)
+            elif isinstance(constr, WindowConstructionShade):
+                if constr.schedule is not None:
+                    self._check_and_add_schedule(constr.schedule, schedules)
+            elif isinstance(constr, WindowConstructionDynamic):
+                self._check_and_add_schedule(constr.schedule, schedules)
+        return list(set(schedules))
 
     @property
     def shade_schedules(self):
@@ -167,7 +219,10 @@ class ModelEnergyProperties(object):
     def misc_room_schedules(self):
         """Get a list of all unique schedules assigned directly to Rooms in the model.
 
-        This includes schedules for process loads and window ventilation control.
+        This includes schedules for process loads and window ventilation control
+        that are assigned to Room2Ds. It also includes any schedules assigned directly
+        to 3D Honeybee Rooms of the model (not through the room program).
+
         Note that this does not include schedules from ProgramTypes assigned to the
         rooms. For this, use the program_type_schedules property.
         """
@@ -182,11 +237,57 @@ class ModelEnergyProperties(object):
                     if len(processes) != 0:
                         for process in processes:
                             self._check_and_add_schedule(process.schedule, scheds)
+            for room in bldg.room_3ds:
+                people = room.properties.energy._people
+                lighting = room.properties.energy._lighting
+                electric_equipment = room.properties.energy._electric_equipment
+                gas_equipment = room.properties.energy._gas_equipment
+                shw = room.properties.energy._service_hot_water
+                infiltration = room.properties.energy._infiltration
+                ventilation = room.properties.energy._ventilation
+                setpoint = room.properties.energy._setpoint
+                window_vent = room.properties.energy._window_vent_control
+                processes = room.properties.energy._process_loads
+                fans = room.properties.energy._fans
+                if people is not None:
+                    self._check_and_add_schedule(people.occupancy_schedule, scheds)
+                    self._check_and_add_schedule(people.activity_schedule, scheds)
+                if lighting is not None:
+                    self._check_and_add_schedule(lighting.schedule, scheds)
+                if electric_equipment is not None:
+                    self._check_and_add_schedule(electric_equipment.schedule, scheds)
+                if gas_equipment is not None:
+                    self._check_and_add_schedule(gas_equipment.schedule, scheds)
+                if shw is not None:
+                    self._check_and_add_schedule(shw.schedule, scheds)
+                if infiltration is not None:
+                    self._check_and_add_schedule(infiltration.schedule, scheds)
+                if ventilation is not None and ventilation.schedule is not None:
+                    self._check_and_add_schedule(ventilation.schedule, scheds)
+                if setpoint is not None:
+                    self._check_and_add_schedule(setpoint.heating_schedule, scheds)
+                    self._check_and_add_schedule(setpoint.cooling_schedule, scheds)
+                    if setpoint.humidifying_schedule is not None:
+                        self._check_and_add_schedule(
+                            setpoint.humidifying_schedule, scheds)
+                        self._check_and_add_schedule(
+                            setpoint.dehumidifying_schedule, scheds)
+                if window_vent is not None:
+                    self._check_and_add_schedule(window_vent.schedule, scheds)
+                if len(processes) != 0:
+                    for process in processes:
+                        self._check_and_add_schedule(process.schedule, scheds)
+                if len(fans) != 0:
+                    for fan in fans:
+                        self._check_and_add_schedule(fan.control.schedule, scheds)
         return list(set(scheds))
 
     @property
     def program_types(self):
-        """Get a list of all unique ProgramTypes in the Model."""
+        """Get a list of all unique ProgramTypes in the Model.
+
+        This includes ProgramTypes assigned to both Room2Ds and 3D Honeybee Rooms.
+        """
         program_types = []
         for bldg in self.host._buildings:
             for story in bldg:
@@ -195,6 +296,11 @@ class ModelEnergyProperties(object):
                         if not self._instance_in_array(
                                 room.properties.energy._program_type, program_types):
                             program_types.append(room.properties.energy._program_type)
+            for room in bldg.room_3ds:
+                if room.properties.energy._program_type is not None:
+                    if not self._instance_in_array(
+                            room.properties.energy._program_type, program_types):
+                        program_types.append(room.properties.energy._program_type)
         return list(set(program_types))  # catch equivalent program types
 
     @property
@@ -208,6 +314,10 @@ class ModelEnergyProperties(object):
                         if not self._instance_in_array(
                                 room.properties.energy._hvac, hvacs):
                             hvacs.append(room.properties.energy._hvac)
+            for room in bldg.room_3ds:
+                if room.properties.energy._hvac is not None:
+                    if not self._instance_in_array(room.properties.energy._hvac, hvacs):
+                        hvacs.append(room.properties.energy._hvac)
         return hvacs
 
     @property
@@ -221,6 +331,10 @@ class ModelEnergyProperties(object):
                         if not self._instance_in_array(
                                 room.properties.energy._shw, shws):
                             shws.append(room.properties.energy._shw)
+            for room in bldg.room_3ds:
+                if room.properties.energy._shw is not None:
+                    if not self._instance_in_array(room.properties.energy._shw, shws):
+                        shws.append(room.properties.energy._shw)
         return shws
 
     def check_all(self, raise_exception=True):
@@ -325,8 +439,7 @@ class ModelEnergyProperties(object):
         """
         assert 'energy' in data['properties'], \
             'Dictionary possesses no ModelEnergyProperties.'
-        materials, constructions, construction_sets, schedule_type_limits, \
-            schedules, program_types, hvacs, shws = \
+        _, constructions, construction_sets, _, schedules, program_types, hvacs, shws = \
             hb_model_properties.ModelEnergyProperties.load_properties_from_dict(data)
 
         # collect lists of energy property dictionaries
@@ -338,6 +451,31 @@ class ModelEnergyProperties(object):
             if b_dict is not None:
                 bldg.properties.energy.apply_properties_from_dict(
                     b_dict, construction_sets)
+            if bldg.has_room_3ds and b_dict is not None and 'room_3ds' in b_dict and \
+                    b_dict['room_3ds'] is not None:
+                room_e_dicts, face_e_dicts, shd_e_dicts, ap_e_dicts, dr_e_dicts = \
+                    room_extension_dicts(b_dict['room_3ds'], 'energy', [], [], [], [], [])
+                for room, r_dict in zip(bldg.room_3ds, room_e_dicts):
+                    if r_dict is not None:
+                        room.properties.energy.apply_properties_from_dict(
+                            r_dict, construction_sets, program_types, hvacs, shws,
+                            schedules, constructions)
+                for face, f_dict in zip(bldg.room_3d_faces, face_e_dicts):
+                    if f_dict is not None:
+                        face.properties.energy.apply_properties_from_dict(
+                            f_dict, constructions)
+                for aperture, a_dict in zip(bldg.room_3d_apertures, ap_e_dicts):
+                    if a_dict is not None:
+                        aperture.properties.energy.apply_properties_from_dict(
+                            a_dict, constructions)
+                for door, d_dict in zip(bldg.room_3d_doors, dr_e_dicts):
+                    if d_dict is not None:
+                        door.properties.energy.apply_properties_from_dict(
+                            d_dict, constructions)
+                for shade, s_dict in zip(bldg.room_3d_shades, shd_e_dicts):
+                    if s_dict is not None:
+                        shade.properties.energy.apply_properties_from_dict(
+                            s_dict, constructions, schedules)
         for story, s_dict in zip(self.host.stories, story_e_dicts):
             if s_dict is not None:
                 story.properties.energy.apply_properties_from_dict(
@@ -398,7 +536,8 @@ class ModelEnergyProperties(object):
                 g_materials.extend(constr.materials)
             except AttributeError:
                 pass  # ShadeConstruction or AirBoundaryConstruction
-        gs['constructions'] = []
+        gs['context_construction'] = generic_context.identifier
+        gs['constructions'] = [generic_context.to_dict()]
         for cnst in g_constr:
             try:
                 gs['constructions'].append(cnst.to_dict(abridged=True))
@@ -417,7 +556,14 @@ class ModelEnergyProperties(object):
         room_constrs = []
         for cnstr_set in construction_sets:
             room_constrs.extend(cnstr_set.modified_constructions_unique)
-        all_constrs = room_constrs + self.shade_constructions
+        mass_constrs = []
+        for bldg in self.host.buildings:
+            for room in bldg.room_3ds:
+                for int_mass in room.properties.energy._internal_masses:
+                    constr = int_mass.construction
+                    if not self._instance_in_array(constr, mass_constrs):
+                        mass_constrs.append(constr)
+        all_constrs = room_constrs + self.face_constructions + self.shade_constructions
         constructions = tuple(set(all_constrs))
         base['energy']['constructions'] = []
         for cnst in constructions:
@@ -431,6 +577,13 @@ class ModelEnergyProperties(object):
         for cnstr in constructions:
             try:
                 materials.extend(cnstr.materials)
+                if cnstr.has_frame:
+                    materials.append(cnstr.frame)
+                if isinstance(cnstr, WindowConstructionShade):
+                    if cnstr.is_switchable_glazing:
+                        materials.append(cnstr.switched_glass_material)
+                    if cnstr.shade_location == 'Between':
+                        materials.append(cnstr.window_construction.materials[-2])
             except AttributeError:
                 pass  # ShadeConstruction
         base['energy']['materials'] = [mat.to_dict() for mat in set(materials)]
@@ -440,6 +593,11 @@ class ModelEnergyProperties(object):
         for constr in constructions:
             if isinstance(constr, AirBoundaryConstruction):
                 self._check_and_add_schedule(constr.air_mixing_schedule, schedules)
+            elif isinstance(constr, WindowConstructionShade):
+                if constr.schedule is not None:
+                    self._check_and_add_schedule(constr.schedule, schedules)
+            elif isinstance(constr, WindowConstructionDynamic):
+                self._check_and_add_schedule(constr.schedule, schedules)
         return schedules
 
     def _add_sched_type_objs_to_dict(self, base, schs):
@@ -496,6 +654,13 @@ class ModelEnergyProperties(object):
         if c_set is not None:
             if not self._instance_in_array(c_set, construction_sets):
                 construction_sets.append(c_set)
+
+    def _check_and_add_obj_construction(self, obj, constructions):
+        """Check if a construction is assigned to an object and add it to a list."""
+        constr = obj.properties.energy._construction
+        if constr is not None:
+            if not self._instance_in_array(constr, constructions):
+                constructions.append(constr)
 
     def _check_and_add_shade_schedule(self, obj, schedules):
         """Check if a schedule is assigned to a shade and add it to a list."""
