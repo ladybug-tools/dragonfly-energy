@@ -641,6 +641,8 @@ def run_des_modelica(sys_param_json, feature_geojson, scenario_csv):
             'No results were found at:\n{}\n{}'.format(modelica_dir, stderr)
         print(msg)
         raise Exception(msg)
+    else:
+        _add_water_heating_patch(modelica_dir)
     return modelica_dir
 
 
@@ -1245,6 +1247,30 @@ def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
     result = process.communicate()
     stderr = result[1]
     return modelica_dir, stderr
+
+
+def _add_water_heating_patch(modelica_dir):
+    """Add a dummy value for water heating for MBL 10 limitation."""
+    data_dir = os.path.join(modelica_dir, 'Loads', 'Resources', 'Data')
+    if os.path.isdir(data_dir):
+        for bldg_dir in os.listdir(data_dir):
+            mo_load_file = os.path.join(data_dir, bldg_dir, 'modelica.mos')
+            if os.path.isfile(mo_load_file):
+                fixed_lines, fl_found = [], False
+                with open(mo_load_file, 'r') as mlf:
+                    for line in mlf:
+                        if line == '#Peak water heating load = 0 Watts\n':
+                            nl = '#Peak water heating load = 1 Watts\n'
+                            fixed_lines.append(nl)
+                        elif not fl_found and ';' in line:
+                            split_vals = line.split(';')
+                            split_vals[-1] = '1.0\n'
+                            fixed_lines.append(';'.join(split_vals))
+                            fl_found = True
+                        else:
+                            fixed_lines.append(line)
+                with open(mo_load_file, 'w') as mlf:
+                    mlf.write(''.join(fixed_lines))
 
 
 def _run_modelica_windows(modelica_project_dir):
