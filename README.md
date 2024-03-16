@@ -7,7 +7,10 @@
 
 # dragonfly-energy
 
-Dragonfly extension for energy simulation.
+Dragonfly extension for energy simulation, including integration with the 
+[EnergyPlus](https://github.com/NREL/EnergyPlus) simulation engine, the 
+[OpenStudio](https://github.com/NREL/OpenStudio) SDK and the
+[URBANopt](https://docs.urbanopt.net/) SDK.
 
 ## Installation
 
