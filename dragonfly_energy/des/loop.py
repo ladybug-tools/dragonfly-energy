@@ -397,7 +397,7 @@ class GHEThermalLoop(object):
             buildings, tolerance)
         for ghe in self.ground_heat_exchangers:
             footprint_2d.append(ghe.geometry)
-            bldg_ids.append('Ground Heat Exchanger')
+            bldg_ids.append(ghe.identifier)
 
         # determine which ThermalConnectors are linked to the buildings
         feat_dict = {}
