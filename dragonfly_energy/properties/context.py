@@ -1,9 +1,11 @@
 # coding=utf-8
 """Context Shade Energy Properties."""
+from honeybee.shade import Shade
 from honeybee_energy.construction.shade import ShadeConstruction
 from honeybee_energy.schedule.ruleset import ScheduleRuleset
 from honeybee_energy.schedule.fixedinterval import ScheduleFixedInterval
 from honeybee_energy.properties.shade import ShadeEnergyProperties
+from honeybee_energy.properties.shademesh import ShadeMeshEnergyProperties
 
 from honeybee_energy.lib.constructions import generic_context
 
@@ -156,7 +158,10 @@ class ContextShadeEnergyProperties(object):
             new_host: A honeybee-core Shade object that will host these properties.
         """
         return ShadeEnergyProperties(new_host, self._construction,
-                                     self._transmittance_schedule)
+                                     self._transmittance_schedule) \
+            if isinstance(new_host, Shade) else \
+            ShadeMeshEnergyProperties(new_host, self._construction,
+                                      self._transmittance_schedule)
 
     def from_honeybee(self, hb_properties):
         """Transfer energy attributes from a Honeybee Shade to Dragonfly ContextShade.
