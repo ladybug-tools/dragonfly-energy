@@ -16,6 +16,9 @@ Dragonfly extension for energy simulation, including integration with the
 
 `pip install dragonfly-energy`
 
+To check if Dragonfly command line interface is installed correctly
+use `dragonfly-energy --help`.
+
 ## QuickStart
 
 ```python
