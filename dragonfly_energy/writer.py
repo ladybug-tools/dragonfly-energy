@@ -109,17 +109,26 @@ def model_to_urbanopt(
     else:
         assert len(folder) < 60, tr_msg.format(folder)
 
-    # get rid of anything that exists in the folder already
+    # get rid of all simulation files that exists in the folder already
+    dir_to_delete = ('hb_json', 'mappers', 'run')
+    ext_to_delete = ('.bat', '.geojson', '.epw', '.mos')
+    file_to_delete = (
+        'Gemfile', 'Gemfile.lock', 'honeybee_scenario.csv', 'runner.conf',
+        'simulation_parameter.json', 'system_params.json',
+        'electrical_database.json', 'network.json'
+    )
     if os.path.isdir(folder):
         files = os.listdir(folder)
         for f in files:
-            if f == '.bundle':
-                continue
             path = os.path.join(folder, f)
             if os.path.isdir(path):
-                nukedir(path, True)
+                if f in dir_to_delete:
+                    nukedir(path, True)
             else:
-                os.remove(path)
+                if f in file_to_delete:
+                    os.remove(path)
+                elif f.endswith(ext_to_delete):
+                    os.remove(path)
     else:
         preparedir(folder)  # create the directory if it's not there
 
