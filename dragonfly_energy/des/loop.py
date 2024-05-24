@@ -12,7 +12,7 @@ from dragonfly.projection import meters_to_long_lat_factors, \
     origin_long_lat_from_location
 
 from .ghe import GroundHeatExchanger, SoilParameter, FluidParameter, \
-    PipeParameter, BoreholeParameter
+    PipeParameter, BoreholeParameter, GHEDesignParameter
 from .connector import ThermalConnector
 from .junction import ThermalJunction
 
@@ -47,6 +47,8 @@ class GHEThermalLoop(object):
             of the ground-heat-exchanging pipes used across the loop.
         borehole_parameters: Optional BoreholeParameter object to specify the
             properties of the boreholes used across the loop.
+        design_parameters: Optional GHEDesignParameter object to specify the
+            design constraints across the loop.
 
     Properties:
         * identifier
@@ -58,15 +60,16 @@ class GHEThermalLoop(object):
         * fluid_parameters
         * pipe_parameters
         * borehole_parameters
+        * design_parameters
     """
     __slots__ = (
         '_identifier', '_display_name', '_ground_heat_exchangers', '_connectors',
         '_clockwise_flow', '_soil_parameters', '_fluid_parameters', '_pipe_parameters',
-        '_borehole_parameters')
+        '_borehole_parameters', '_design_parameters')
 
     def __init__(self, identifier, ground_heat_exchangers, connectors,
                  clockwise_flow=False, soil_parameters=None, fluid_parameters=None,
-                 pipe_parameters=None, borehole_parameters=None):
+                 pipe_parameters=None, borehole_parameters=None, design_parameters=None):
         """Initialize GHEThermalLoop."""
         self.identifier = identifier
         self._display_name = None
@@ -77,6 +80,7 @@ class GHEThermalLoop(object):
         self.fluid_parameters = fluid_parameters
         self.pipe_parameters = pipe_parameters
         self.borehole_parameters = borehole_parameters
+        self.design_parameters = design_parameters
 
     @classmethod
     def from_dict(cls, data):
@@ -100,7 +104,9 @@ class GHEThermalLoop(object):
             if 'pipe_parameters' in data else None
         bore = BoreholeParameter.from_dict(data['borehole_parameters']) \
             if 'borehole_parameters' in data else None
-        loop = cls(data['identifier'], ghe, conns, clock, soil, fluid, pipe, bore)
+        des = GHEDesignParameter.from_dict(data['design_parameters']) \
+            if 'design_parameters' in data else None
+        loop = cls(data['identifier'], ghe, conns, clock, soil, fluid, pipe, bore, des)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -351,6 +357,20 @@ class GHEThermalLoop(object):
             ' for GroundHeatExchanger. Got {}.'.format(type(value))
         self._borehole_parameters = value
 
+    @property
+    def design_parameters(self):
+        """Get or set a GHEDesignParameter object for the heat exchanger field."""
+        return self._design_parameters
+
+    @design_parameters.setter
+    def design_parameters(self, value):
+        if value is None:
+            value = GHEDesignParameter()
+        assert isinstance(value, GHEDesignParameter), \
+            'Expected GHEDesignParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._design_parameters = value
+
     def junctions(self, tolerance=0.01):
         """Get a list of ThermalJunction objects for the unique thermal loop junctions.
 
@@ -570,6 +590,7 @@ class GHEThermalLoop(object):
         base['fluid_parameters'] = self.fluid_parameters.to_dict()
         base['pipe_parameters'] = self.pipe_parameters.to_dict()
         base['borehole_parameters'] = self.borehole_parameters.to_dict()
+        base['design_parameters'] = self.design_parameters.to_dict()
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -757,8 +778,8 @@ class GHEThermalLoop(object):
                 'temperature': self.fluid_parameters.temperature
             },
             'grout': {
-                'conductivity': 1.0,
-                'rho_cp': 3901000,
+                'conductivity': self.soil_parameters.grout_conductivity,
+                'rho_cp': self.soil_parameters.grout_heat_capacity,
             },
             'soil': {
                 'conductivity': self.soil_parameters.conductivity,
@@ -772,10 +793,10 @@ class GHEThermalLoop(object):
                 'roughness': self.pipe_parameters.roughness,
                 'conductivity': self.pipe_parameters.conductivity,
                 'rho_cp': self.pipe_parameters.heat_capacity,
-                'arrangement': 'singleutube'
+                'arrangement': self.pipe_parameters.arrangement.lower()
             },
             'simulation': {
-                'num_months': 240
+                'num_months': self.design_parameters.month_count
             },
             'geometric_constraints': {
                 'b_min': self.borehole_parameters.min_spacing,
@@ -786,10 +807,10 @@ class GHEThermalLoop(object):
             },
             'design': {
                 'method': 'AREAPROPORTIONAL',
-                'flow_rate': 0.2,
-                'flow_type': 'borehole',
-                'max_eft': 35.0,
-                'min_eft': 5.0
+                'flow_rate': self.design_parameters.flow_rate,
+                'flow_type': self.design_parameters.flow_type.lower(),
+                'max_eft': self.design_parameters.max_eft,
+                'min_eft': self.design_parameters.min_eft
             },
             'ghe_specific_params': geo_pars
         }
@@ -922,9 +943,9 @@ class FourthGenThermalLoop(object):
         assert data['type'] == 'FourthGenThermalLoop', 'Expected FourthGenThermalLoop ' \
             'dictionary. Got {}.'.format(data['type'])
         cwt = data['chilled_water_setpoint'] if 'chilled_water_setpoint' in data \
-            and data['chilled_water_setpoint']  is not None else 6
+            and data['chilled_water_setpoint'] is not None else 6
         hwt = data['hot_water_setpoint'] if 'hot_water_setpoint' in data \
-            and data['hot_water_setpoint']  is not None else 54
+            and data['hot_water_setpoint'] is not None else 54
         loop = cls(data['identifier'], cwt, hwt)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']

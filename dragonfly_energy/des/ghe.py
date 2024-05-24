@@ -3,7 +3,7 @@
 from .._base import _GeometryBase
 
 from ladybug_geometry.geometry2d.polygon import Polygon2D
-from honeybee.typing import valid_string, float_positive, float_in_range
+from honeybee.typing import valid_string, float_positive, float_in_range, int_in_range
 from honeybee.altnumber import autocalculate
 from dragonfly.projection import polygon_to_lon_lat
 
@@ -133,21 +133,30 @@ class SoilParameter(object):
             temperature in degrees Celsius. If autocalculate, this value will
             automatically be replaced with the average EPW temperature before
             simulation. (Default: Autocalculate).
+        grout_conductivity: A number for the grout conductivity in W/m-K. (Default: 1.0).
+        grout_heat_capacity: A number for the volumetric heat capacity of the grout
+            in J/m3-K. (Default: 3,901,000).
 
     Properties:
         * conductivity
         * heat_capacity
         * undisturbed_temperature
+        * grout_conductivity
+        * grout_heat_capacity
     """
 
-    __slots__ = ('_conductivity', '_heat_capacity', '_undisturbed_temperature')
+    __slots__ = ('_conductivity', '_heat_capacity', '_undisturbed_temperature',
+                 '_grout_conductivity', '_grout_heat_capacity')
 
     def __init__(self, conductivity=2.3, heat_capacity=2343500,
-                 undisturbed_temperature=autocalculate):
+                 undisturbed_temperature=autocalculate,
+                 grout_conductivity=1.0, grout_heat_capacity=3901000):
         """Initialize SoilParameter."""
         self.conductivity = conductivity
         self.heat_capacity = heat_capacity
         self.undisturbed_temperature = undisturbed_temperature
+        self.grout_conductivity = grout_conductivity
+        self.grout_heat_capacity = grout_heat_capacity
 
     @classmethod
     def from_dict(cls, data):
@@ -163,7 +172,9 @@ class SoilParameter(object):
             'type': 'SoilParameter',
             'conductivity': 1.8,  # float in W/m2-K
             'heat_capacity': 2100000,  # float in J/m3-K
-            'undisturbed_temperature': 18  # float in C or autocalculate
+            'undisturbed_temperature': 18,  # float in C or autocalculate
+            'grout_conductivity': 1.0,  # float in W/m2-K
+            'grout_heat_capacity': 3901000
             }
         """
         cond = data['conductivity'] if 'conductivity' in data else 2.3
@@ -171,7 +182,9 @@ class SoilParameter(object):
         u_temp = autocalculate if 'undisturbed_temperature' not in data or \
             data['undisturbed_temperature'] == autocalculate.to_dict() \
             else data['undisturbed_temperature']
-        return cls(cond, cap, u_temp)
+        g_cond = data['grout_conductivity'] if 'grout_conductivity' in data else 1.0
+        g_cap = data['grout_heat_capacity'] if 'grout_heat_capacity' in data else 3901000
+        return cls(cond, cap, u_temp, g_cond, g_cap)
 
     @property
     def conductivity(self):
@@ -205,6 +218,25 @@ class SoilParameter(object):
             self._undisturbed_temperature = \
                 float_in_range(value, -273, 200, 'undisturbed_temperature')
 
+    @property
+    def grout_conductivity(self):
+        """Get or set a number for the grout conductivity in W/m-K."""
+        return self._grout_conductivity
+
+    @grout_conductivity.setter
+    def grout_conductivity(self, value):
+        self._grout_conductivity = float_positive(value, 'grout conductivity')
+
+    @property
+    def grout_heat_capacity(self):
+        """Get or set a number for the volumetric heat capacity of the grout in J/m3-K.
+        """
+        return self._grout_heat_capacity
+
+    @grout_heat_capacity.setter
+    def grout_heat_capacity(self, value):
+        self._grout_heat_capacity = float_positive(value, 'grout heat_capacity')
+
     def to_dict(self):
         """Get SoilParameter dictionary."""
         base = {'type': 'SoilParameter'}
@@ -212,6 +244,8 @@ class SoilParameter(object):
         base['heat_capacity'] = self.heat_capacity
         if self._undisturbed_temperature is not None:
             base['undisturbed_temperature'] = self._undisturbed_temperature
+        base['grout_conductivity'] = self.grout_conductivity
+        base['grout_heat_capacity'] = self.grout_heat_capacity
         return base
 
     def duplicate(self):
@@ -221,6 +255,8 @@ class SoilParameter(object):
     def __copy__(self):
         new_obj = SoilParameter(self._conductivity, self._heat_capacity)
         new_obj._undisturbed_temperature = self._undisturbed_temperature
+        new_obj._grout_conductivity = self._grout_conductivity
+        new_obj._grout_heat_capacity = self._grout_heat_capacity
         return new_obj
 
     def ToString(self):
@@ -369,6 +405,12 @@ class PipeParameter(object):
             W/m-K. (Default: 0.4).
         heat_capacity: A number for the volumetric heat capacity of the pipe
             material in J/m3-K. (Default: 1,542,000).
+        arrangement: Text for the specified pipe arrangement. Choose from the
+            following options. (Default: SingleUTube).
+
+            * SingleUTube
+            * DoubleUTubeSeries
+            * DoubleUTubeParallel
 
     Properties:
         * inner_diameter
@@ -377,14 +419,16 @@ class PipeParameter(object):
         * roughness
         * conductivity
         * heat_capacity
+        * arrangement
     """
-
     __slots__ = ('_inner_diameter', '_outer_diameter', '_shank_spacing',
-                 '_roughness', '_conductivity', '_heat_capacity')
+                 '_roughness', '_conductivity', '_heat_capacity', '_arrangement')
+    ARRANGEMENT_TYPES = ('SingleUTube', 'DoubleUTubeSeries', 'DoubleUTubeParallel')
 
     def __init__(
             self, inner_diameter=0.0216, outer_diameter=0.0266, shank_spacing=0.0323,
-            roughness=1e-06, conductivity=0.4, heat_capacity=1542000):
+            roughness=1e-06, conductivity=0.4, heat_capacity=1542000,
+            arrangement='SingleUTube'):
         """Initialize PipeParameter."""
         self.inner_diameter = inner_diameter
         self.outer_diameter = outer_diameter
@@ -392,6 +436,7 @@ class PipeParameter(object):
         self.roughness = roughness
         self.conductivity = conductivity
         self.heat_capacity = heat_capacity
+        self.arrangement = arrangement
 
     @classmethod
     def from_dict(cls, data):
@@ -410,7 +455,8 @@ class PipeParameter(object):
             'shank_spacing': 0.0323,  # float for spacing between outer pipes in meters
             'roughness': 1e-06,  # float for the dimension of the surface bumps
             'conductivity': 0.6,  # float in W/m2-K
-            'heat_capacity': 1542000  # float in J/m3-K
+            'heat_capacity': 1542000,  # float in J/m3-K
+            'arrangement': 'SingleUTube'  # text for arrangement type
             }
         """
         in_d = data['inner_diameter'] if 'inner_diameter' in data else 0.0216
@@ -419,7 +465,8 @@ class PipeParameter(object):
         rough = data['roughness'] if 'roughness' in data else 1e-06
         cond = data['conductivity'] if 'conductivity' in data else 2.3
         cap = data['heat_capacity'] if 'heat_capacity' in data else 2343500
-        return cls(in_d, out_d, s_spc, rough, cond, cap)
+        arr = data['arrangement'] if 'arrangement' in data else 'SingleUTube'
+        return cls(in_d, out_d, s_spc, rough, cond, cap, arr)
 
     @property
     def inner_diameter(self):
@@ -475,6 +522,31 @@ class PipeParameter(object):
     def heat_capacity(self, value):
         self._heat_capacity = float_positive(value, 'pipe heat_capacity')
 
+    @property
+    def arrangement(self):
+        """Get or set text for the pipe arrangement.
+
+        Choose from the following options:
+
+        * SingleUTube
+        * DoubleUTubeSeries
+        * DoubleUTubeParallel
+        """
+        return self._arrangement
+
+    @arrangement.setter
+    def arrangement(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.ARRANGEMENT_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'arrangement {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.ARRANGEMENT_TYPES))
+        self._arrangement = value
+
     def to_dict(self):
         """Get PipeParameter dictionary."""
         base = {'type': 'PipeParameter'}
@@ -484,6 +556,7 @@ class PipeParameter(object):
         base['roughness'] = self.roughness
         base['conductivity'] = self.conductivity
         base['heat_capacity'] = self.heat_capacity
+        base['arrangement'] = self.arrangement
         return base
 
     def duplicate(self):
@@ -493,7 +566,7 @@ class PipeParameter(object):
     def __copy__(self):
         return PipeParameter(
             self.inner_diameter, self.outer_diameter, self.shank_spacing,
-            self.roughness, self.conductivity, self.heat_capacity)
+            self.roughness, self.conductivity, self.heat_capacity, self.arrangement)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -530,7 +603,7 @@ class BoreholeParameter(object):
         max_spacing: A number for the maximum spacing between boreholes in meters.
             All boreholes will have a spacing of at most this value. So this
             typically represents the spacing at which the performance effects of
-            one borehole on a neighboring one are negligible. (Default: 10).
+            one borehole on a neighboring one are negligible. (Default: 25).
         buried_depth: A number for the depth below the ground surface at which
             the top of the heat exchanging part of the borehole sits in
             meters. (Default: 2).
@@ -544,11 +617,10 @@ class BoreholeParameter(object):
         * buried_depth
         * diameter
     """
-
     __slots__ = ('_min_depth', '_max_depth', '_min_spacing', '_max_spacing',
                  '_buried_depth', '_diameter')
 
-    def __init__(self, min_depth=60, max_depth=135, min_spacing=3, max_spacing=10,
+    def __init__(self, min_depth=60, max_depth=135, min_spacing=3, max_spacing=25,
                  buried_depth=2, diameter=0.15):
         """Initialize BoreholeParameter."""
         self._min_depth = float_positive(min_depth, 'borehole min_depth')
@@ -588,7 +660,7 @@ class BoreholeParameter(object):
 
     @property
     def min_depth(self):
-        """Get or set a number number for the minimum depth of the borehole in meters."""
+        """Get or set a number for the minimum depth of the borehole in meters."""
         return self._min_depth
 
     @min_depth.setter
@@ -598,7 +670,7 @@ class BoreholeParameter(object):
 
     @property
     def max_depth(self):
-        """Get or set a number number for the maximum depth of the borehole in meters."""
+        """Get or set a number for the maximum depth of the borehole in meters."""
         return self._max_depth
 
     @max_depth.setter
@@ -608,7 +680,7 @@ class BoreholeParameter(object):
 
     @property
     def min_spacing(self):
-        """Get or set a number number for the minimum spacing between boreholes in m.
+        """Get or set a number for the minimum spacing between boreholes in m.
         """
         return self._min_spacing
 
@@ -619,7 +691,7 @@ class BoreholeParameter(object):
 
     @property
     def max_spacing(self):
-        """Get or set a number number for the maximum spacing between boreholes in m.
+        """Get or set a number for the maximum spacing between boreholes in m.
         """
         return self._max_spacing
 
@@ -684,3 +756,166 @@ class BoreholeParameter(object):
         """Represent BoreholeParameter."""
         return 'BoreholeParameter: [depth: {}m - {}m] [spacing: {}m - {}m]'.format(
             self.min_depth, self.max_depth, self.min_spacing, self.max_spacing)
+
+
+class GHEDesignParameter(object):
+    """Represents criteria used to design a ground heat exchanger.
+
+    Args:
+        flow_rate: A number for the volumetric design flow rate through the
+            ground heat exchanger in L/s. The value specified will be either for
+            the entire system system or per-borehole flow rate depending on
+            the flow_type set. (Default: 0.2 L/s).
+        flow_type: Text to indicate whether the design volumetric flow rate set on
+            a per-borehole or system basis. Choose from the following
+            options. (Default: Borehole).
+
+            * Borehole
+            * System
+
+        max_eft: A number for the maximum heat pump entering fluid temperature
+            in Celsius. (Default: 35C).
+        min_eft: A number for the minimum heat pump entering fluid temperature
+            in Celsius. (Default: 5C).
+        month_count: An integer for the number of months over which the simulation
+            will be run in order to ensure stable ground temperature
+            conditions. (Default: 240).
+
+    Properties:
+        * flow_rate
+        * flow_type
+        * max_eft
+        * min_eft
+        * month_count
+    """
+    __slots__ = ('_flow_rate', '_flow_type', '_max_eft', '_min_eft', '_month_count')
+    FLOW_TYPES = ('Borehole', 'System')
+
+    def __init__(self, flow_rate=0.2, flow_type='Borehole', max_eft=35, min_eft=5,
+                 month_count=240):
+        """Initialize BoreholeParameter."""
+        self.flow_rate = flow_rate
+        self.flow_type = flow_type
+        self._min_eft = float_positive(min_eft, 'GHE min entering fluid temperature')
+        self.max_eft = max_eft
+        self.month_count = month_count
+
+    @classmethod
+    def from_dict(cls, data):
+        """Create a GHEDesignParameter object from a dictionary
+
+        Args:
+            data: A dictionary representation of an GHEDesignParameter object
+                in the format below.
+
+        .. code-block:: python
+
+            {
+            'type': 'GHEDesignParameter',
+            'flow_rate': 30,  # float in L/s
+            'flow_type': 'Borehole',  # text for the type of object flow_rate references
+            'max_eft': 35,  # float for max entering fluid temperature in C
+            'min_eft': 5,  # float for min entering fluid temperature in C
+            'month_count': 240  # int for the number of months to run the simulation
+            }
+        """
+        flow_rate = data['flow_rate'] if 'flow_rate' in data else 0.2
+        flow_type = data['flow_type'] if 'flow_type' in data else 'Borehole'
+        max_eft = data['max_eft'] if 'max_eft' in data else 35
+        min_eft = data['min_eft'] if 'min_eft' in data else 5
+        month_count = data['month_count'] if 'month_count' in data else 240
+        return cls(flow_rate, flow_type, max_eft, min_eft, month_count)
+
+    @property
+    def flow_rate(self):
+        """Get or set a number the volumetric design flow rate in L/s."""
+        return self._flow_rate
+
+    @flow_rate.setter
+    def flow_rate(self, value):
+        self._flow_rate = float_positive(value, 'ground heat exchanger flow_rate')
+
+    @property
+    def flow_type(self):
+        """Get or set text for the type of object flow_rate references.
+
+        Choose from the following options:
+
+        * Borehole
+        * System
+        """
+        return self._flow_type
+
+    @flow_type.setter
+    def flow_type(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.FLOW_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'Flow type {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.FLOW_TYPES))
+        self._flow_type = value
+
+    @property
+    def min_eft(self):
+        """Get or set a number for the minimum entering fluid temperature in Celsius."""
+        return self._min_eft
+
+    @min_eft.setter
+    def min_eft(self, value):
+        self._min_eft = float_positive(value, 'GHE min entering fluid temperature')
+        self._eft_check()
+
+    @property
+    def max_eft(self):
+        """Get or set a number for the maximum entering fluid temperature in Celsius."""
+        return self._max_eft
+
+    @max_eft.setter
+    def max_eft(self, value):
+        self._max_eft = float_positive(value, 'GHE max entering fluid temperature')
+        self._eft_check()
+
+    @property
+    def month_count(self):
+        """Get or set a number for the maximum entering fluid temperature in Celsius."""
+        return self._month_count
+
+    @month_count.setter
+    def month_count(self, value):
+        self._month_count = int_in_range(value, 12, input_name='GHE month count')
+
+    def to_dict(self):
+        """Get GHEDesignParameter dictionary."""
+        base = {'type': 'GHEDesignParameter'}
+        base['flow_rate'] = self.flow_rate
+        base['flow_type'] = self.flow_type
+        base['min_eft'] = self.min_eft
+        base['max_eft'] = self.max_eft
+        base['month_count'] = self.month_count
+        return base
+
+    def duplicate(self):
+        """Get a copy of this object."""
+        return self.__copy__()
+
+    def __copy__(self):
+        return GHEDesignParameter(
+            self.flow_rate, self.flow_type, self.min_eft, self.max_eft, self.month_count)
+
+    def _eft_check(self):
+        """Check that max_eft is greater than or equal to min_eft."""
+        assert self._max_eft >= self._min_eft, \
+            'GHE max_eft must be greater than or equal to min_eft.'
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Represent GHEDesignParameter."""
+        return 'GHEDesignParameter: [flow: {}L/s] [eft: {}C - {}C]'.format(
+            self.flow_rate, self.min_eft, self.max_eft)
