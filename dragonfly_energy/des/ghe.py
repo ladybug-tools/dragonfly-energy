@@ -430,7 +430,7 @@ class PipeParameter(object):
             roughness=1e-06, conductivity=0.4, heat_capacity=1542000,
             arrangement='SingleUTube'):
         """Initialize PipeParameter."""
-        self.inner_diameter = inner_diameter
+        self._inner_diameter = float_positive(inner_diameter, 'pipe inner_diameter')
         self.outer_diameter = outer_diameter
         self.shank_spacing = shank_spacing
         self.roughness = roughness
@@ -476,6 +476,7 @@ class PipeParameter(object):
     @inner_diameter.setter
     def inner_diameter(self, value):
         self._inner_diameter = float_positive(value, 'pipe inner diameter')
+        self._diameter_check()
 
     @property
     def outer_diameter(self):
@@ -485,6 +486,7 @@ class PipeParameter(object):
     @outer_diameter.setter
     def outer_diameter(self, value):
         self._outer_diameter = float_positive(value, 'pipe outer diameter')
+        self._diameter_check()
 
     @property
     def shank_spacing(self):
@@ -567,6 +569,11 @@ class PipeParameter(object):
         return PipeParameter(
             self.inner_diameter, self.outer_diameter, self.shank_spacing,
             self.roughness, self.conductivity, self.heat_capacity, self.arrangement)
+
+    def _diameter_check(self):
+        """Check that outer_diameter is greater than or equal to the inner_diameter."""
+        assert self._outer_diameter > self._inner_diameter, \
+            'Pipe outer_diameter must be greater than or equal to inner_diameter.'
 
     def ToString(self):
         """Overwrite .NET ToString method."""
