@@ -6,6 +6,7 @@ import json
 
 from ladybug_geometry.geometry2d import Point2D, LineSegment2D, Polyline2D, Polygon2D
 from ladybug.location import Location
+from ladybug.datacollection import HourlyContinuousCollection
 from honeybee.typing import valid_ep_string, float_in_range
 from honeybee.units import conversion_factor_to_meters
 from dragonfly.projection import meters_to_long_lat_factors, \
@@ -40,15 +41,20 @@ class GHEThermalLoop(object):
             loop is clockwise (True) when viewed from above in the GeoJSON or it
             is counterclockwise (False). (Default: False).
         soil_parameters: Optional SoilParameter object to specify the properties
-            of the soil in which the loop is operating.
+            of the soil in which the loop is operating. If None, default
+            values will be used. (Default: None).
         fluid_parameters: Optional FluidParameter object to specify the properties
-            of the fluid that is circulating through the loop.
+            of the fluid that is circulating through the loop. If None, default
+            values will be used. (Default: None).
         pipe_parameters: Optional PipeParameter object to specify the properties
-            of the ground-heat-exchanging pipes used across the loop.
+            of the ground-heat-exchanging pipes used across the loop. If None,
+            default values will be used. (Default: None).
         borehole_parameters: Optional BoreholeParameter object to specify the
-            properties of the boreholes used across the loop.
+            properties of the boreholes used across the loop. If None,
+            default values will be used. (Default: None).
         design_parameters: Optional GHEDesignParameter object to specify the
-            design constraints across the loop.
+            design constraints across the loop. If None, default values
+            will be used. (Default: None).
 
     Properties:
         * identifier
@@ -818,6 +824,145 @@ class GHEThermalLoop(object):
     def duplicate(self):
         """Get a copy of this object."""
         return self.__copy__()
+
+    @staticmethod
+    def ghe_designer_dict(
+        thermal_load, site_geometry, soil_parameters=None, fluid_parameters=None,
+        pipe_parameters=None, borehole_parameters=None, design_parameters=None,
+        tolerance=0.01):
+        """Get a dictionary following the schema of the input JSON for GHEDesigner.
+
+        This includes many of the same parameters that are used to size ground
+        heat exchangers in an URBANopt DES system but it requires the input of
+        hourly thermal loads.
+        
+        The dictionary returned by this method can be written to a JSON and
+        passed directly to the GHEDesigner CLI in order to receive sizing
+        information for the GHE and a G-function that can be used to meet
+        the input load in a building energy simulation.
+
+        Args:
+            thermal_load: An annual data collection of hourly thermal loads on
+                the ground in Watts. These are the heat extraction and heat rejection
+                loads directly on the ground heat exchanger and should already
+                account for factors like additional heat added or removed by the
+                heat pump compressors. Positive values indicate heat extraction
+                from the ground and negative values indicate heat rejection to
+                the ground.
+            site_geometry: A list of horizontal Face3D representing the footprint
+                of the site to be populated with boreholes. These Face3D can
+                have holes in them and these holes will be excluded from
+                borehole placement. Note that it is expected that this geometry's
+                dimensions are in meters and, if they are not, then it should
+                be scaled before input to this method.
+            soil_parameters: Optional SoilParameter object to specify the properties
+                of the soil in which the loop is operating. If None, default
+                values will be used. (Default: None).
+            fluid_parameters: Optional FluidParameter object to specify the properties
+                of the fluid that is circulating through the loop. If None, default
+                values will be used. (Default: None).
+            pipe_parameters: Optional PipeParameter object to specify the properties
+                of the ground-heat-exchanging pipes used across the loop. If None,
+                default values will be used. (Default: None).
+            borehole_parameters: Optional BoreholeParameter object to specify the
+                properties of the boreholes used across the loop. If None,
+                default values will be used. (Default: None).
+            design_parameters: Optional GHEDesignParameter object to specify the
+                design constraints across the loop. If None, default values
+                will be used. (Default: None).
+            tolerance: The minimum difference between the coordinate values of two
+                geometries at which they are considered co-located. (Default: 0.01,
+                suitable for objects in meters).
+        """
+        # check that the inputs are what we expect
+        assert isinstance(thermal_load, HourlyContinuousCollection), \
+            'Expected hourly continuous data collection for thermal_load. ' \
+            'Got {}'.format(type(thermal_load))
+        period = thermal_load.header.analysis_period
+        assert period.is_annual and period.timestep == 1, 'Hourly thermal load ' \
+            'is not annual. Analysis period is: {}.'.format(period)
+        assert thermal_load.header.unit == 'W', 'Expected load data collection to be in Watts. ' \
+            'Got {}.'.format(thermal_load.header.unit)
+
+        # process the input geometry into the format needed for GHEDesigner
+        site_boundaries, site_holes = [], []
+        for face in site_geometry:
+            bnd_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in face.boundary])
+            bnd_poly = bnd_poly.remove_colinear_vertices(tolerance)
+            if bnd_poly.is_clockwise:
+                bnd_poly = bnd_poly.reverse()
+            site_boundaries.append([[pt.x, pt.y] for pt in bnd_poly])
+            if face.has_holes:
+                for hole in face.holes:
+                    hole_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in hole])
+                    hole_poly = hole_poly.remove_colinear_vertices(tolerance)
+                    if hole_poly.is_clockwise:
+                        hole_poly = hole_poly.reverse()
+                    site_holes.append([[pt.x, pt.y] for pt in hole_poly])
+
+        # set defaults if any of the inputs are unspecified
+        soil = soil_parameters if soil_parameters is not None else SoilParameter()
+        fluid = fluid_parameters if fluid_parameters is not None else FluidParameter()
+        pipe = pipe_parameters if pipe_parameters is not None else PipeParameter()
+        borehole = borehole_parameters if borehole_parameters is not None \
+            else BoreholeParameter()
+        design = design_parameters if pipe_parameters is not None \
+            else GHEDesignParameter()
+        u_temp = 18.3 if soil._undisturbed_temperature is None \
+            else soil.undisturbed_temperature
+
+        # return a dictionary with all of the inputs
+        return {
+            'fluid': {
+                'fluid_name': fluid.fluid_type,
+                'concentration_percent': fluid.concentration,
+                'temperature': fluid.temperature
+            },
+            'grout': {
+                'conductivity': soil.grout_conductivity,
+                'rho_cp': soil.grout_heat_capacity
+            },
+            'soil': {
+                'conductivity': soil.conductivity,
+                'rho_cp': soil.heat_capacity,
+                'undisturbed_temp': u_temp
+            },
+            'pipe': {
+                'inner_diameter': pipe.inner_diameter,
+                'outer_diameter': pipe.outer_diameter,
+                'shank_spacing': pipe.shank_spacing,
+                'roughness': pipe.roughness,
+                'conductivity': pipe.conductivity,
+                'rho_cp': pipe.heat_capacity,
+                'arrangement': pipe.arrangement.upper()
+            },
+                'borehole': {
+                'buried_depth': borehole.buried_depth,
+                'diameter': borehole.diameter
+            },
+            'simulation': {
+                'num_months': design.month_count
+            },
+            'geometric_constraints': {
+                'b_min': borehole.min_spacing,
+                'b_max_x': borehole.max_spacing,
+                'b_max_y': borehole.max_spacing,
+                'max_height': borehole.max_depth,
+                'min_height': borehole.min_depth,
+                'property_boundary': site_boundaries,
+                'no_go_boundaries': site_holes,
+                'method': 'BIRECTANGLECONSTRAINED'
+            },
+            'design': {
+                'flow_rate': design.flow_rate,
+                'flow_type': 'BOREHOLE',
+                'max_eft': design.max_eft,
+                'min_eft': design.min_eft
+            },
+            'loads': {
+                'ground_loads': thermal_load.values
+            }
+        }
 
     @staticmethod
     def assign_junction_buildings(junctions, buildings, tolerance=0.01):
