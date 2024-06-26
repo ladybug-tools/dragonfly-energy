@@ -365,7 +365,7 @@ class ModelEnergyProperties(object):
     def check_duplicate_construction_set_identifiers(
             self, raise_exception=True, detailed=False):
         """Check that there are no duplicate ConstructionSet identifiers in the model.
-        
+
         Args:
             raise_exception: Boolean to note whether a ValueError should be raised
                 if duplicate identifiers are found. (Default: True).
@@ -410,7 +410,7 @@ class ModelEnergyProperties(object):
             A string with the message or a list with a dictionary if detailed is True.
         """
         return check_duplicate_identifiers(
-            self.hvacs, raise_exception, 'HVAC',detailed, '020007', 'Energy',
+            self.hvacs, raise_exception, 'HVAC', detailed, '020007', 'Energy',
             error_type='Duplicate HVAC Identifier')
 
     def check_duplicate_shw_identifiers(self, raise_exception=True, detailed=False):
