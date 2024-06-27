@@ -625,7 +625,7 @@ def run_des_modelica(sys_param_json, feature_geojson, scenario_csv):
         feature_geojson: The full path to a .geojson file containing the
             footprints of buildings to be simulated.
         scenario_csv: The full path to a .csv file for the URBANopt scenario.
-    
+
     Returns:
         The path to the folder where the Modelica files have been written.
     """
@@ -652,7 +652,7 @@ def run_modelica_docker(modelica_project_dir):
     Args:
         modelica_project_dir: The full path to the folder in which the Modelica
             files were written.
-    
+
     Returns:
         The path to where the results have been written.
     """
@@ -838,7 +838,7 @@ def _run_urbanopt_unix(feature_geojson, scenario_csv):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     process = subprocess.Popen(
-        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV, shell=True
     )
     result = process.communicate()
     stderr = result[1]
@@ -1242,7 +1242,7 @@ def _generate_modelica_unix(sys_param_json, feature_geojson, scenario_csv):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     process = subprocess.Popen(
-        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV, shell=True
     )
     result = process.communicate()
     stderr = result[1]
@@ -1356,7 +1356,7 @@ def _run_modelica_unix(modelica_project_dir):
     subprocess.check_call(['chmod', 'u+x', shell_file])
     # run the shell script
     process = subprocess.Popen(
-        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+        '"{}"'.format(shell_file), stderr=subprocess.PIPE, env=PYTHON_ENV, shell=True
     )
     result = process.communicate()
     stderr = result[1]
