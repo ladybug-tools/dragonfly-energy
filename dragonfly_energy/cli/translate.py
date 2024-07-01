@@ -391,7 +391,9 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
             f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
             out_path = os.path.join(out_directory, f_name)
         elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+            f_name = os.path.basename(model_file).lower()
             f_name = f_name.replace('.gbxml', '.xml')
+            out_path = os.path.join(out_directory, f_name)
         preparedir(out_directory)
 
         # re-serialize the Dragonfly Model
