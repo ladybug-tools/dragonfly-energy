@@ -10,7 +10,7 @@ from ladybug.futil import preparedir
 from ladybug.epw import EPW
 from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
-from honeybee_energy.run import to_openstudio_osw, to_gbxml_osw, run_osw, \
+from honeybee_energy.run import to_openstudio_osw, to_gbxml_osw, to_sdd_osw, run_osw, \
     add_gbxml_space_boundaries, set_gbxml_floor_types
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
@@ -434,6 +434,104 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
                         print(json_file.read())
             else:
                 raise Exception('Running OpenStudio CLI failed.')
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+@translate.command('model-to-gbxml')
+@click.argument('model-file', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
+              'multipliers on each Building story will be passed along to the '
+              'generated Honeybee Room objects or if full geometry objects should be '
+              'written for each story in the building.', default=True, show_default=True)
+@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
+              'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
+              'whether adjacencies should be solved between interior stories when '
+              'Room2Ds perfectly match one another in their floor plate. This ensures '
+              'that Surface boundary conditions are used instead of Adiabatic ones. '
+              'Note that this input has no effect when the object-per-model is Story.',
+              default=True, show_default=True)
+@click.option('--osw-folder', '-osw', help='Folder on this computer, into which the '
+              'working files will be written. If None, it will be written into the a '
+              'temp folder in the default simulation folder.', default=None,
+              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--geometry-ids/--geometry-names', ' /-gn', help='Flag to note whether a '
+              'cleaned version of all geometry display names should be used instead '
+              'of identifiers when translating the Model to SDD. Using this flag will '
+              'affect all Rooms, Faces, Apertures, Doors, and Shades. It will '
+              'generally result in more read-able names in the SDD but this means that '
+              'it will not be easy to map the EnergyPlus results back to the original '
+              'Honeybee Model. Cases of duplicate IDs resulting from non-unique names '
+              'will be resolved by adding integers to the ends of the new IDs that are '
+              'derived from the name.', default=True, show_default=True)
+@click.option('--resource-ids/--resource-names', ' /-rn', help='Flag to note whether a '
+              'cleaned version of all resource display names should be used instead '
+              'of identifiers when translating the Model to SDD. Using this flag will '
+              'affect all Materials, Constructions, ConstructionSets, Schedules, '
+              'Loads, and ProgramTypes. It will generally result in more read-able '
+              'names for the resources in the SDD. Cases of duplicate IDs resulting '
+              'from non-unique names will be resolved by adding integers to the ends '
+              'of the new IDs that are derived from the name.',
+              default=True, show_default=True)
+@click.option('--output-file', '-f', help='Optional gbXML file to output the string '
+              'of the translation. By default it printed out to stdout', default='-',
+              type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
+def model_to_sdd(model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folder,
+                 geometry_ids, resource_ids, output_file):
+    """Translate a Model DFJSON to a CBECC SDD file.
+
+    \b
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+    """
+    try:
+        # set the default folder if it's not specified
+        out_path = None
+        out_directory = os.path.join(
+            hb_folders.default_simulation_folder, 'temp_translate')
+        if output_file.endswith('-'):
+            f_name = os.path.basename(model_file).lower()
+            f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
+            f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
+            f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
+            out_path = os.path.join(out_directory, f_name)
+        elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+            f_name = os.path.basename(model_file).lower()
+            f_name = f_name.replace('.gbxml', '.xml')
+            out_path = os.path.join(out_directory, f_name)
+        preparedir(out_directory)
+
+        # re-serialize the Dragonfly Model
+        model = Model.from_dfjson(model_file)
+        model.convert_to_units('Meters')
+
+        # convert Dragonfly Model to Honeybee
+        add_plenum = not no_plenum
+        ceil_adjacency = not no_ceil_adjacency
+        hb_models = model.to_honeybee(
+            object_per_model='District', use_multiplier=multiplier,
+            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency)
+        hb_model = hb_models[0]
+
+        # create the dictionary of the HBJSON for input to OpenStudio CLI
+        geo_names = not geometry_ids
+        res_names = not resource_ids
+        hb_model_json = _measure_compatible_model_json(
+            hb_model, out_directory, simplify_window_cons=True,
+            triangulate_sub_faces=True, use_geometry_names=geo_names,
+            use_resource_names=res_names)
+
+        # Write the osw file and translate the model to SDD
+        out_f = out_path if output_file.endswith('-') else output_file
+        osw = to_sdd_osw(hb_model_json, out_f, osw_folder)
+        _run_translation_osw(osw, out_path)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
