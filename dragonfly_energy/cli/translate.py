@@ -441,7 +441,7 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
         sys.exit(0)
 
 
-@translate.command('model-to-gbxml')
+@translate.command('model-to-sdd')
 @click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
