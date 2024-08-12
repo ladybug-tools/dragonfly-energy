@@ -11,7 +11,7 @@ from ladybug.epw import EPW
 from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, to_gbxml_osw, to_sdd_osw, run_osw, \
-    add_gbxml_space_boundaries, set_gbxml_floor_types
+    add_gbxml_space_boundaries, set_gbxml_floor_types, _parse_os_cli_failure
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
 from dragonfly.model import Model
@@ -548,7 +548,7 @@ def _run_translation_osw(osw, out_path):
             with open(out_path) as json_file:
                 print(json_file.read())
     else:
-        raise Exception('Running OpenStudio CLI failed.')
+        _parse_os_cli_failure(os.path.dirname(osw))
 
 
 def _measure_compatible_model_json(
