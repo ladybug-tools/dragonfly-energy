@@ -163,7 +163,8 @@ def model_to_osm(model_file, sim_par_json, epw_file,
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
             object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency)
+            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
+            enforce_adj=False)
         hb_model = hb_models[0]
 
         # create the HBJSON for input to OpenStudio CLI
@@ -288,7 +289,8 @@ def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjace
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
             object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency)
+            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
+            enforce_adj=False)
         hb_model = hb_models[0]
 
         # reset the IDs to be derived from the display_names if requested
@@ -405,7 +407,8 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
             object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency)
+            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
+            enforce_adj=False)
         hb_model = hb_models[0]
 
         # create the dictionary of the HBJSON for input to OpenStudio CLI
@@ -517,7 +520,8 @@ def model_to_sdd(model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folde
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
             object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency)
+            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
+            enforce_adj=False)
         hb_model = hb_models[0]
 
         # create the dictionary of the HBJSON for input to OpenStudio CLI
