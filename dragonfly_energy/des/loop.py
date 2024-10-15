@@ -827,15 +827,15 @@ class GHEThermalLoop(object):
 
     @staticmethod
     def ghe_designer_dict(
-        thermal_load, site_geometry, soil_parameters=None, fluid_parameters=None,
-        pipe_parameters=None, borehole_parameters=None, design_parameters=None,
-        tolerance=0.01):
+            thermal_load, site_geometry, soil_parameters=None, fluid_parameters=None,
+            pipe_parameters=None, borehole_parameters=None, design_parameters=None,
+            tolerance=0.01):
         """Get a dictionary following the schema of the input JSON for GHEDesigner.
 
         This includes many of the same parameters that are used to size ground
         heat exchangers in an URBANopt DES system but it requires the input of
         hourly thermal loads.
-        
+
         The dictionary returned by this method can be written to a JSON and
         passed directly to the GHEDesigner CLI in order to receive sizing
         information for the GHE and a G-function that can be used to meet
@@ -936,7 +936,7 @@ class GHEThermalLoop(object):
                 'rho_cp': pipe.heat_capacity,
                 'arrangement': pipe.arrangement.upper()
             },
-                'borehole': {
+            'borehole': {
                 'buried_depth': borehole.buried_depth,
                 'diameter': borehole.diameter
             },
