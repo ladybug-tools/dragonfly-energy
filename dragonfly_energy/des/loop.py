@@ -890,14 +890,14 @@ class GHEThermalLoop(object):
             bnd_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in face.boundary])
             bnd_poly = bnd_poly.remove_colinear_vertices(tolerance)
             if bnd_poly.is_clockwise:
-                bnd_poly = bnd_poly.reverse()
+                bnd_poly.reverse()
             site_boundaries.append([[pt.x, pt.y] for pt in bnd_poly])
             if face.has_holes:
                 for hole in face.holes:
                     hole_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in hole])
                     hole_poly = hole_poly.remove_colinear_vertices(tolerance)
                     if hole_poly.is_clockwise:
-                        hole_poly = hole_poly.reverse()
+                        hole_poly.reverse()
                     site_holes.append([[pt.x, pt.y] for pt in hole_poly])
 
         # set defaults if any of the inputs are unspecified
