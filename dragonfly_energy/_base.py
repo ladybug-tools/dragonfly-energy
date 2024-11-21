@@ -5,6 +5,7 @@ import math
 
 from ladybug_geometry.geometry2d import Point2D, Vector2D, LineSegment2D, \
     Polyline2D, Polygon2D
+from ladybug_geometry.geometry3d import Point3D, Vector3D, Plane, Face3D
 from honeybee.typing import valid_ep_string
 from dragonfly.projection import lon_lat_to_polygon
 
@@ -107,6 +108,40 @@ class _GeometryBase(object):
         return self.__copy__()
 
     @staticmethod
+    def _geojson_coordinates_to_face3d(
+            geojson_coordinates, origin_lon_lat, convert_facs):
+        """Convert geoJSON coordinates to a Face3D.
+
+        Args:
+            geojson_coordinates: The coordinates from the geojson file. For 'Polygon'
+                geometries, this will be the list from the 'coordinates' key in the
+                geojson file, for 'MultiPolygon' geometries, this will be each item
+                in the list from the 'coordinates' key. This can also be a single
+                point, which will be interpreted as a rectangular polygon with
+                the point at its center.
+            origin_lon_lat: An array of two numbers in degrees representing the
+                longitude and latitude of the scene origin in degrees.
+            convert_facs: A tuple with two values used to translate between
+                longitude, latitude and meters.
+
+        Returns:
+            A Face3D object in model space coordinates converted from the geojson
+            coordinates.
+        """
+        pt_array = [[geojson_coordinates]] if \
+            isinstance(geojson_coordinates[0], (float, int)) else geojson_coordinates
+        coords = []
+        for loop in pt_array:
+            loop = lon_lat_to_polygon(loop, origin_lon_lat, convert_facs)
+            loop = [Point3D(pt[0], pt[1]) for pt in loop]
+            coords.append(loop)
+        if len(coords[0]) != 1:
+            return Face3D(coords[0], holes=coords[1:])
+        else:
+            base_plane = Plane(n=Vector3D(0, 0, 1), o=coords[0][0])
+            return Face3D.from_regular_polygon(4, 5, base_plane)
+
+    @staticmethod
     def _geojson_coordinates_to_polygon2d(
             geojson_coordinates, origin_lon_lat, convert_facs):
         """Convert geoJSON coordinates to a Polygon2D.
@@ -124,7 +159,7 @@ class _GeometryBase(object):
                 longitude, latitude and meters.
 
         Returns:
-            A Polygon2D  object in model space coordinates converted from the geojson
+            A Polygon2D object in model space coordinates converted from the geojson
             coordinates.
         """
         pt_array = [geojson_coordinates] if \
