@@ -422,7 +422,7 @@ class GHEThermalLoop(object):
         footprint_2d, bldg_ids = GHEThermalLoop._building_footprints(
             buildings, tolerance)
         for ghe in self.ground_heat_exchangers:
-            footprint_2d.append(ghe.geometry)
+            footprint_2d.append(ghe.boundary_2d)
             bldg_ids.append(ghe.identifier)
 
         # determine which ThermalConnectors are linked to the buildings
@@ -635,7 +635,8 @@ class GHEThermalLoop(object):
         # get the footprints of the Buildings in 2D space
         footprint_2d, bldg_ids = GHEThermalLoop._building_footprints(
             buildings, tolerance)
-        all_feat = footprint_2d + [ghe.geometry for ghe in self.ground_heat_exchangers]
+        all_feat = \
+            footprint_2d + [ghe.boundary_2d for ghe in self.ground_heat_exchangers]
         feat_ids = bldg_ids + [ghe.identifier for ghe in self.ground_heat_exchangers]
 
         # order the connectors correctly on the loop and translate them to features
@@ -751,7 +752,7 @@ class GHEThermalLoop(object):
         # compute the geometric constraints of the borehole fields
         geo_pars = []
         for ghe in self.ground_heat_exchangers:
-            ghe_geo = ghe.geometry
+            ghe_geo = ghe.boundary_2d
             max_dim = max((ghe_geo.max.x - ghe_geo.min.x, ghe_geo.max.y - ghe_geo.min.y))
             ang_tol = tolerance / max_dim
             if ghe_geo.is_rectangle(ang_tol):
@@ -1014,7 +1015,7 @@ class GHEThermalLoop(object):
         # loop through district system objects to determine adjacent junctions
         for jct in junctions:
             for ds_obj in self.ground_heat_exchangers:
-                if ds_obj.geometry.is_point_on_edge(jct.geometry, tolerance):
+                if ds_obj.boundary_2d.is_point_on_edge(jct.geometry, tolerance):
                     jct.system_identifier = ds_obj.identifier
                     break
         return junctions, connector_junction_ids

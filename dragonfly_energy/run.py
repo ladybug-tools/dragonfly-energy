@@ -573,7 +573,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         bh_count = int(total_area / (ghe_par['geometric_constraints']['b_min'] ** 2))
         if bh_count > MAX_BOREHOLES:
             msg = 'The inputs suggest that there may be as many as {} boreholes in the ' \
-                'GHE field\nand this will cause your machine to run out of memory.\n' \
+                'GHE field\nand this will likely max out the memory of the machine.\n' \
                 'A smaller GHE field or a larger minimum borehole spacing is needed ' \
                 'such that fewer\nthan {} boreholes are generated and the sizing ' \
                 'simulation can succeed.'.format(bh_count, MAX_BOREHOLES)

@@ -2,7 +2,8 @@
 """Ground Heat Exchanger (GHE) in a district thermal system."""
 from .._base import _GeometryBase
 
-from ladybug_geometry.geometry2d.polygon import Polygon2D
+from ladybug_geometry.geometry2d import Polygon2D
+from ladybug_geometry.geometry3d import Point3D, Vector3D, Plane, Face3D
 from honeybee.typing import valid_string, float_positive, float_in_range, int_in_range
 from honeybee.altnumber import autocalculate
 from dragonfly.projection import polygon_to_lon_lat
@@ -15,20 +16,30 @@ class GroundHeatExchanger(_GeometryBase):
         identifier: Text string for a unique heat exchanger ID. Must contain only
             characters that are acceptable in OpenDSS. This will be used to
             identify the object across the exported geoJSON and OpenDSS files.
-        geometry: A Polygon2D representing the geometry of the heat exchanger.
+        geometry: A Polygon2D or horizontal Face3D representing the geometry
+            of the heat exchanger.
 
     Properties:
         * identifier
         * display_name
         * geometry
+        * boundary_2d
+        * holes_2d
     """
     __slots__ = ()
 
     def __init__(self, identifier, geometry):
         """Initialize GroundHeatExchanger."""
         _GeometryBase.__init__(self, identifier)  # process the identifier
-        assert isinstance(geometry, Polygon2D), 'Expected ladybug_geometry ' \
-            'Polygon2D for GroundHeatExchanger geometry. Got {}'.format(type(geometry))
+        assert isinstance(geometry, (Polygon2D, Face3D)), 'Expected ladybug_geometry ' \
+            'Polygon2D or Face3D for GroundHeatExchanger geometry. ' \
+            'Got {}'.format(type(geometry))
+        if isinstance(geometry, Face3D):
+            if geometry.normal.z < 0:  # ensure upward-facing Face3D
+                geometry = geometry.flip()
+            # ensure a global 2D origin, which helps in solve adjacency and the dict schema
+            o_pl = Plane(Vector3D(0, 0, 1), Point3D(0, 0, geometry.plane.o.z))
+            geometry = Face3D(geometry.boundary, o_pl, geometry.holes)
         self._geometry = geometry
 
     @classmethod
@@ -41,7 +52,9 @@ class GroundHeatExchanger(_GeometryBase):
         # check the type of dictionary
         assert data['type'] == 'GroundHeatExchanger', 'Expected GroundHeatExchanger ' \
             'dictionary. Got {}.'.format(data['type'])
-        geo = Polygon2D.from_dict(data['geometry'])
+        geo = Face3D.from_dict(data['geometry']) \
+            if data['geometry']['type'] == 'Face3D' \
+            else Polygon2D.from_dict(data['geometry'])
         trans = cls(data['identifier'], geo)
         if 'display_name' in data and data['display_name'] is not None:
             trans.display_name = data['display_name']
@@ -62,14 +75,29 @@ class GroundHeatExchanger(_GeometryBase):
             conversion_factors: A tuple with two values used to translate between
                 meters and longitude, latitude.
         """
-        geo = cls._geojson_coordinates_to_polygon2d(
+        geo = cls._geojson_coordinates_to_face3d(
             data['geometry']['coordinates'], origin_lon_lat, conversion_factors)
         return cls(data['properties']['id'], geo)
 
     @property
     def geometry(self):
-        """Get a Polygon2D representing the ground heat exchanger."""
+        """Get a Polygon2D or Face3D representing the ground heat exchanger."""
         return self._geometry
+
+    @property
+    def boundary_2d(self):
+        """Get a Polygon2D for the outer boundary of the ground heat exchanger."""
+        return self._geometry.boundary_polygon2d \
+            if isinstance(self._geometry, Face3D) else self._geometry
+
+    @property
+    def hole_polygon2d(self):
+        """Get a list of Polygon2D for the holes in the ground heat exchanger.
+
+        Will be None if the ground heat exchanger has no holes in it.
+        """
+        return self._geometry.hole_polygon2d \
+            if isinstance(self._geometry, Face3D) else None
 
     def to_dict(self):
         """GroundHeatExchanger dictionary representation."""
@@ -92,9 +120,18 @@ class GroundHeatExchanger(_GeometryBase):
             conversion_factors: A tuple with two values used to translate between
                 meters and longitude, latitude.
         """
-        pts = [(pt.x, pt.y) for pt in self.geometry.vertices]
-        coords = [polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)]
-        coords[0].append(coords[0][0])
+        if isinstance(self.geometry, Face3D):
+            loops = [[(pt.x, pt.y) for pt in self.geometry.boundary]]
+            if self.geometry.has_holes:
+                for hole in self.geometry.holes:
+                    loops.append([(pt.x, pt.y) for pt in hole])
+        else:
+            loops = [[(pt.x, pt.y) for pt in self.geometry.vertices]]
+        coords = []
+        for pts in loops:
+            loop = polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)
+            loop.append(loop[0])
+            coords.append(loop)
         return {
             'type': 'Feature',
             'properties': {
