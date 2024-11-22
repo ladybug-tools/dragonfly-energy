@@ -43,7 +43,7 @@ class Folders(object):
         * config_file
         * mute
     """
-    URBANOPT_VERSION = (0, 12, 0)
+    URBANOPT_VERSION = (0, 14, 0)
     COMPATIBILITY_URL = 'https://github.com/ladybug-tools/lbt-grasshopper/wiki/' \
         '1.4-Compatibility-Matrix'
 
@@ -215,12 +215,20 @@ class Folders(object):
             os.path.join(home_folder, '.env_uo.sh')
 
         if self.urbanopt_cli_path:  # try to generate the env file
-            env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.bat') \
-                if os.name == 'nt' else \
-                os.path.join(self.urbanopt_cli_path, 'setup-env.sh')
+            if os.name == 'nt':
+                env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.bat')
+                if not os.path.isfile(env_setup):
+                    env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.ps1')
+            else:
+                env_setup = os.path.join(self.urbanopt_cli_path, 'setup-env.sh')
             if os.path.isfile(env_setup):
                 if os.name == 'nt':  # run the batch file on Windows
-                    os.system(env_setup)
+                    if env_setup.endswith('.bat'):
+                        os.system(env_setup)
+                    else:
+                        cmds = ['powershell.exe', env_setup]
+                        p = subprocess.Popen(cmds)
+                        p.communicate()
                 else:  # run the sell file on Mac or Linux
                     subprocess.check_call(['chmod', 'u+x', env_setup])
                     subprocess.call(env_setup)
