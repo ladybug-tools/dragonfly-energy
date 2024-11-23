@@ -469,6 +469,17 @@ class GHEThermalLoop(object):
         loop_poly = loop_geo.to_polygon(tolerance)
         if loop_poly.is_clockwise is not self.clockwise_flow:
             loop_poly = loop_poly.reverse()
+
+        # make sure that the loop ends at a GHE; this is a limitation of GMT 0.8.0
+        last_ghe_poly = self.ground_heat_exchangers[0].boundary_2d
+        for i_pt, pt in enumerate(loop_poly.vertices):
+            if last_ghe_poly.is_point_on_edge(pt, tolerance):
+                break_i = i_pt + 2
+        break_i = break_i if break_i < len(loop_poly.vertices) \
+            else break_i - len(loop_poly.vertices)
+        start_verts = loop_poly.vertices[break_i:] + loop_poly.vertices[:break_i]
+        loop_poly = Polygon2D(start_verts)
+
         return loop_poly
 
     def ordered_connectors(self, buildings, tolerance=0.01):
@@ -732,10 +743,20 @@ class GHEThermalLoop(object):
             bldg_array.append(b_dict)
         des_dict['buildings'] = bldg_array
 
-        # add the ground loop parameters
+        # handle autocalculated soil temperatures
+        u_temp = self.soil_parameters.undisturbed_temperature \
+            if self.soil_parameters._undisturbed_temperature is not None \
+            else 'Autocalculate'
+
+        # add the fifth generation system parameters
         des_param = {
             'fifth_generation': {
-                'ghe_parameters': self.to_ghe_param_dict(tolerance)
+                'ghe_parameters': self.to_ghe_param_dict(tolerance),
+                'soil': {
+                    'conductivity': self.soil_parameters.conductivity,
+                    'rho_cp': self.soil_parameters.heat_capacity,
+                    'undisturbed_temp': u_temp
+                }
             }
         }
         des_dict['district_system'] = des_param
@@ -773,10 +794,7 @@ class GHEThermalLoop(object):
                 'ground_loads': []
             }
             geo_pars.append(geo_par)
-        # handle autocalculated soil temperatures
-        u_temp = self.soil_parameters.undisturbed_temperature \
-            if self.soil_parameters._undisturbed_temperature is not None \
-            else 'Autocalculate'
+
         # return a dictionary with all of the information
         return {
             'fluid': {
@@ -787,11 +805,6 @@ class GHEThermalLoop(object):
             'grout': {
                 'conductivity': self.soil_parameters.grout_conductivity,
                 'rho_cp': self.soil_parameters.grout_heat_capacity,
-            },
-            'soil': {
-                'conductivity': self.soil_parameters.conductivity,
-                'rho_cp': self.soil_parameters.heat_capacity,
-                'undisturbed_temp': u_temp
             },
             'pipe': {
                 'inner_diameter': self.pipe_parameters.inner_diameter,
