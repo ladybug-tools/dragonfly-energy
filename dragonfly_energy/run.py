@@ -217,16 +217,14 @@ def base_honeybee_osw(
             if 'district_system' in sys_dict:
                 if 'fifth_generation' in sys_dict['district_system']:
                     g5_par = sys_dict['district_system']['fifth_generation']
-                    if 'ghe_parameters' in g5_par:
-                        ghe_par = g5_par['ghe_parameters']
-                        if 'soil' in ghe_par and 'undisturbed_temp' in ghe_par['soil']:
-                            soil_par = ghe_par['soil']
-                            if soil_par['undisturbed_temp'] == 'Autocalculate':
-                                epw_obj = EPW(epw_file)
-                                soil_par['undisturbed_temp'] = \
-                                    epw_obj.dry_bulb_temperature.average
-                                with open(sys_param_file, 'w') as fp:
-                                    json.dump(sys_dict, fp, indent=4)
+                    if 'soil' in g5_par and 'undisturbed_temp' in g5_par['soil']:
+                        soil_par = g5_par['soil']
+                        if soil_par['undisturbed_temp'] == 'Autocalculate':
+                            epw_obj = EPW(epw_file)
+                            soil_par['undisturbed_temp'] = \
+                                epw_obj.dry_bulb_temperature.average
+                            with open(sys_param_file, 'w') as fp:
+                                json.dump(sys_dict, fp, indent=4)
 
     # write the dictionary to a honeybee_workflow.osw
     mappers_dir = os.path.join(project_directory, 'mappers')
@@ -527,12 +525,15 @@ def run_des_sys_param(feature_geojson, scenario_csv):
     shell = True if os.name == 'nt' else False
     uo_des_exe = os.path.join(
         hb_folders.python_scripts_path, 'uo_des{}'.format(ext))
-    build_cmd = '"{des_exe}" build-sys-param "{sp_file}" "{scenario}" "{feature}" ' \
-        'time_series -o'.format(
+    build_cmd = '"{des_exe}" build-sys-param ' \
+        '"{sp_file}" "{scenario}" "{feature}" '.format(
             des_exe=uo_des_exe, sp_file=sys_param_file,
             scenario=scenario_csv, feature=feature_geojson)
     if ghe_sys:
-        build_cmd = '{} --ghe'.format(build_cmd)
+        build_cmd = '{} 5G_ghe'.format(build_cmd)
+    else:
+        build_cmd = '{} 4G'.format(build_cmd)
+    build_cmd = '{} time_series -o'.format(build_cmd)
     process = subprocess.Popen(
         build_cmd, stderr=subprocess.PIPE, shell=shell, env=PYTHON_ENV
     )
@@ -549,14 +550,17 @@ def run_des_sys_param(feature_geojson, scenario_csv):
     with open(sys_param_file, 'r') as spf:
         sp_dict = json.load(spf)
     if ghe_sys:
-        original_ghe_par = des_dict['fifth_generation']['ghe_parameters']
-        ghe_par = sp_dict['district_system']['fifth_generation']['ghe_parameters']
-        ghe_par['fluid'] = original_ghe_par['fluid']
-        ghe_par['grout'] = original_ghe_par['grout']
-        ghe_par['soil'] = original_ghe_par['soil']
-        ghe_par['pipe'] = original_ghe_par['pipe']
-        ghe_par['geometric_constraints'] = original_ghe_par['geometric_constraints']
-        ghe_par['ghe_specific_params'] = original_ghe_par['ghe_specific_params']
+        original_des_par = des_dict['fifth_generation']
+        original_ghe_par = original_des_par['ghe_parameters']
+        des_par = sp_dict['district_system']['fifth_generation']
+        des_par['soil'] = original_des_par['soil']
+        des_par['ghe_parameters']['fluid'] = original_ghe_par['fluid']
+        des_par['ghe_parameters']['grout'] = original_ghe_par['grout']
+        des_par['ghe_parameters']['pipe'] = original_ghe_par['pipe']
+        des_par['ghe_parameters']['geometric_constraints'] = \
+            original_ghe_par['geometric_constraints']
+        des_par['ghe_parameters']['ghe_specific_params'] = \
+            original_ghe_par['ghe_specific_params']
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -566,11 +570,12 @@ def run_des_sys_param(feature_geojson, scenario_csv):
     if ghe_sys:
         # check to be sure the user will not max out their RAM
         total_area = 0
-        for ghe_sp in ghe_par['ghe_specific_params']:
+        for ghe_sp in des_par['ghe_parameters']['ghe_specific_params']:
             ghe_len = ghe_sp['ghe_geometric_params']['length_of_ghe']
             ghe_wth = ghe_sp['ghe_geometric_params']['width_of_ghe']
             total_area += ghe_len * ghe_wth
-        bh_count = int(total_area / (ghe_par['geometric_constraints']['b_min'] ** 2))
+        b_min = des_par['ghe_parameters']['geometric_constraints']['b_min']
+        bh_count = int(total_area / (b_min ** 2))
         if bh_count > MAX_BOREHOLES:
             msg = 'The inputs suggest that there may be as many as {} boreholes in the ' \
                 'GHE field\nand this will likely max out the memory of the machine.\n' \
@@ -603,7 +608,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             sp_dict = json.load(spf)
         ghe_par_dict = sp_dict['district_system']['fifth_generation']['ghe_parameters']
         for ghe_s_par in ghe_par_dict['ghe_specific_params']:
-            r_dir = ghe_par['ghe_dir']
+            r_dir = des_par['ghe_parameters']['ghe_dir']
             res_file = os.path.join(r_dir, ghe_s_par['ghe_id'], 'SimulationSummary.json')
             with open(res_file, 'r') as rf:
                 res_dict = json.load(rf)
@@ -1303,9 +1308,8 @@ def _run_modelica_windows(modelica_project_dir):
     uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des.exe')
     # Write the batch file to call the GMT
     working_drive = modelica_project_dir[:2]
-    batch = '{}\ncd {}\ncall "{}"\n"{}" run-model "{}"'.format(
-        working_drive, working_drive, folders.urbanopt_env_path,
-        uo_des_exe, modelica_project_dir)
+    batch = '{}\ncd {}\n"{}" run-model "{}"'.format(
+        working_drive, working_drive, uo_des_exe, modelica_project_dir)
     batch_file = os.path.join(directory, 'run_modelica.bat')
     write_to_file(batch_file, batch, True)
     # run the batch file
@@ -1347,8 +1351,8 @@ def _run_modelica_unix(modelica_project_dir):
         '{}.Districts.DistrictEnergySystem_results'.format(project_name))
     uo_des_exe = os.path.join(hb_folders.python_scripts_path, 'uo_des')
     # write the shell script to call the GMT
-    shell = '#!/usr/bin/env bash\nsource "{}"\n"{}" run-model "{}"'.format(
-        folders.urbanopt_env_path, uo_des_exe, modelica_project_dir)
+    shell = '#!/usr/bin/env bash\n"{}" run-model "{}"'.format(
+        uo_des_exe, modelica_project_dir)
     shell_file = os.path.join(directory, 'run_modelica.sh')
     write_to_file(shell_file, shell, True)
     # make the shell script executable using subprocess.check_call

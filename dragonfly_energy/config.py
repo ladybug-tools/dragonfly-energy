@@ -233,6 +233,13 @@ class Folders(object):
                     subprocess.check_call(['chmod', 'u+x', env_setup])
                     subprocess.call(env_setup)
             if os.path.isfile(env_file):
+                if os.name == 'nt':  # remove the utf-8 encoding powershell does
+                    with open(env_file, 'r') as inf:
+                        env_data = inf.read().splitlines(True)
+                    if not env_data[0] == '\n' and not env_data[0].startswith('SET'):
+                        env_data = env_data[1:]
+                        with open(env_file, 'w') as otf:
+                            otf.write(''.join(env_data))
                 self._urbanopt_env_path = env_file  # the file was successfully generated
 
     def check_urbanopt_version(self):
