@@ -561,6 +561,10 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             original_ghe_par['geometric_constraints']
         des_par['ghe_parameters']['ghe_specific_params'] = \
             original_ghe_par['ghe_specific_params']
+        # remove geometric params so that ThermalNetwork uses GeoJSON polygon
+        rect_geo_par = []
+        for ghe_dict in des_par['ghe_parameters']['ghe_specific_params']:
+            rect_geo_par.append(ghe_dict.pop('ghe_geometric_params'))
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -568,21 +572,6 @@ def run_des_sys_param(feature_geojson, scenario_csv):
 
     # if the DES system has a ground heat exchanger, run the thermal network package
     if ghe_sys:
-        # check to be sure the user will not max out their RAM
-        total_area = 0
-        for ghe_sp in des_par['ghe_parameters']['ghe_specific_params']:
-            ghe_len = ghe_sp['ghe_geometric_params']['length_of_ghe']
-            ghe_wth = ghe_sp['ghe_geometric_params']['width_of_ghe']
-            total_area += ghe_len * ghe_wth
-        b_min = des_par['ghe_parameters']['geometric_constraints']['b_min']
-        bh_count = int(total_area / (b_min ** 2))
-        if bh_count > MAX_BOREHOLES:
-            msg = 'The inputs suggest that there may be as many as {} boreholes in the ' \
-                'GHE field\nand this will likely max out the memory of the machine.\n' \
-                'A smaller GHE field or a larger minimum borehole spacing is needed ' \
-                'such that fewer\nthan {} boreholes are generated and the sizing ' \
-                'simulation can succeed.'.format(bh_count, MAX_BOREHOLES)
-            raise ValueError(msg)
         # run the GHE Designer to size the system
         tn_exe = os.path.join(
             hb_folders.python_scripts_path, 'thermalnetwork{}'.format(ext))
@@ -607,7 +596,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         with open(sys_param_file, 'r') as spf:
             sp_dict = json.load(spf)
         ghe_par_dict = sp_dict['district_system']['fifth_generation']['ghe_parameters']
-        for ghe_s_par in ghe_par_dict['ghe_specific_params']:
+        for ghe_s_par, rect_par in zip(ghe_par_dict['ghe_specific_params'], rect_geo_par):
             r_dir = des_par['ghe_parameters']['ghe_dir']
             res_file = os.path.join(r_dir, ghe_s_par['ghe_id'], 'SimulationSummary.json')
             with open(res_file, 'r') as rf:
@@ -616,6 +605,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
                 res_dict['ghe_system']['active_borehole_length']['value']
             ghe_s_par['borehole']['number_of_boreholes'] = \
                 res_dict['ghe_system']['number_of_boreholes']
+            ghe_s_par['ghe_geometric_params'] = rect_par
         with open(sys_param_file, 'w') as spf:
             json.dump(sp_dict, spf, indent=2)
     return sys_param_file
