@@ -11,7 +11,8 @@ from ladybug.epw import EPW
 from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import to_openstudio_osw, to_gbxml_osw, to_sdd_osw, run_osw, \
-    add_gbxml_space_boundaries, set_gbxml_floor_types, _parse_os_cli_failure
+    add_gbxml_space_boundaries, set_gbxml_floor_types, trace_compatible_model_json, \
+    _parse_os_cli_failure
 from honeybee_energy.writer import energyplus_idf_version
 from honeybee_energy.config import folders
 from dragonfly.model import Model
@@ -89,10 +90,10 @@ def translate():
               'generated OSM and IDF files if they were successfully created. '
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_osm(model_file, sim_par_json, epw_file,
-                 multiplier, no_plenum, no_ceil_adjacency,
-                 folder, osm_file, idf_file, geometry_ids, resource_ids, log_file):
-    """Translate a Model DFJSON to an OpenStudio Model.
+def model_to_osm_cli(
+        model_file, sim_par_json, epw_file, multiplier, no_plenum, no_ceil_adjacency,
+        folder, osm_file, idf_file, geometry_ids, resource_ids, log_file):
+    """Translate a Dragonfly Model to an OpenStudio Model.
 
     \b
     Args:
@@ -100,103 +101,177 @@ def model_to_osm(model_file, sim_par_json, epw_file,
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
-        # set the default folder to the default if it's not specified
-        if folder is None:
-            folder = os.path.dirname(os.path.abspath(model_file))
-        preparedir(folder, remove_content=False)
-
-        # generate default simulation parameters
-        if sim_par_json is None:
-            sim_par = SimulationParameter()
-            sim_par.output.add_zone_energy_use()
-            sim_par.output.add_hvac_energy_use()
-            sim_par.output.add_electricity_generation()
-            sim_par.output.reporting_frequency = 'Monthly'
-        else:
-            with open(sim_par_json) as json_file:
-                data = json.load(json_file)
-            sim_par = SimulationParameter.from_dict(data)
-
-        # perform a check to be sure the EPW file is specified for sizing runs
-        def ddy_from_epw(epw_file, sim_par):
-            """Produce a DDY from an EPW file."""
-            epw_obj = EPW(epw_file)
-            des_days = [epw_obj.approximate_design_day('WinterDesignDay'),
-                        epw_obj.approximate_design_day('SummerDesignDay')]
-            sim_par.sizing_parameter.design_days = des_days
-
-        def write_sim_par(sim_par):
-            """Write simulation parameter object to a JSON."""
-            sim_par_dict = sim_par.to_dict()
-            sp_json = os.path.abspath(os.path.join(folder, 'simulation_parameter.json'))
-            with open(sp_json, 'w') as fp:
-                json.dump(sim_par_dict, fp)
-            return sp_json
-
-        if sim_par.sizing_parameter.efficiency_standard is not None:
-            assert epw_file is not None, 'An epw_file must be specified for ' \
-                'translation to OSM whenever a Simulation Parameter ' \
-                'efficiency_standard is specified.\nNo EPW was specified yet the ' \
-                'Simulation Parameter efficiency_standard is "{}".'.format(
-                    sim_par.sizing_parameter.efficiency_standard
-                )
-            epw_folder, epw_file_name = os.path.split(epw_file)
-            ddy_file = os.path.join(epw_folder, epw_file_name.replace('.epw', '.ddy'))
-            if len(sim_par.sizing_parameter.design_days) == 0 and \
-                    os.path.isfile(ddy_file):
-                try:
-                    sim_par.sizing_parameter.add_from_ddy_996_004(ddy_file)
-                except AssertionError:  # no design days within the DDY file
-                    ddy_from_epw(epw_file, sim_par)
-            elif len(sim_par.sizing_parameter.design_days) == 0:
-                ddy_from_epw(epw_file, sim_par)
-            sim_par_json = write_sim_par(sim_par)
-        elif sim_par_json is None:
-            sim_par_json = write_sim_par(sim_par)
-
-        # re-serialize the Dragonfly Model
-        model = Model.from_file(model_file)
-        model.convert_to_units('Meters')
-
-        # convert Dragonfly Model to Honeybee
-        add_plenum = not no_plenum
+        full_geometry = not multiplier
+        plenum = not no_plenum
         ceil_adjacency = not no_ceil_adjacency
-        hb_models = model.to_honeybee(
-            object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-            enforce_adj=False)
-        hb_model = hb_models[0]
-
-        # create the HBJSON for input to OpenStudio CLI
         geo_names = not geometry_ids
         res_names = not resource_ids
-        hb_model_json = _measure_compatible_model_json(
-            hb_model, folder, use_geometry_names=geo_names,
-            use_resource_names=res_names)
-
-        # Write the osw file to translate the model to osm
-        osw = to_openstudio_osw(folder, hb_model_json, sim_par_json)
-
-        # run the measure to translate the model JSON to an openstudio measure
-        osm, idf = run_osw(osw)
-        # copy the resulting files to the specified locations
-        if idf is not None and os.path.isfile(idf):
-            if osm_file is not None:
-                if not osm_file.lower().endswith('.osm'):
-                    osm_file = osm_file + '.osm'
-                shutil.copyfile(osm, osm_file)
-            if idf_file is not None:
-                if not idf_file.lower().endswith('.idf'):
-                    idf_file = idf_file + '.idf'
-                shutil.copyfile(idf, idf_file)
-            log_file.write(json.dumps([osm, idf]))
-        else:
-            raise Exception('Running OpenStudio CLI failed.')
+        model_to_osm(
+            model_file, sim_par_json, epw_file, full_geometry, plenum, ceil_adjacency,
+            folder, osm_file, idf_file, geo_names, res_names, log_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
     else:
         sys.exit(0)
+
+
+def model_to_osm(
+    model_file, sim_par_json=None, epw_file=None,
+    full_geometry=False, plenum=False, ceil_adjacency=False,
+    folder=None, osm_file=None, idf_file=None,
+    geometry_names=False, resource_names=False, log_file=None,
+    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    geometry_ids=True, resource_ids=True
+):
+    """Translate a Dragonfly Model to an OpenStudio Model.
+
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        sim_par_json: Full path to a honeybee energy SimulationParameter JSON that
+            describes all of the settings for the simulation. If None, default
+            parameters will be generated.
+        epw_file: Full path to an EPW file to be associated with the exported OSM.
+            This is typically not necessary but may be used when a sim-par-json is
+            specified that requests a HVAC sizing calculation to be run as part
+            of the translation process but no design days are inside this
+            simulation parameter.
+        full_geometry: Boolean to note if the multipliers on each Building story
+            will be passed along to the generated Honeybee Room objects or if
+            full geometry objects should be written for each story in the
+            building. (Default: False).
+        plenum: Boolean to indicate whether ceiling/floor plenums should be
+            auto-generated for the Rooms. (Default: False).
+        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories when Room2Ds perfectly match one another
+            in their floor plate. This ensures that Surface boundary conditions
+            are used instead of Adiabatic ones. Note that this input has no
+            effect when the object-per-model is Story. (Default: False).
+        folder: Folder on this computer, into which the working files, OSM and IDF
+            files will be written. If None, the files will be output in the
+            same location as the model_file.
+        osm_file: Optional path where the OSM will be copied after it is translated
+            in the folder. If None, the file will not be copied.
+        idf_file: Optional path where the IDF will be copied after it is translated
+            in the folder. If None, the file will not be copied.
+        geometry_names: Boolean to note whether a cleaned version of all geometry
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Rooms, Faces,
+            Apertures, Doors, and Shades. It will generally result in more read-able
+            names in the OSM and IDF but this means that it will not be easy to map
+            the EnergyPlus results back to the original Honeybee Model. Cases
+            of duplicate IDs resulting from non-unique names will be resolved
+            by adding integers to the ends of the new IDs that are derived from
+            the name. (Default: False).
+        resource_names: Boolean to note whether a cleaned version of all resource
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Materials,
+            Constructions, ConstructionSets, Schedules, Loads, and ProgramTypes.
+            It will generally result in more read-able names for the resources
+            in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
+            names will be resolved by adding integers to the ends of the new IDs
+            that are derived from the name. (Default: False).
+        bypass_check: Boolean to note whether the Model should be re-serialized
+            to Python and checked before it is translated to .osm. The check is
+            not needed if the model-json was exported directly from the
+            honeybee-energy Python library. (Default: False).
+        log_file: Optional log file to output the paths to the generated OSM and]
+            IDF files if they were successfully created. By default this string
+            will be returned from this method.
+    """
+    # set the default folder to the default if it's not specified
+    if folder is None:
+        folder = os.path.dirname(os.path.abspath(model_file))
+    preparedir(folder, remove_content=False)
+
+    # generate default simulation parameters
+    if sim_par_json is None:
+        sim_par = SimulationParameter()
+        sim_par.output.add_zone_energy_use()
+        sim_par.output.add_hvac_energy_use()
+        sim_par.output.add_electricity_generation()
+        sim_par.output.reporting_frequency = 'Monthly'
+    else:
+        with open(sim_par_json) as json_file:
+            data = json.load(json_file)
+        sim_par = SimulationParameter.from_dict(data)
+
+    # perform a check to be sure the EPW file is specified for sizing runs
+    def ddy_from_epw(epw_file, sim_par):
+        """Produce a DDY from an EPW file."""
+        epw_obj = EPW(epw_file)
+        des_days = [epw_obj.approximate_design_day('WinterDesignDay'),
+                    epw_obj.approximate_design_day('SummerDesignDay')]
+        sim_par.sizing_parameter.design_days = des_days
+
+    def write_sim_par(sim_par):
+        """Write simulation parameter object to a JSON."""
+        sim_par_dict = sim_par.to_dict()
+        sp_json = os.path.abspath(os.path.join(folder, 'simulation_parameter.json'))
+        with open(sp_json, 'w') as fp:
+            json.dump(sim_par_dict, fp)
+        return sp_json
+
+    if sim_par.sizing_parameter.efficiency_standard is not None:
+        assert epw_file is not None, 'An epw_file must be specified for ' \
+            'translation to OSM whenever a Simulation Parameter ' \
+            'efficiency_standard is specified.\nNo EPW was specified yet the ' \
+            'Simulation Parameter efficiency_standard is "{}".'.format(
+                sim_par.sizing_parameter.efficiency_standard
+            )
+        epw_folder, epw_file_name = os.path.split(epw_file)
+        ddy_file = os.path.join(epw_folder, epw_file_name.replace('.epw', '.ddy'))
+        if len(sim_par.sizing_parameter.design_days) == 0 and \
+                os.path.isfile(ddy_file):
+            try:
+                sim_par.sizing_parameter.add_from_ddy_996_004(ddy_file)
+            except AssertionError:  # no design days within the DDY file
+                ddy_from_epw(epw_file, sim_par)
+        elif len(sim_par.sizing_parameter.design_days) == 0:
+            ddy_from_epw(epw_file, sim_par)
+        sim_par_json = write_sim_par(sim_par)
+    elif sim_par_json is None:
+        sim_par_json = write_sim_par(sim_par)
+
+    # re-serialize the Dragonfly Model
+    model = Model.from_file(model_file)
+    model.convert_to_units('Meters')
+
+    # convert Dragonfly Model to Honeybee
+    multiplier = not full_geometry
+    hb_models = model.to_honeybee(
+        object_per_model='District', use_multiplier=multiplier,
+        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        enforce_adj=False)
+    hb_model = hb_models[0]
+
+    # create the HBJSON for input to OpenStudio CLI
+    hb_model_json = _measure_compatible_model_json(
+        hb_model, folder, use_geometry_names=geometry_names,
+        use_resource_names=resource_names)
+
+    # Write the osw file to translate the model to osm
+    osw = to_openstudio_osw(folder, hb_model_json, sim_par_json, epw_file=epw_file)
+
+    # run the measure to translate the model JSON to an openstudio measure
+    osm, idf = run_osw(osw)
+    # copy the resulting files to the specified locations
+    if idf is not None and os.path.isfile(idf):
+        if osm_file is not None:
+            if not osm_file.lower().endswith('.osm'):
+                osm_file = osm_file + '.osm'
+            shutil.copyfile(osm, osm_file)
+        if idf_file is not None:
+            if not idf_file.lower().endswith('.idf'):
+                idf_file = idf_file + '.idf'
+            shutil.copyfile(idf, idf_file)
+        if log_file is None:
+            return json.dumps([osm, idf], indent=4)
+        else:
+            log_file.write(json.dumps([osm, idf], indent=4))
+    else:
+        _parse_os_cli_failure(folder)
 
 
 @translate.command('model-to-idf')
@@ -254,10 +329,12 @@ def model_to_osm(model_file, sim_par_json, epw_file,
 @click.option('--output-file', '-f', help='Optional IDF file to output the IDF string '
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
-def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
-                 additional_str, compact_schedules, hvac_to_ideal_air,
-                 geometry_ids, resource_ids, output_file):
-    """Translate a Model JSON file to an IDF using direct-to-idf translators.
+def model_to_idf_cli(
+    model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
+    additional_str, compact_schedules, hvac_to_ideal_air,
+    geometry_ids, resource_ids, output_file
+):
+    """Translate a Dragonfly Model to an IDF using direct-to-idf translators.
 
     The resulting IDF should be simulate-able but not all Model properties might
     make it into the IDF given that the direct-to-idf translators are used.
@@ -268,60 +345,144 @@ def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjace
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
-        # check that the simulation parameters are there and load them
-        if sim_par_json is not None:
-            with open(sim_par_json) as json_file:
-                data = json.load(json_file)
-            sim_par = SimulationParameter.from_dict(data)
-        else:
-            sim_par = SimulationParameter()
-            sim_par.output.add_zone_energy_use()
-            sim_par.output.add_hvac_energy_use()
-            sim_par.output.add_electricity_generation()
-            sim_par.output.reporting_frequency = 'Monthly'
-
-        # re-serialize the Dragonfly Model
-        model = Model.from_file(model_file)
-        model.convert_to_units('Meters')
-
-        # convert Dragonfly Model to Honeybee
-        add_plenum = not no_plenum
+        full_geometry = not multiplier
+        plenum = not no_plenum
         ceil_adjacency = not no_ceil_adjacency
-        hb_models = model.to_honeybee(
-            object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-            enforce_adj=False)
-        hb_model = hb_models[0]
-
-        # reset the IDs to be derived from the display_names if requested
-        if not geometry_ids:
-            model.reset_ids()
-        if not resource_ids:
-            model.properties.energy.reset_resource_ids()
-
-        # set the schedule directory in case it is needed
-        sch_directory = None
-        if not compact_schedules:
-            sch_path = os.path.abspath(model_file) if 'stdout' in str(output_file) \
-                else os.path.abspath(str(output_file))
-            sch_directory = os.path.join(os.path.split(sch_path)[0], 'schedules')
-
-        # create the strings for simulation parameters and model
-        ver_str = energyplus_idf_version() if folders.energyplus_version \
-            is not None else ''
-        sim_par_str = sim_par.to_idf()
-        model_str = hb_model.to.idf(
-            hb_model, schedule_directory=sch_directory,
-            use_ideal_air_equivalent=hvac_to_ideal_air)
-        idf_str = '\n\n'.join([ver_str, sim_par_str, model_str, additional_str])
-
-        # write out the IDF file
-        output_file.write(idf_str)
+        csv_schedules = not compact_schedules
+        hvac_check = not hvac_to_ideal_air
+        geo_names = not geometry_ids
+        res_names = not resource_ids
+        model_to_idf(
+            model_file, sim_par_json, full_geometry, plenum, ceil_adjacency,
+            additional_str, csv_schedules,
+            hvac_check, geo_names, res_names, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}\n'.format(e))
         sys.exit(1)
     else:
         sys.exit(0)
+
+
+def model_to_idf(
+    model_file, sim_par_json=None,
+    full_geometry=False, plenum=False, ceil_adjacency=False,
+    additional_str='', csv_schedules=False, hvac_check=False,
+    geometry_names=False, resource_names=False, output_file=None,
+    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    compact_schedules=True, hvac_to_ideal_air=True, geometry_ids=True, resource_ids=True
+):
+    """Translate a Dragonfly Model to an IDF using direct-to-idf translators.
+
+    The resulting IDF should be simulate-able but not all Model properties might
+    make it into the IDF given that the direct-to-idf translators are used.
+
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        sim_par_json: Full path to a honeybee energy SimulationParameter JSON that
+            describes all of the settings for the simulation. If None, default
+            parameters will be generated.
+        full_geometry: Boolean to note if the multipliers on each Building story
+            will be passed along to the generated Honeybee Room objects or if
+            full geometry objects should be written for each story in the
+            building. (Default: False).
+        plenum: Boolean to indicate whether ceiling/floor plenums should be
+            auto-generated for the Rooms. (Default: False).
+        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories when Room2Ds perfectly match one another
+            in their floor plate. This ensures that Surface boundary conditions
+            are used instead of Adiabatic ones. Note that this input has no
+            effect when the object-per-model is Story. (Default: False).
+        additional_str: Text string for additional lines that should be added
+            to the IDF.
+        csv_schedules: Boolean to note whether any ScheduleFixedIntervals in the
+            model should be included in the IDF string as a Schedule:Compact or
+            they should be written as CSV Schedule:File and placed in a directory
+            next to the output_file. (Default: False).
+        hvac_check: Boolean to note whether any detailed HVAC system templates
+            should be converted to an equivalent IdealAirSystem upon export.
+            If hvac-check is used and the Model contains detailed systems, a
+            ValueError will be raised. (Default: False).
+        geometry_names: Boolean to note whether a cleaned version of all geometry
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Rooms, Faces,
+            Apertures, Doors, and Shades. It will generally result in more read-able
+            names in the OSM and IDF but this means that it will not be easy to map
+            the EnergyPlus results back to the original Honeybee Model. Cases
+            of duplicate IDs resulting from non-unique names will be resolved
+            by adding integers to the ends of the new IDs that are derived from
+            the name. (Default: False).
+        resource_names: Boolean to note whether a cleaned version of all resource
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Materials,
+            Constructions, ConstructionSets, Schedules, Loads, and ProgramTypes.
+            It will generally result in more read-able names for the resources
+            in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
+            names will be resolved by adding integers to the ends of the new IDs
+            that are derived from the name. (Default: False).
+        output_file: Optional IDF file to output the IDF string of the translation.
+            By default this string will be returned from this method.
+    """
+    # check that the simulation parameters are there and load them
+    if sim_par_json is not None:
+        with open(sim_par_json) as json_file:
+            data = json.load(json_file)
+        sim_par = SimulationParameter.from_dict(data)
+    else:
+        sim_par = SimulationParameter()
+        sim_par.output.add_zone_energy_use()
+        sim_par.output.add_hvac_energy_use()
+        sim_par.output.add_electricity_generation()
+        sim_par.output.reporting_frequency = 'Monthly'
+
+    # re-serialize the Dragonfly Model
+    model = Model.from_file(model_file)
+    model.convert_to_units('Meters')
+
+    # convert Dragonfly Model to Honeybee
+    multiplier = not full_geometry
+    hb_models = model.to_honeybee(
+        object_per_model='District', use_multiplier=multiplier,
+        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        enforce_adj=False)
+    hb_model = hb_models[0]
+
+    # reset the IDs to be derived from the display_names if requested
+    if geometry_names:
+        model.reset_ids()
+    if resource_names:
+        model.properties.energy.reset_resource_ids()
+
+    # set the schedule directory in case it is needed
+    sch_directory = None
+    if csv_schedules:
+        sch_path = os.path.abspath(model_file) if 'stdout' in str(output_file) \
+            else os.path.abspath(str(output_file))
+        sch_directory = os.path.join(os.path.split(sch_path)[0], 'schedules')
+
+    # create the strings for simulation parameters and model
+    ver_str = energyplus_idf_version() if folders.energyplus_version \
+        is not None else ''
+    sim_par_str = sim_par.to_idf()
+    hvac_to_ideal_air = not hvac_check
+    model_str = hb_model.to.idf(
+        hb_model, schedule_directory=sch_directory,
+        use_ideal_air_equivalent=hvac_to_ideal_air)
+    idf_str = '\n\n'.join([ver_str, sim_par_str, model_str, additional_str])
+
+    # write out the IDF file
+    if output_file is None:
+        return idf_str
+    elif isinstance(output_file, str):
+        if not os.path.isdir(os.path.dirname(output_file)):
+            os.makedirs(os.path.dirname(output_file))
+        with open(output_file, 'w') as of:
+            of.write(idf_str)
+    else:
+        if 'stdout' not in str(output_file):
+            if not os.path.isdir(os.path.dirname(output_file.name)):
+                os.makedirs(os.path.dirname(output_file.name))
+        output_file.write(idf_str)
 
 
 @translate.command('model-to-gbxml')
@@ -356,7 +517,7 @@ def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjace
               'OpenStudio simply raises an error when it encounters non-planar '
               'geometry, which would hinder the ability to save gbXML files that are '
               'to be corrected in other software.', default=True, show_default=True)
-@click.option('--minimal/--full-geometry', ' /-fg', help='Flag to note whether space '
+@click.option('--minimal/--complete-geometry', ' /-cg', help='Flag to note whether space '
               'boundaries and shell geometry should be included in the exported '
               'gbXML vs. just the minimal required non-manifold geometry.',
               default=True, show_default=True)
@@ -371,10 +532,12 @@ def model_to_idf(model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjace
 @click.option('--output-file', '-f', help='Optional gbXML file to output the string '
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
-def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
-                   osw_folder, default_subfaces, triangulate_non_planar, minimal,
-                   interior_face_type, ground_face_type, output_file):
-    """Translate a Model DFJSON to a gbXML file.
+def model_to_gbxml_cli(
+    model_file, multiplier, no_plenum, no_ceil_adjacency,
+    osw_folder, default_subfaces, triangulate_non_planar, minimal,
+    interior_face_type, ground_face_type, output_file
+):
+    """Translate a Dragonfly Model to a gbXML file.
 
     \b
     Args:
@@ -382,66 +545,299 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
-        # set the default folder if it's not specified
-        out_path = None
-        out_directory = os.path.join(
-            hb_folders.default_simulation_folder, 'temp_translate')
-        if output_file.endswith('-'):
-            f_name = os.path.basename(model_file).lower()
-            f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
-            f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
-            f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
-            out_path = os.path.join(out_directory, f_name)
-        elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
-            f_name = os.path.basename(model_file).lower()
-            f_name = f_name.replace('.gbxml', '.xml')
-            out_path = os.path.join(out_directory, f_name)
-        preparedir(out_directory)
-
-        # re-serialize the Dragonfly Model
-        model = Model.from_dfjson(model_file)
-        model.convert_to_units('Meters')
-
-        # convert Dragonfly Model to Honeybee
-        add_plenum = not no_plenum
+        full_geometry = not multiplier
+        plenum = not no_plenum
         ceil_adjacency = not no_ceil_adjacency
-        hb_models = model.to_honeybee(
-            object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-            enforce_adj=False)
-        hb_model = hb_models[0]
-
-        # create the dictionary of the HBJSON for input to OpenStudio CLI
-        tri_sub = not default_subfaces
-        hb_model_json = _measure_compatible_model_json(
-                hb_model, out_directory, simplify_window_cons=True,
-                triangulate_sub_faces=tri_sub,
-                triangulate_non_planar_orphaned=triangulate_non_planar)
-
-        # Write the osw file and translate the model to gbXML
-        out_f = out_path if output_file.endswith('-') else output_file
-        osw = to_gbxml_osw(hb_model_json, out_f, osw_folder)
-        if minimal and not (interior_face_type or ground_face_type):
-            _run_translation_osw(osw, out_path)
-        else:
-            _, idf = run_osw(osw, silent=True)
-            if idf is not None and os.path.isfile(idf):
-                if interior_face_type or ground_face_type:
-                    int_ft = interior_face_type if interior_face_type != '' else None
-                    gnd_ft = ground_face_type if ground_face_type != '' else None
-                    set_gbxml_floor_types(out_f, int_ft, gnd_ft)
-                if not minimal:
-                    add_gbxml_space_boundaries(out_f, hb_model)
-                if out_path is not None:  # load the JSON string to stdout
-                    with open(out_path) as json_file:
-                        print(json_file.read())
-            else:
-                raise Exception('Running OpenStudio CLI failed.')
+        triangulate_subfaces = not default_subfaces
+        permit_non_planar = not triangulate_non_planar
+        complete_geometry = not minimal
+        model_to_gbxml(
+            model_file, osw_folder, full_geometry, plenum, ceil_adjacency,
+            triangulate_subfaces, permit_non_planar, complete_geometry,
+            interior_face_type, ground_face_type, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
     else:
         sys.exit(0)
+
+
+def model_to_gbxml(
+    model_file, osw_folder=None, full_geometry=False, plenum=False, ceil_adjacency=False,
+    triangulate_subfaces=False, permit_non_planar=False, complete_geometry=False,
+    interior_face_type='', ground_face_type='', output_file=None,
+    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    default_subfaces=True, triangulate_non_planar=True, minimal=True,
+):
+    """Translate a Dragonfly Model to a gbXML file.
+
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        osw_folder: Folder on this computer, into which the working files will
+            be written. If None, it will be written into a temp folder in the
+            default simulation folder.
+        full_geometry: Boolean to note if the multipliers on each Building story
+            will be passed along to the generated Honeybee Room objects or if
+            full geometry objects should be written for each story in the
+            building. (Default: False).
+        plenum: Boolean to indicate whether ceiling/floor plenums should be
+            auto-generated for the Rooms. (Default: False).
+        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories when Room2Ds perfectly match one another
+            in their floor plate. This ensures that Surface boundary conditions
+            are used instead of Adiabatic ones. Note that this input has no
+            effect when the object-per-model is Story. (Default: False).
+        triangulate_subfaces: Boolean to note whether sub-faces (including
+            Apertures and Doors) should be triangulated if they have more
+            than 4 sides (True) or whether they should be left as they are (False).
+            This triangulation is necessary when exporting directly to EnergyPlus
+            since it cannot accept sub-faces with more than 4 vertices. (Default: False).
+        permit_non_planar: Boolean to note whether any non-planar orphaned geometry
+            in the model should be triangulated upon export. This can be helpful
+            because OpenStudio simply raises an error when it encounters non-planar
+            geometry, which would hinder the ability to save gbXML files that are
+            to be corrected in other software. (Default: False).
+        complete_geometry: Boolean to note whether space boundaries and shell geometry
+            should be included in the exported gbXML vs. just the minimal required
+            non-manifold geometry. (Default: False).
+        interior_face_type: Text string for the type to be used for all interior
+            floor faces. If unspecified, the interior types will be left as they are.
+            Choose from: InteriorFloor, Ceiling.
+        ground_face_type: Text string for the type to be used for all ground-contact
+            floor faces. If unspecified, the ground types will be left as they are.
+            Choose from: UndergroundSlab, SlabOnGrade, RaisedFloor.
+        bypass_check: Boolean to note whether the Model should be re-serialized
+            to Python and checked before it is translated to .osm. The check is
+            not needed if the model-json was exported directly from the
+            honeybee-energy Python library. (Default: False).
+        output_file: Optional gbXML file to output the string of the translation.
+            By default it will be returned from this method.
+    """
+    # set the default folder if it's not specified
+    out_path = None
+    out_directory = os.path.join(
+        hb_folders.default_simulation_folder, 'temp_translate')
+    if output_file.endswith('-'):
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
+        f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
+        f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.gbxml', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    preparedir(out_directory)
+
+    # re-serialize the Dragonfly Model
+    model = Model.from_dfjson(model_file)
+    model.convert_to_units('Meters')
+
+    # convert Dragonfly Model to Honeybee
+    multiplier = not full_geometry
+    hb_models = model.to_honeybee(
+        object_per_model='District', use_multiplier=multiplier,
+        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        enforce_adj=False)
+    hb_model = hb_models[0]
+
+    # create the dictionary of the HBJSON for input to OpenStudio CLI
+    tri_non_planar = not permit_non_planar
+    hb_model_json = _measure_compatible_model_json(
+            hb_model, out_directory, simplify_window_cons=True,
+            triangulate_sub_faces=triangulate_subfaces,
+            triangulate_non_planar_orphaned=tri_non_planar)
+
+    # Write the osw file and translate the model to gbXML
+    out_f = out_path if output_file is None or output_file.endswith('-') else output_file
+    osw = to_gbxml_osw(hb_model_json, out_f, osw_folder)
+    if not complete_geometry and not (interior_face_type or ground_face_type):
+        file_contents = _run_translation_osw(osw, out_path)
+    else:
+        _, idf = run_osw(osw, silent=True)
+        if idf is not None and os.path.isfile(idf):
+            if interior_face_type or ground_face_type:
+                int_ft = interior_face_type if interior_face_type != '' else None
+                gnd_ft = ground_face_type if ground_face_type != '' else None
+                set_gbxml_floor_types(out_f, int_ft, gnd_ft)
+            if complete_geometry:
+                add_gbxml_space_boundaries(out_f, hb_model)
+            if out_path is not None:  # load the JSON string to stdout
+                with open(out_path) as json_file:
+                    file_contents = json_file.read()
+        else:
+            _parse_os_cli_failure(osw_folder)
+
+    # return the file contents if requested
+    if file_contents is not None:
+        if output_file is None:
+            return file_contents
+        else:
+            print(file_contents)
+
+
+@translate.command('model-to-trace-gbxml')
+@click.argument('model-file', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
+              'multipliers on each Building story will be passed along to the '
+              'generated Honeybee Room objects or if full geometry objects should be '
+              'written for each story in the building.', default=True, show_default=True)
+@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
+              'ceiling/floor plenums should be auto-generated for the Rooms.',
+              default=True, show_default=True)
+@click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
+              'whether adjacencies should be solved between interior stories when '
+              'Room2Ds perfectly match one another in their floor plate. This ensures '
+              'that Surface boundary conditions are used instead of Adiabatic ones. '
+              'Note that this input has no effect when the object-per-model is Story.',
+              default=True, show_default=True)
+@click.option('--single-window/--detailed-windows', ' /-fg', help='Flag to note '
+              'whether all windows within walls should be converted to a single '
+              'window with an area that matches the original geometry.',
+              default=True, show_default=True)
+@click.option('--rect-sub-distance', '-r', help='A number for the resolution at which '
+              'non-rectangular Apertures will be subdivided into smaller rectangular '
+              'units. This is required as TRACE 3D plus cannot model non-rectangular '
+              'geometries. This can include the units of the distance (eg. 0.5ft) or, '
+              'if no units are provided, the value will be interpreted in the '
+              'honeybee model units.',
+              type=str, default='0.15m', show_default=True)
+@click.option('--frame-merge-distance', '-m', help='A number for the maximum distance '
+              'between non-rectangular Apertures at which point the Apertures will be '
+              'merged into a single rectangular geometry. This is often helpful when '
+              'there are several triangular Apertures that together make a rectangle '
+              'when they are merged across their frames. This can include the units '
+              'of the distance (eg. 0.5ft) or, if no units are provided, the value '
+              'will be interpreted in the honeybee model units',
+              type=str, default='0.2m', show_default=True)
+@click.option('--osw-folder', '-osw', help='Folder on this computer, into which the '
+              'working files will be written. If None, it will be written into a '
+              'temp folder in the default simulation folder.', default=None,
+              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--output-file', '-f', help='Optional gbXML file to output the string '
+              'of the translation. By default it printed out to stdout.', default='-',
+              type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
+def model_to_trace_gbxml_cli(
+    model_file, multiplier, no_plenum, no_ceil_adjacency,
+    single_window, rect_sub_distance, frame_merge_distance,
+    osw_folder, output_file
+):
+    """Translate a Dragonfly Model to a TRACE-compatible gbXML file.
+
+    \b
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+    """
+    try:
+        full_geometry = not multiplier
+        plenum = not no_plenum
+        ceil_adjacency = not no_ceil_adjacency
+        detailed_windows = not single_window
+        model_to_trace_gbxml(
+            model_file, full_geometry, plenum, ceil_adjacency, detailed_windows,
+            rect_sub_distance, frame_merge_distance, osw_folder, output_file)
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def model_to_trace_gbxml(
+    model_file, full_geometry=False, plenum=False, ceil_adjacency=False,
+    detailed_windows=False, rect_sub_distance='0.15m',
+    frame_merge_distance='0.2m', osw_folder=None, output_file=None,
+    multiplier=True, no_plenum=True, no_ceil_adjacency=True, single_window=True
+):
+    """Translate a Dragonfly Model to a gbXML file that is compatible with TRACE.
+
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        full_geometry: Boolean to note if the multipliers on each Building story
+            will be passed along to the generated Honeybee Room objects or if
+            full geometry objects should be written for each story in the
+            building. (Default: False).
+        plenum: Boolean to indicate whether ceiling/floor plenums should be
+            auto-generated for the Rooms. (Default: False).
+        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories when Room2Ds perfectly match one another
+            in their floor plate. This ensures that Surface boundary conditions
+            are used instead of Adiabatic ones. Note that this input has no
+            effect when the object-per-model is Story. (Default: False).
+        detailed_windows: A boolean for whether all windows within walls should be
+            left as they are (True) or converted to a single window with an area
+            that matches the original geometry (False). (Default: False).
+        rect_sub_distance: A number for the resolution at which non-rectangular
+            Apertures will be subdivided into smaller rectangular units. This is
+            required as TRACE 3D plus cannot model non-rectangular geometries.
+            This can include the units of the distance (eg. 0.5ft) or, if no units
+            are provided, the value will be interpreted in the honeybee model
+            units. (Default: 0.15m).
+        frame_merge_distance: A number for the maximum distance between non-rectangular
+            Apertures at which point the Apertures will be merged into a single
+            rectangular geometry. This is often helpful when there are several
+            triangular Apertures that together make a rectangle when they are
+            merged across their frames. This can include the units of the
+            distance (eg. 0.5ft) or, if no units are provided, the value will
+            be interpreted in the honeybee model units. (Default: 0.2m).
+        osw_folder: Folder on this computer, into which the working files will
+            be written. If None, it will be written into a temp folder in the
+            default simulation folder.
+        output_file: Optional gbXML file to output the string of the translation.
+            By default it will be returned from this method.
+    """
+    # set the default folder if it's not specified
+    out_path = None
+    out_directory = os.path.join(
+        hb_folders.default_simulation_folder, 'temp_translate')
+    if output_file.endswith('-'):
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
+        f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
+        f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.gbxml', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    preparedir(out_directory)
+
+    # re-serialize the Dragonfly Model
+    model = Model.from_dfjson(model_file)
+    model.convert_to_units('Meters')
+
+    # convert Dragonfly Model to Honeybee
+    multiplier = not full_geometry
+    hb_models = model.to_honeybee(
+        object_per_model='District', use_multiplier=multiplier,
+        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        enforce_adj=False)
+    hb_model = hb_models[0]
+    hb_model_file = os.path.join(out_directory)
+    with open(hb_model_file, 'w', encoding='utf-8') as hmf:
+        json.dump(hb_model.to_dict(), hmf, ensure_ascii=False)
+
+    # run the Model re-serialization and check if specified
+    single_window = not detailed_windows
+    hb_model_file = trace_compatible_model_json(
+        hb_model_file, out_directory, single_window,
+        rect_sub_distance, frame_merge_distance)
+
+    # Write the osw file and translate the model to gbXML
+    out_f = out_path if output_file is None or output_file.endswith('-') else output_file
+    osw = to_gbxml_osw(model_file, out_f, osw_folder)
+    file_contents = _run_translation_osw(osw, out_path)
+
+    # return the file contents if requested
+    if file_contents is not None:
+        if output_file is None:
+            return file_contents
+        else:
+            print(file_contents)
 
 
 @translate.command('model-to-sdd')
@@ -485,9 +881,11 @@ def model_to_gbxml(model_file, multiplier, no_plenum, no_ceil_adjacency,
 @click.option('--output-file', '-f', help='Optional gbXML file to output the string '
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
-def model_to_sdd(model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folder,
-                 geometry_ids, resource_ids, output_file):
-    """Translate a Model DFJSON to a CBECC SDD file.
+def model_to_sdd_cli(
+    model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folder,
+    geometry_ids, resource_ids, output_file
+):
+    """Translate a Dragonfly Model to a CBECC SDD file.
 
     \b
     Args:
@@ -495,52 +893,111 @@ def model_to_sdd(model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folde
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
     """
     try:
-        # set the default folder if it's not specified
-        out_path = None
-        out_directory = os.path.join(
-            hb_folders.default_simulation_folder, 'temp_translate')
-        if output_file.endswith('-'):
-            f_name = os.path.basename(model_file).lower()
-            f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
-            f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
-            f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
-            out_path = os.path.join(out_directory, f_name)
-        elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
-            f_name = os.path.basename(model_file).lower()
-            f_name = f_name.replace('.gbxml', '.xml')
-            out_path = os.path.join(out_directory, f_name)
-        preparedir(out_directory)
-
-        # re-serialize the Dragonfly Model
-        model = Model.from_dfjson(model_file)
-        model.convert_to_units('Meters')
-
-        # convert Dragonfly Model to Honeybee
-        add_plenum = not no_plenum
+        full_geometry = not multiplier
+        plenum = not no_plenum
         ceil_adjacency = not no_ceil_adjacency
-        hb_models = model.to_honeybee(
-            object_per_model='District', use_multiplier=multiplier,
-            add_plenum=add_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-            enforce_adj=False)
-        hb_model = hb_models[0]
-
-        # create the dictionary of the HBJSON for input to OpenStudio CLI
         geo_names = not geometry_ids
         res_names = not resource_ids
-        hb_model_json = _measure_compatible_model_json(
-            hb_model, out_directory, simplify_window_cons=True,
-            triangulate_sub_faces=True, use_geometry_names=geo_names,
-            use_resource_names=res_names)
-
-        # Write the osw file and translate the model to SDD
-        out_f = out_path if output_file.endswith('-') else output_file
-        osw = to_sdd_osw(hb_model_json, out_f, osw_folder)
-        _run_translation_osw(osw, out_path)
+        model_to_sdd(
+            model_file, full_geometry, plenum, ceil_adjacency,
+            osw_folder, geo_names, res_names, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
     else:
         sys.exit(0)
+
+
+def model_to_sdd(
+    model_file, full_geometry=False, plenum=False, ceil_adjacency=False,
+    osw_folder=None, geometry_names=False, resource_names=False, output_file=None,
+    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    geometry_ids=True, resource_ids=True
+):
+    """Translate a Dragonfly Model to a CBECC SDD file.
+
+    Args:
+        model_file: Path to either a DFJSON or DFpkl file. This can also be a
+            HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        full_geometry: Boolean to note if the multipliers on each Building story
+            will be passed along to the generated Honeybee Room objects or if
+            full geometry objects should be written for each story in the
+            building. (Default: False).
+        plenum: Boolean to indicate whether ceiling/floor plenums should be
+            auto-generated for the Rooms. (Default: False).
+        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories when Room2Ds perfectly match one another
+            in their floor plate. This ensures that Surface boundary conditions
+            are used instead of Adiabatic ones. Note that this input has no
+            effect when the object-per-model is Story. (Default: False).
+        osw_folder: Folder on this computer, into which the working files will
+            be written. If None, it will be written into a temp folder in the
+            default simulation folder.
+        geometry_names: Boolean to note whether a cleaned version of all geometry
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Rooms, Faces,
+            Apertures, Doors, and Shades. It will generally result in more read-able
+            names in the OSM and IDF but this means that it will not be easy to map
+            the EnergyPlus results back to the original Honeybee Model. Cases
+            of duplicate IDs resulting from non-unique names will be resolved
+            by adding integers to the ends of the new IDs that are derived from
+            the name. (Default: False).
+        resource_names: Boolean to note whether a cleaned version of all resource
+            display names should be used instead of identifiers when translating
+            the Model to OSM and IDF. Using this flag will affect all Materials,
+            Constructions, ConstructionSets, Schedules, Loads, and ProgramTypes.
+            It will generally result in more read-able names for the resources
+            in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
+            names will be resolved by adding integers to the ends of the new IDs
+            that are derived from the name. (Default: False).
+        output_file: Optional SDD file to output the string of the translation.
+            By default it will be returned from this method.
+    """
+    # set the default folder if it's not specified
+    out_path = None
+    out_directory = os.path.join(
+        hb_folders.default_simulation_folder, 'temp_translate')
+    if output_file.endswith('-'):
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
+        f_name = f_name.replace('.dfplk', '.xml').replace('.pkl', '.xml')
+        f_name = f_name.replace('.hbjson', '.xml').replace('.hbpkl', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    elif output_file.endswith('.gbxml'):  # avoid OpenStudio complaining about .gbxml
+        f_name = os.path.basename(model_file).lower()
+        f_name = f_name.replace('.gbxml', '.xml')
+        out_path = os.path.join(out_directory, f_name)
+    preparedir(out_directory)
+
+    # re-serialize the Dragonfly Model
+    model = Model.from_dfjson(model_file)
+    model.convert_to_units('Meters')
+
+    # convert Dragonfly Model to Honeybee
+    multiplier = not full_geometry
+    hb_models = model.to_honeybee(
+        object_per_model='District', use_multiplier=multiplier,
+        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        enforce_adj=False)
+    hb_model = hb_models[0]
+
+    # create the dictionary of the HBJSON for input to OpenStudio CLI
+    hb_model_json = _measure_compatible_model_json(
+        hb_model, out_directory, simplify_window_cons=True,
+        triangulate_sub_faces=True, use_geometry_names=geometry_names,
+        use_resource_names=resource_names)
+
+    # Write the osw file and translate the model to SDD
+    out_f = out_path if output_file.endswith('-') else output_file
+    osw = to_sdd_osw(hb_model_json, out_f, osw_folder)
+    file_contents = _run_translation_osw(osw, out_path)
+
+    # return the file contents if requested
+    if file_contents is not None:
+        if output_file is None:
+            return file_contents
+        else:
+            print(file_contents)
 
 
 def _run_translation_osw(osw, out_path):
