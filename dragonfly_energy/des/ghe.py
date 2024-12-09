@@ -1,12 +1,16 @@
 # coding=utf-8
 """Ground Heat Exchanger (GHE) in a district thermal system."""
-from .._base import _GeometryBase
+import math
+import json
 
-from ladybug_geometry.geometry2d import Polygon2D
+from ladybug_geometry.geometry2d import Vector2D, Point2D, Polygon2D
 from ladybug_geometry.geometry3d import Point3D, Vector3D, Plane, Face3D
 from honeybee.typing import valid_string, float_positive, float_in_range, int_in_range
+from honeybee.units import conversion_factor_to_meters
 from honeybee.altnumber import autocalculate
 from dragonfly.projection import polygon_to_lon_lat
+
+from .._base import _GeometryBase
 
 
 class GroundHeatExchanger(_GeometryBase):
@@ -26,6 +30,37 @@ class GroundHeatExchanger(_GeometryBase):
         * boundary_2d
         * holes_2d
     """
+    # a list of GHE properties that are needed to represent the GHE in EnergyPlus
+    PROPERTY_NAMES = (
+        'Borehole Length (m)',
+        'Borehole Radius (m)',
+        'Design Flow Rate (m3/s)',
+        'Ground Temperature (C)',
+        'Ground Conductivity (W/m-K)',
+        'Ground Heat Capacity (J/m3-K)',
+        'Grout Conductivity (W/m-K)',
+        'Number of Boreholes',
+        'Pipe Outer Diameter (m)',
+        'Pipe Conductivity (W/m-K)',
+        'Pipe Thickness (m)',
+        'U Tube Distance (m)'
+    )
+    # a list of corresponding fields in the GHEDesigner summary JSON
+    PROPERTY_PATHS = (
+        ('ghe_system', 'active_borehole_length', 'value'),
+        ('ghe_system', 'borehole_diameter', 'value'),
+        ('ghe_system', 'fluid_mass_flow_rate_per_borehole', 'value'),
+        ('ghe_system', 'soil_undisturbed_ground_temp', 'value'),
+        ('ghe_system', 'soil_thermal_conductivity', 'value'),
+        ('ghe_system', 'soil_volumetric_heat_capacity', 'value'),
+        ('ghe_system', 'grout_thermal_conductivity', 'value'),
+        ('ghe_system', 'total_drilling', 'value'),
+        ('ghe_system', 'pipe_geometry', 'pipe_outer_diameter', 'value'),
+        ('ghe_system', 'pipe_thermal_conductivity', 'value'),
+        ('ghe_system', 'pipe_geometry', 'pipe_inner_diameter', 'value'),
+        ('ghe_system', 'shank_spacing', 'value')
+    )
+
     __slots__ = ()
 
     def __init__(self, identifier, geometry):
@@ -149,6 +184,145 @@ class GroundHeatExchanger(_GeometryBase):
                 'coordinates': coords
             }
         }
+
+    def load_boreholes(self, borehole_file, units='Meters', ortho_rotation=False):
+        """Load borehole positions for this GHE from a borehole file made by GHEDesigner.
+
+        Args:
+            borehole_file: Full path to a BoreFieldData.csv produced by GHEDesigner
+                from this GroundHeatExchanger object.
+            units: The units system in which the geometry of this GroundHeatExchanger
+                object exists. This is used to convert between GHEDesigner's
+                native units of Meters over to the units system of this
+                GroundHeatExchanger object. (Default: Meters).
+            ortho_rotation: A boolean to note whether this GroundHeatExchanger
+                geometry was rotated to have it's right-angles align with the
+                coordinate system of GHEDesigner. This should be False when this
+                GroundHeatExchanger's geometry was directly translated to
+                GHEDesigner and should be True if the geometry was converted
+                to GeoJSON and then translated to a GeoJSON by the ThermalNetwork
+                package. (Default: False).
+
+        Returns:
+            A list of Point2D for the position of each borehole in the ground heat
+            exchanger. These points should all be contained within the geometry
+            of this object.
+        """
+        # load the borehole positions from the file
+        with open(borehole_file, 'r') as bf:
+            borehole_data = bf.readlines()
+
+        # create the Point2D objects and format them for the units system
+        scale_fac = 1.0 / conversion_factor_to_meters(units)
+        bound_poly = self.boundary_2d
+        min_pt = bound_poly.min
+        ghe_boreholes = []
+        for pt in borehole_data[1:]:
+            b_pt = Point2D(*(float(c) for c in pt.split(',')))
+            b_pt = b_pt.scale(scale_fac)
+            ghe_boreholes.append(b_pt)
+        move_vec_2d = Vector2D(min_pt.x, min_pt.y)
+        ghe_boreholes = [pt.move(move_vec_2d) for pt in ghe_boreholes]
+
+        # sense if the geometry has a right angle and, if so, rotate it
+        if ortho_rotation:
+            if bound_poly.is_clockwise:
+                bound_poly = bound_poly.reverse()
+            # get the point of the polygon representing the lower left corner
+            pt_dists = []
+            for i, point in enumerate(bound_poly):
+                pt_dists.append((min_pt.distance_to_point(point), i))
+            sorted_i = [x for _, x in sorted(pt_dists, key=lambda pair: pair[0])]
+            origin_i = sorted_i[0]
+            origin = bound_poly[origin_i]
+            prev_pt = bound_poly[origin_i - 1]
+            next_pt = bound_poly[origin_i + 1] \
+                if origin_i < len(bound_poly) - 1 else bound_poly[0]
+            # check if there is a need to rotate the polygon
+            if not (origin.x == min_pt.x and origin.y == min_pt.y):
+                vec_1, vec_2 = next_pt - origin, prev_pt - origin
+                if 89 < math.degrees(vec_1.angle(vec_2)) < 91:
+                    # rotate all of the boreholes
+                    y_axis = Vector2D(0, 1)
+                    rot_ang = math.degrees(vec_2.angle_counterclockwise(y_axis))
+                    rot_ang = rot_ang - 360 if rot_ang > 180 else rot_ang
+                    ghe_boreholes = [pt.rotate(math.radians(-rot_ang), origin)
+                                     for pt in ghe_boreholes]
+        return ghe_boreholes
+
+    @staticmethod
+    def load_g_function(g_func_file):
+        """Load the G-Function for this GHE from a G function file made by GHEDesigner.
+
+        Args:
+            g_func_file: Full path to a Gfunction.csv produced by GHEDesigner
+                from this GroundHeatExchanger object.
+
+        Returns:
+            A list of lists of G-function coefficients that describe the response
+            of the ground to the input loads. Each pair of factors represents
+            a point on the G-function. Flattening this list of lists yields
+            properties that can be plugged into the EnergyPlus G-function object.
+        """
+        with open(g_func_file, 'r') as gf:
+            g_function = gf.readlines()
+        g_function = [[float(v) for v in line.split(',')[:2]] for line in g_function[1:]]
+        return g_function
+
+    @staticmethod
+    def load_energyplus_properties(summary_file):
+        """Load E+ properties for this GHE from a summary file made by GHEDesigner.
+
+        Args:
+            summary_file: Full path to a SimulationSummary.json produced by GHEDesigner
+                from this GroundHeatExchanger object.
+
+        Returns:
+            A list of properties of the ground heat exchanger that are needed to
+            simulate it in EnergyPlus. These values output here correspond to the
+            PROPERTY_NAMES on this object.
+        """
+        with open(summary_file, 'r') as sf:
+            summary_data = json.load(sf)
+        properties = []
+        zp = zip(GroundHeatExchanger.PROPERTY_NAMES, GroundHeatExchanger.PROPERTY_PATHS)
+        for p_name, p_path in zp:
+            val = summary_data[p_path[0]]
+            for key in p_path[1:]:
+                val = val[key]
+            if '(J/m3-K)' in p_name:
+                val = val * 0.001
+            if 'Borehole Radius' in p_name:
+                val = val * 0.5
+            if 'Number of Boreholes' in p_name:
+                val = int(val / properties[0])
+            properties.append(val)
+        properties[-2] = properties[-4] - properties[-2]  # pipe thickness from diameter
+        # compute total system flow rate from per-borehole rate
+        density = summary_data['ghe_system']['fluid_density']['value']
+        properties[2] = (properties[2] * properties[7]) / density
+        return properties
+
+    @staticmethod
+    def load_monthly_temperatures(summary_file):
+        """Load ground temperatures for this GHE from a summary file made by GHEDesigner.
+
+        Args:
+            summary_file: Full path to a SimulationSummary.json produced by GHEDesigner
+                from this GroundHeatExchanger object.
+
+        Returns:
+            A list of ground temperatures in Celsius with one value for each month
+            of the period over which the GHEDesigner simulation was run (typically
+            20 years). This can be used to check the drift in the ground temperature
+            over long periods of time.
+        """
+        with open(summary_file, 'r') as sf:
+            sum_data = json.load(sf)
+        temperatures = []
+        for month_data in sum_data['simulation_results']['monthly_temp_summary']['data']:
+            temperatures.append(month_data[1])
+        return temperatures
 
     def __copy__(self):
         new_ghe = GroundHeatExchanger(self.identifier, self.geometry)
