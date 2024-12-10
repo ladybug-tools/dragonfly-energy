@@ -3,6 +3,11 @@
 import os
 import json
 
+from ladybug.header import Header
+from ladybug.datacollection import HourlyContinuousCollection
+from ladybug.datatype.power import Power
+from ladybug.datatype.time import Time
+
 from honeybee_energy.config import folders
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
@@ -10,7 +15,6 @@ from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.hvac import HVAC_TYPES_DICT
 from honeybee_energy.shw import SHWSystem
-
 from honeybee_energy.lib.constructionsets import generic_construction_set, \
     construction_set_by_identifier
 from honeybee_energy.lib.programtypes import building_program_type_by_identifier
@@ -30,6 +34,10 @@ class BuildingEnergyProperties(object):
     Properties:
         * host
         * construction_set
+        * des_cooling_load
+        * des_heating_load
+        * des_hot_water_load
+        * has_des_loads
     """
     _HVAC_REGISTRY = None
     _HVAC_TYPES_DICT = HVAC_TYPES_DICT
@@ -43,12 +51,18 @@ class BuildingEnergyProperties(object):
         '90.1-2016': ('2016', 'ASHRAE_2016'),
         '90.1-2019': ('2019', 'ASHRAE_2019')
     }
-    __slots__ = ('_host', '_construction_set')
+    __slots__ = (
+        '_host', '_construction_set',
+        '_des_cooling_load', '_des_heating_load', '_des_hot_water_load'
+    )
 
     def __init__(self, host, construction_set=None):
         """Initialize Building energy properties."""
         self._host = host
         self.construction_set = construction_set
+        self._des_cooling_load = None  # can be set later
+        self._des_heating_load = None  # can be set later
+        self._des_hot_water_load = None  # can be set later
 
     @property
     def host(self):
@@ -73,6 +87,57 @@ class BuildingEnergyProperties(object):
                 'Expected ConstructionSet. Got {}'.format(type(value))
             value.lock()   # lock in case construction set has multiple references
         self._construction_set = value
+
+    @property
+    def des_cooling_load(self):
+        """Get or set an optional data collection for building cooling loads for a DES.
+
+        Note that any data collection input here must be an HourlyContinuousCollection,
+        it must be annual, and it must have a data type of Power in Watts.
+        """
+        return self._des_cooling_load
+
+    @des_cooling_load.setter
+    def des_cooling_load(self, value):
+        if value is not None:
+            value = self._check_data_coll(value, 'DES Cooling')
+        self._des_cooling_load = value
+
+    @property
+    def des_heating_load(self):
+        """Get or set an optional data collection for building heating loads for a DES.
+
+        Note that any data collection input here must be an HourlyContinuousCollection,
+        it must be annual, and it must have a data type of Power in Watts.
+        """
+        return self._des_heating_load
+
+    @des_heating_load.setter
+    def des_heating_load(self, value):
+        if value is not None:
+            value = self._check_data_coll(value, 'DES Heating')
+        self._des_heating_load = value
+
+    @property
+    def des_hot_water_load(self):
+        """Get or set an optional data collection for building hot water loads for a DES.
+
+        Note that any data collection input here must be an HourlyContinuousCollection,
+        it must be annual, and it must have a data type of Power in Watts.
+        """
+        return self._des_hot_water_load
+
+    @des_hot_water_load.setter
+    def des_hot_water_load(self, value):
+        if value is not None:
+            value = self._check_data_coll(value, 'DES Hot Water')
+        self._des_hot_water_load = value
+
+    @property
+    def has_des_loads(self):
+        """Get a boolean for whether this Building has DES loads assigned to it."""
+        return self._des_cooling_load is not None or self._des_heating_load is not None \
+            or self._des_hot_water_load is not None
 
     def averaged_program_type(self, identifier=None, timestep_resolution=1):
         """Get a ProgramType that is averaged across all of the children Room2Ds.
@@ -251,7 +316,15 @@ class BuildingEnergyProperties(object):
         if 'construction_set' in data and data['construction_set'] is not None:
             new_prop.construction_set = \
                 ConstructionSet.from_dict(data['construction_set'])
-
+        if 'des_cooling_load' in data and data['des_cooling_load'] is not None:
+            new_prop.des_cooling_load = \
+                HourlyContinuousCollection.from_dict(data['des_cooling_load'])
+        if 'des_heating_load' in data and data['des_heating_load'] is not None:
+            new_prop.des_heating_load = \
+                HourlyContinuousCollection.from_dict(data['des_heating_load'])
+        if 'des_hot_water_load' in data and data['des_hot_water_load'] is not None:
+            new_prop.des_heating_load = \
+                HourlyContinuousCollection.from_dict(data['des_hot_water_load'])
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets):
@@ -266,26 +339,18 @@ class BuildingEnergyProperties(object):
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
             self.construction_set = construction_sets[abridged_data['construction_set']]
-
-    def to_dict(self, abridged=False):
-        """Return Building energy properties as a dictionary.
-
-        Args:
-            abridged: Boolean for whether the full dictionary of the Building should
-                be written (False) or just the identifier of the the individual
-                properties (True). Default: False.
-        """
-        base = {'energy': {}}
-        base['energy']['type'] = 'BuildingEnergyProperties' if not \
-            abridged else 'BuildingEnergyPropertiesAbridged'
-
-        # write the ConstructionSet into the dictionary
-        if self._construction_set is not None:
-            base['energy']['construction_set'] = \
-                self._construction_set.identifier if abridged else \
-                self._construction_set.to_dict()
-
-        return base
+        if 'des_cooling_load' in abridged_data and \
+                abridged_data['des_cooling_load'] is not None:
+            self.des_cooling_load = \
+                HourlyContinuousCollection.from_dict(abridged_data['des_cooling_load'])
+        if 'des_heating_load' in abridged_data and \
+                abridged_data['des_heating_load'] is not None:
+            self.des_heating_load = \
+                HourlyContinuousCollection.from_dict(abridged_data['des_heating_load'])
+        if 'des_hot_water_load' in abridged_data and \
+                abridged_data['des_hot_water_load'] is not None:
+            self.des_heating_load = \
+                HourlyContinuousCollection.from_dict(abridged_data['des_hot_water_load'])
 
     def apply_properties_from_geojson_dict(self, data):
         """Apply properties from a geoJSON dictionary.
@@ -322,6 +387,71 @@ class BuildingEnergyProperties(object):
             if hvac_instance is not None:
                 self.set_all_room_2d_hvac(hvac_instance, False)
 
+    def to_dict(self, abridged=False):
+        """Return Building energy properties as a dictionary.
+
+        Args:
+            abridged: Boolean for whether the full dictionary of the Building should
+                be written (False) or just the identifier of the the individual
+                properties (True). Default: False.
+        """
+        base = {'energy': {}}
+        base['energy']['type'] = 'BuildingEnergyProperties' if not \
+            abridged else 'BuildingEnergyPropertiesAbridged'
+
+        # write the properties into the dictionary
+        if self._construction_set is not None:
+            base['energy']['construction_set'] = \
+                self._construction_set.identifier if abridged else \
+                self._construction_set.to_dict()
+        if self._des_cooling_load is not None:
+            base['energy']['des_cooling_load'] = self._des_cooling_load.to_dict()
+        if self._des_heating_load is not None:
+            base['energy']['des_heating_load'] = self._des_heating_load.to_dict()
+        if self._des_hot_water_load is not None:
+            base['energy']['des_hot_water_load'] = self._des_hot_water_load.to_dict()
+
+        return base
+
+    def to_building_load_csv(self):
+        """Get a CSV file string of building loads for DES simulation."""
+        time_col, cool, heat, water = self._building_loads()
+        total = cool + heat
+        header = (
+            'SecondsFromStart',
+            'TotalSensibleLoad',
+            'TotalCoolingSensibleLoad',
+            'TotalHeatingSensibleLoad',
+            'TotalWaterHeating'
+        )
+        file_lines = [','.join(header)]
+        for s, t, c, h, hw in zip(time_col, total, cool, heat, water):
+            text_vals = [str(v) for v in (s, t, c, h, hw)]
+            file_lines.append(','.join(text_vals))
+        return '\n'.join(file_lines)
+
+    def to_building_load_mos(self):
+        """Get a MOS file string of building loads for DES simulation."""
+        time_col, cool, heat, water = self._building_loads()
+        file_lines = [
+            '#1',
+            '#Exported loads from Dragonfly',
+            '\n',
+            '#First column: Seconds in the year (loads are hourly)',
+            '#Second column: cooling loads in Watts (as negative numbers).',
+            '#Third column: space heating loads in Watts',
+            '#Fourth column: water heating loads in Watts',
+            '\n'
+        ]
+        file_lines.append('#Peak space cooling load = {} Watts'.format(cool.min))
+        file_lines.append('#Peak space heating load = {} Watts'.format(cool.max))
+        file_lines.append('#Peak water heating load = {} Watts'.format(water.max))
+        file_lines.append('double tab1({},4)'.format(len(time_col)))
+        for s, c, h, hw in zip(time_col, cool, heat, water):
+            text_vals = [str(v) for v in (s, c, h, hw)]
+            file_lines.append(';'.join(text_vals))
+        return '\n'.join(file_lines)
+
     def duplicate(self, new_host=None):
         """Get a copy of this object.
 
@@ -329,7 +459,11 @@ class BuildingEnergyProperties(object):
             If None, the properties will be duplicated with the same host.
         """
         _host = new_host or self._host
-        return BuildingEnergyProperties(_host, self._construction_set)
+        new_prop = BuildingEnergyProperties(_host, self._construction_set)
+        new_prop._des_cooling_load = self._des_cooling_load
+        new_prop._des_heating_load = self._des_heating_load
+        new_prop._des_hot_water_load = self._des_hot_water_load
+        return new_prop
 
     def _hvac_from_long_name(self, hvac_long_name, vintage='ASHRAE_2013'):
         """Get an HVAC class instance from it's long name (as found in a geoJSON)."""
@@ -355,6 +489,52 @@ class BuildingEnergyProperties(object):
             else:  # assume it is an HVAC template
                 hvac_id = '{} {}'.format(self.host.identifier, hvac_reg[hvac_long_name])
                 return hvac_class(hvac_id, vintage, hvac_reg[hvac_long_name])
+
+    def _building_loads(self):
+        """Get data collections for cooling, heating, and hot water."""
+        assert self.has_des_loads, 'Building "{}" has no building loads assigned ' \
+            'to it for DES simulation.'.format(self.host.display_name)
+        base_col = self._base_load_collection()
+        a_per = base_col.header.analysis_period
+        def_vals = [0] * len(base_col)
+        def_col = HourlyContinuousCollection(Header(Power(), 'W', a_per), def_vals)
+        cool = self._des_cooling_load if self._des_cooling_load is not None else def_col
+        heat = self._des_heating_load if self._des_heating_load is not None else def_col
+        water = self._des_hot_water_load \
+            if self._des_hot_water_load is not None else def_col
+        # negate cooling as DES simulation needs it that way
+        neg_cool_vals = []
+        for val in cool.values:
+            v = -val if val != 0 else val
+            neg_cool_vals.append(v)
+        cool.values = neg_cool_vals
+        # make a collection for time in seconds
+        sec_step = int(3600.0 / a_per.timestep)
+        time_vals = list(range(sec_step, sec_step * (len(base_col) + 1), sec_step))
+        time_col = HourlyContinuousCollection(Header(Time(), 'sec', a_per), time_vals)
+        return time_col, cool, heat, water
+
+    def _base_load_collection(self):
+        """Get a data collection to serve as the basis for writing DES loads."""
+        if self._des_cooling_load is not None:
+            return self._des_cooling_load
+        if self._des_heating_load is not None:
+            return self._des_heating_load
+        if self._des_heating_load is not None:
+            return self._des_hot_water_load
+
+    @staticmethod
+    def _check_data_coll(value, name):
+        """Check the data type and units of a Data Collection."""
+        assert isinstance(value, HourlyContinuousCollection), 'Expected ' \
+            'HourlyContinuousCollection for {}. Got {}'.format(name, type(value))
+        assert value.header.analysis_period.is_annual, '{} data analysis period ' \
+            'is not annual. {}'.format(name, value.header.analysis_period)
+        assert isinstance(value.header.data_type, Power), '{} must be Power in W. ' \
+            'Got {} in {}'.format(name, value.header.data_type.name, value.header.unit)
+        if value.header.unit != 'W':
+            value = value.to_unit('W')
+        return value
 
     def ToString(self):
         return self.__repr__()
