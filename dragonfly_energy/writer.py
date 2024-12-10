@@ -4,9 +4,11 @@ import sys
 import os
 import re
 import json
+import shutil
 
 from ladybug_geometry.geometry2d import Point2D
 from ladybug.futil import nukedir, preparedir
+from ladybug.epw import EPW
 from honeybee.config import folders
 from honeybee.model import Model as hb_model
 
@@ -15,7 +17,7 @@ def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
     add_plenum=False, solve_ceiling_adjacencies=False,
     des_loop=None, electrical_network=None, road_network=None, ground_pv=None,
-    folder=None, tolerance=0.01
+    folder=None, tolerance=None
 ):
     r"""Generate an URBANopt feature geoJSON and honeybee JSONs from a dragonfly Model.
 
@@ -59,8 +61,7 @@ def model_to_urbanopt(
             URBANopt folder. If None, the files will be written into a sub-directory
             of the honeybee-core default_simulation_folder.
         tolerance: The minimum distance between points at which they are
-            not considered touching. (Default: 0.01, suitable for objects
-            in meters).
+            not considered touching. If None, the Model tolerance will be used.
 
     Returns:
         A tuple with three values.
@@ -76,6 +77,7 @@ def model_to_urbanopt(
     """
     # make sure the model is in meters and, if it's not, duplicate and scale it
     conversion_factor, original_units = None, 'Meters'
+    tolerance = model.tolerance if tolerance is None else tolerance
     if model.units != 'Meters':
         original_units = model.units
         conversion_factor = hb_model.conversion_factor_to_meters(model.units)
@@ -218,3 +220,155 @@ def model_to_urbanopt(
         hb_model_jsons.append(bld_path)
 
     return feature_geojson, hb_model_jsons, hb_models
+
+
+def model_to_des(
+    model, des_loop, epw_file, location=None, point=Point2D(0, 0),
+    folder=None, tolerance=None
+):
+    r"""Generate an URBANopt feature geoJSON and DES input files from a dragonfly Model.
+
+    This method is intended specifically for the case that District Energy
+    System (DES) simulation is to be performed without using URBANopt to generate
+    building energy loads through EnergyPlus. Accordingly, ALL Dragonfly Buildings
+    in the Model must have DES loads assigned directly to them in order for this
+    method to run correctly.
+
+    Args:
+        model: A dragonfly Model for which an URBANopt feature geoJSON and
+            corresponding DES input files will be generated.
+        des_loop: A District Energy System (DES) ThermalLoop that is associated
+            with the dragonfly Model.
+        epw_file: The file path to an EPW that should be associated with the
+            output energy model.
+        location: An optional ladybug Location object possessing longitude and
+            latitude data. If None, the Location data will be pulled from the
+            input epw_file, effectively placing the GeoJSON at the location
+            of the EPW
+        point: A ladybug_geometry Point2D for where the location object exists
+            within the space of a scene. The coordinates of this point are
+            expected to be in the units of this Model. (Default: (0, 0)).
+        folder: An optional folder to be used as the root of the model's
+            URBANopt folder. If None, the files will be written into a sub-directory
+            of the honeybee-core default_simulation_folder.
+        tolerance: The minimum distance between points at which they are
+            not considered touching. If None, the Model tolerance will be used.
+
+    Returns:
+        A tuple with three values.
+
+        feature_geojson -- The path to an URBANopt feature geoJSON that has
+            been written by this method.
+
+        scenario_csv -- The path to an URBANopt scenario CSV that has
+            been written by this method.
+
+        system_parameters -- The path to the DES system parameter JSON that has
+            been written by this method.
+    """
+    # make sure the model is in meters and, if it's not, duplicate and scale it
+    conversion_factor = None
+    tolerance = model.tolerance if tolerance is None else tolerance
+    if model.units != 'Meters':
+        conversion_factor = hb_model.conversion_factor_to_meters(model.units)
+        point = point.scale(conversion_factor)
+        tolerance = tolerance * conversion_factor
+        model = model.duplicate()  # duplicate the model to avoid mutating the input
+        model.convert_to_units('Meters')
+        des_loop.scale(conversion_factor)
+
+    # prepare the folder for simulation
+    if folder is None:  # use the default simulation folder
+        folder = os.path.join(
+            folders.default_simulation_folder,
+            re.sub(r'[^.A-Za-z0-9_-]', '_', model.display_name)
+        )
+    nukedir(folder, True)  # get rid of anything that exists in the folder already
+    preparedir(folder)  # create the directory if it's not there
+
+    # create GeoJSON dictionary
+    epw_obj = EPW(epw_file)
+    if location is None:
+        location = epw_obj.location
+    geojson_dict = model.to_geojson_dict(location, point, tolerance=tolerance)
+
+    # create the scenario CSV file
+    scenario_matrix = [['Feature Id', 'Feature Name', 'Mapper Class']]
+    hb_mapper = 'URBANopt::Scenario::HoneybeeMapper'
+    for feature in geojson_dict['features']:
+        try:
+            if feature['properties']['type'] == 'Building':
+                props = feature['properties']
+                f_row = [props['id'], props['name'], hb_mapper]
+                scenario_matrix.append(f_row)
+        except KeyError:  # definitely not a building
+            pass
+    scenario_csv = os.path.join(folder, 'honeybee_scenario.csv')
+    with open(scenario_csv, 'w') as fp:
+        for row in scenario_matrix:
+            fp.write('{}\n'.format(','.join(row)))
+
+    # write the Building loads into the scenario result folder
+    scn_dir = os.path.join(folder, 'run', 'honeybee_scenario')
+    for bldg in model.buildings:
+        csv_data = bldg.properties.energy.to_building_load_csv()
+        mos_data = bldg.properties.energy.to_building_load_mos()
+        bldg_dir = os.path.join(scn_dir, bldg.identifier, '004_export_modelica_loads')
+        preparedir(bldg_dir)
+        csv_path = os.path.join(bldg_dir, 'building_loads.csv')
+        mos_path = os.path.join(bldg_dir, 'modelica.mos')
+        with open(csv_path, 'w') as fp:
+            fp.write(csv_data)
+        with open(mos_path, 'w') as fp:
+            fp.write(mos_data)
+
+    # add the DES to the GeoJSON dictionary
+    if hasattr(des_loop, 'to_geojson_dict'):
+        des_features = des_loop.to_geojson_dict(
+            model.buildings, location, point, tolerance=tolerance)
+        geojson_dict['features'].extend(des_features)
+    des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)
+    if conversion_factor is not None:  # put back the correct scale for the DES
+        des_loop.scale(1 / conversion_factor)
+
+    # copy the EPW to the project directory
+    epw_f_name = os.path.split(epw_file)[-1]
+    target_epw = os.path.join(folder, epw_f_name)
+    shutil.copy(epw_file, target_epw)
+    # create a MOS file from the EPW
+    epw_obj = EPW(target_epw)
+    mos_file = os.path.join(folder, epw_f_name.replace('.epw', '.mos'))
+    epw_obj.to_mos(mos_file)
+    # write the EPW path into the GeoJSON
+    if 'project' in geojson_dict:
+        if 'weather_filename' not in geojson_dict['project']:
+            geojson_dict['project']['weather_filename'] = epw_f_name
+
+    # if the DES system is GSHP, specify any autocalculated ground temperatures
+    if 'district_system' in des_dict:
+        if 'fifth_generation' in des_dict['district_system']:
+            g5_par = des_dict['district_system']['fifth_generation']
+            if 'soil' in g5_par and 'undisturbed_temp' in g5_par['soil']:
+                soil_par = g5_par['soil']
+                if soil_par['undisturbed_temp'] == 'Autocalculate':
+                    epw_obj = EPW(epw_file)
+                    soil_par['undisturbed_temp'] = \
+                        epw_obj.dry_bulb_temperature.average
+
+    # write out the GeoJSON and system parameter files
+    feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
+    system_parameters = os.path.join(folder, 'system_params.json')
+    if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
+        with open(feature_geojson, 'wb') as fp:
+            obj_str = json.dumps(geojson_dict, indent=4, ensure_ascii=False)
+            fp.write(obj_str.encode('utf-8'))
+        with open(system_parameters, 'wb') as fp:
+            obj_str = json.dumps(des_dict, indent=2, ensure_ascii=False)
+            fp.write(obj_str.encode('utf-8'))
+    else:
+        with open(feature_geojson, 'w', encoding='utf-8') as fp:
+            obj_str = json.dump(geojson_dict, fp, indent=4, ensure_ascii=False)
+        with open(system_parameters, 'w') as fp:
+            json.dump(des_dict, fp, indent=2)
+
+    return feature_geojson, scenario_csv, system_parameters

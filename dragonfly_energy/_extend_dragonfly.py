@@ -8,7 +8,7 @@ from .properties.building import BuildingEnergyProperties
 from .properties.story import StoryEnergyProperties
 from .properties.room2d import Room2DEnergyProperties
 from .properties.context import ContextShadeEnergyProperties
-from .writer import model_to_urbanopt
+from .writer import model_to_urbanopt, model_to_des
 
 
 # set a hidden energy attribute on each core geometry Property class to None
@@ -60,3 +60,4 @@ ContextShadeProperties.energy = property(context_energy_properties)
 
 # add model writer to urbanopt
 model_writer.urbanopt = model_to_urbanopt
+model_writer.urbanopt_des = model_to_des
