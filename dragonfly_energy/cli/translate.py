@@ -472,7 +472,7 @@ def model_to_idf(
     idf_str = '\n\n'.join([ver_str, sim_par_str, model_str, additional_str])
 
     # write out the result
-    process_content_to_output(idf_str, output_file)
+    return process_content_to_output(idf_str, output_file)
 
 
 @translate.command('model-to-gbxml')
