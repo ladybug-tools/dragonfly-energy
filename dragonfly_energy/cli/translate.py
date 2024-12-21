@@ -606,8 +606,8 @@ def model_to_gbxml(
     """
     # set the default folder if it's not specified
     out_path = None
-    out_directory = os.path.join(
-        hb_folders.default_simulation_folder, 'temp_translate')
+    out_directory = os.path.join(hb_folders.default_simulation_folder, 'temp_translate') \
+        if osw_folder is None else osw_folder
     if output_file.endswith('-'):
         f_name = os.path.basename(model_file).lower()
         f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
@@ -782,8 +782,8 @@ def model_to_trace_gbxml(
     """
     # set the default folder if it's not specified
     out_path = None
-    out_directory = os.path.join(
-        hb_folders.default_simulation_folder, 'temp_translate')
+    out_directory = os.path.join(hb_folders.default_simulation_folder, 'temp_translate') \
+        if osw_folder is None else osw_folder
     if output_file.endswith('-'):
         f_name = os.path.basename(model_file).lower()
         f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
@@ -945,8 +945,8 @@ def model_to_sdd(
     """
     # set the default folder if it's not specified
     out_path = None
-    out_directory = os.path.join(
-        hb_folders.default_simulation_folder, 'temp_translate')
+    out_directory = os.path.join(hb_folders.default_simulation_folder, 'temp_translate') \
+        if osw_folder is None else osw_folder
     if output_file.endswith('-'):
         f_name = os.path.basename(model_file).lower()
         f_name = f_name.replace('.dfjson', '.xml').replace('.json', '.xml')
