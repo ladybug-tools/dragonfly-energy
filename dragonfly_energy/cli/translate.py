@@ -807,7 +807,7 @@ def model_to_trace_gbxml(
         add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
-    hb_model_file = os.path.join(out_directory)
+    hb_model_file = os.path.join(out_directory, 'in.hbjson')
     with open(hb_model_file, 'w', encoding='utf-8') as hmf:
         json.dump(hb_model.to_dict(), hmf, ensure_ascii=False)
 
