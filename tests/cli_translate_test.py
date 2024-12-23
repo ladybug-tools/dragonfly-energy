@@ -59,6 +59,19 @@ def test_model_to_trace_gbxml():
     nukedir(output_df_folder)
 
 
+def test_model_to_trace_gbxml_non_utf8():
+    runner = CliRunner()
+    input_df_model = './tests/json/model_non_utf_8.dfjson'
+
+    output_df_folder = './tests/json/gbxml'
+    output_df_model = os.path.join(output_df_folder, 'test.xml')
+    result = runner.invoke(model_to_trace_gbxml_cli, [input_df_model, '-f', output_df_model])
+    assert result.exit_code == 0
+
+    assert os.path.isfile(output_df_model)
+    nukedir(output_df_folder)
+
+
 def test_model_to_sdd():
     runner = CliRunner()
     input_df_model = './tests/json/model_complete_simple.dfjson'

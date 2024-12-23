@@ -819,7 +819,7 @@ def model_to_trace_gbxml(
 
     # Write the osw file and translate the model to gbXML
     out_f = out_path if output_file is None or output_file.endswith('-') else output_file
-    osw = to_gbxml_osw(model_file, out_f, osw_folder)
+    osw = to_gbxml_osw(hb_model_file, out_f, osw_folder)
     file_contents = _run_translation_osw(osw, out_path)
 
     # return the file contents if requested
