@@ -998,6 +998,14 @@ class GHEDesignParameter(object):
         month_count: An integer for the number of months over which the simulation
             will be run in order to ensure stable ground temperature
             conditions. (Default: 240).
+        method: Text for the method to be used in sizing the GHE. Downstream
+            will size each GHE for all of the buildings that lie downstream of
+            the GHE. AreaProportional will take the load along the entire loop
+            and evenly distribute it per unit area of GHE. (Default: AreaProportional).
+            Choose from the followingL
+
+            * AreaProportional
+            * Downstream
 
     Properties:
         * flow_rate
@@ -1005,18 +1013,22 @@ class GHEDesignParameter(object):
         * max_eft
         * min_eft
         * month_count
+        * method
     """
-    __slots__ = ('_flow_rate', '_flow_type', '_max_eft', '_min_eft', '_month_count')
+    __slots__ = ('_flow_rate', '_flow_type', '_max_eft', '_min_eft',
+                 '_month_count', '_method')
     FLOW_TYPES = ('Borehole', 'System')
+    METHODS = ('AreaProportional', 'Downstream')
 
     def __init__(self, flow_rate=0.2, flow_type='Borehole', max_eft=35, min_eft=5,
-                 month_count=240):
+                 month_count=240, method='AreaProportional'):
         """Initialize BoreholeParameter."""
         self.flow_rate = flow_rate
         self.flow_type = flow_type
         self._min_eft = float_positive(min_eft, 'GHE min entering fluid temperature')
         self.max_eft = max_eft
         self.month_count = month_count
+        self.method = method
 
     @classmethod
     def from_dict(cls, data):
@@ -1034,7 +1046,8 @@ class GHEDesignParameter(object):
             'flow_type': 'Borehole',  # text for the type of object flow_rate references
             'max_eft': 35,  # float for max entering fluid temperature in C
             'min_eft': 5,  # float for min entering fluid temperature in C
-            'month_count': 240  # int for the number of months to run the simulation
+            'month_count': 240,  # int for the number of months to run the simulation
+            'method': 'Downstream'  # text for the sizing method
             }
         """
         flow_rate = data['flow_rate'] if 'flow_rate' in data else 0.2
@@ -1042,7 +1055,8 @@ class GHEDesignParameter(object):
         max_eft = data['max_eft'] if 'max_eft' in data else 35
         min_eft = data['min_eft'] if 'min_eft' in data else 5
         month_count = data['month_count'] if 'month_count' in data else 240
-        return cls(flow_rate, flow_type, max_eft, min_eft, month_count)
+        method = data['method'] if 'method' in data else 'AreaProportional'
+        return cls(flow_rate, flow_type, max_eft, min_eft, month_count, method)
 
     @property
     def flow_rate(self):
@@ -1106,6 +1120,30 @@ class GHEDesignParameter(object):
     def month_count(self, value):
         self._month_count = int_in_range(value, 12, input_name='GHE month count')
 
+    @property
+    def method(self):
+        """Get or set text for the sizing method.
+
+        Choose from the following options:
+
+        * AreaProportional
+        * Downstream
+        """
+        return self._method
+
+    @method.setter
+    def method(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.METHODS:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'Design method {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.METHODS))
+        self._method = value
+
     def to_dict(self):
         """Get GHEDesignParameter dictionary."""
         base = {'type': 'GHEDesignParameter'}
@@ -1114,6 +1152,7 @@ class GHEDesignParameter(object):
         base['min_eft'] = self.min_eft
         base['max_eft'] = self.max_eft
         base['month_count'] = self.month_count
+        base['method'] = self.method
         return base
 
     def duplicate(self):
@@ -1122,7 +1161,8 @@ class GHEDesignParameter(object):
 
     def __copy__(self):
         return GHEDesignParameter(
-            self.flow_rate, self.flow_type, self.min_eft, self.max_eft, self.month_count)
+            self.flow_rate, self.flow_type, self.min_eft, self.max_eft,
+            self.month_count, self.method)
 
     def _eft_check(self):
         """Check that max_eft is greater than or equal to min_eft."""
