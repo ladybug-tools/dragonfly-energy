@@ -826,7 +826,7 @@ class GHEThermalLoop(object):
                 'method': 'rectangle'
             },
             'design': {
-                'method': 'AREAPROPORTIONAL',
+                'method': self.design_parameters.method.upper(),
                 'flow_rate': self.design_parameters.flow_rate,
                 'flow_type': self.design_parameters.flow_type.lower(),
                 'max_eft': self.design_parameters.max_eft,
