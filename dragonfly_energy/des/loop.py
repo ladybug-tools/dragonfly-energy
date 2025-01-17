@@ -470,11 +470,11 @@ class GHEThermalLoop(object):
         if loop_poly.is_clockwise is not self.clockwise_flow:
             loop_poly = loop_poly.reverse()
 
-        # make sure that the loop ends at a GHE; this is a limitation of GMT 0.8.0
+        # make sure that the loop starts at a GHE; this is a limitation of GMT 0.8.0
         last_ghe_poly = self.ground_heat_exchangers[0].boundary_2d
         for i_pt, pt in enumerate(loop_poly.vertices):
             if last_ghe_poly.is_point_on_edge(pt, tolerance):
-                break_i = i_pt + 2
+                break_i = i_pt + 1
         break_i = break_i if break_i < len(loop_poly.vertices) \
             else break_i - len(loop_poly.vertices)
         start_verts = loop_poly.vertices[break_i:] + loop_poly.vertices[:break_i]
