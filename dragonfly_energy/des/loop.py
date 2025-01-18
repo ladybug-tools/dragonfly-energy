@@ -470,16 +470,6 @@ class GHEThermalLoop(object):
         if loop_poly.is_clockwise is not self.clockwise_flow:
             loop_poly = loop_poly.reverse()
 
-        # make sure that the loop starts at a GHE; this is a limitation of GMT 0.8.0
-        last_ghe_poly = self.ground_heat_exchangers[0].boundary_2d
-        for i_pt, pt in enumerate(loop_poly.vertices):
-            if last_ghe_poly.is_point_on_edge(pt, tolerance):
-                break_i = i_pt + 1
-        break_i = break_i if break_i < len(loop_poly.vertices) \
-            else break_i - len(loop_poly.vertices)
-        start_verts = loop_poly.vertices[break_i:] + loop_poly.vertices[:break_i]
-        loop_poly = Polygon2D(start_verts)
-
         return loop_poly
 
     def ordered_connectors(self, buildings, tolerance=0.01):
@@ -654,7 +644,7 @@ class GHEThermalLoop(object):
         ordered_conns = self.ordered_connectors(buildings, tolerance)
         junctions, connector_jct_ids = self._junctions_from_connectors(
             ordered_conns, tolerance)
-        for conn, jct_ids in zip(self.connectors, connector_jct_ids):
+        for conn, jct_ids in zip(ordered_conns, connector_jct_ids):
             st_feat, end_feat, cp1, cp2 = None, None, conn.geometry.p1, conn.geometry.p2
             for f_poly, f_id in zip(all_feat, feat_ids):
                 if f_poly.is_point_on_edge(cp1, tolerance):
