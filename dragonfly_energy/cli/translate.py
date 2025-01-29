@@ -48,9 +48,9 @@ def translate():
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
               'whether adjacencies should be solved between interior stories when '
               'Room2Ds perfectly match one another in their floor plate. This ensures '
@@ -92,7 +92,7 @@ def translate():
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_osm_cli(
-        model_file, sim_par_json, epw_file, multiplier, no_plenum, no_ceil_adjacency,
+        model_file, sim_par_json, epw_file, multiplier, plenum, no_ceil_adjacency,
         folder, osm_file, idf_file, geometry_ids, resource_ids, log_file):
     """Translate a Dragonfly Model to an OpenStudio Model.
 
@@ -103,12 +103,12 @@ def model_to_osm_cli(
     """
     try:
         full_geometry = not multiplier
-        plenum = not no_plenum
+        no_plenum = not plenum
         ceil_adjacency = not no_ceil_adjacency
         geo_names = not geometry_ids
         res_names = not resource_ids
         model_to_osm(
-            model_file, sim_par_json, epw_file, full_geometry, plenum, ceil_adjacency,
+            model_file, sim_par_json, epw_file, full_geometry, no_plenum, ceil_adjacency,
             folder, osm_file, idf_file, geo_names, res_names, log_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -119,10 +119,10 @@ def model_to_osm_cli(
 
 def model_to_osm(
     model_file, sim_par_json=None, epw_file=None,
-    full_geometry=False, plenum=False, ceil_adjacency=False,
+    full_geometry=False, no_plenum=False, ceil_adjacency=False,
     folder=None, osm_file=None, idf_file=None,
     geometry_names=False, resource_names=False, log_file=None,
-    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    multiplier=True, plenum=True, no_ceil_adjacency=True,
     geometry_ids=True, resource_ids=True
 ):
     """Translate a Dragonfly Model to an OpenStudio Model.
@@ -142,8 +142,9 @@ def model_to_osm(
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
             building. (Default: False).
-        plenum: Boolean to indicate whether ceiling/floor plenums should be
-            auto-generated for the Rooms. (Default: False).
+        no_plenum: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should generate distinct 3D Rooms in the
+            translation. (Default: False).
         ceil_adjacency: Boolean to indicate whether adjacencies should be solved
             between interior stories when Room2Ds perfectly match one another
             in their floor plate. This ensures that Surface boundary conditions
@@ -243,7 +244,7 @@ def model_to_osm(
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
-        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
 
@@ -288,9 +289,9 @@ def model_to_osm(
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
               'whether adjacencies should be solved between interior stories when '
               'Room2Ds perfectly match one another in their floor plate. This ensures '
@@ -331,7 +332,7 @@ def model_to_osm(
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_idf_cli(
-    model_file, sim_par_json, multiplier, no_plenum, no_ceil_adjacency,
+    model_file, sim_par_json, multiplier, plenum, no_ceil_adjacency,
     additional_str, compact_schedules, hvac_to_ideal_air,
     geometry_ids, resource_ids, output_file
 ):
@@ -347,14 +348,14 @@ def model_to_idf_cli(
     """
     try:
         full_geometry = not multiplier
-        plenum = not no_plenum
+        no_plenum = not plenum
         ceil_adjacency = not no_ceil_adjacency
         csv_schedules = not compact_schedules
         hvac_check = not hvac_to_ideal_air
         geo_names = not geometry_ids
         res_names = not resource_ids
         model_to_idf(
-            model_file, sim_par_json, full_geometry, plenum, ceil_adjacency,
+            model_file, sim_par_json, full_geometry, no_plenum, ceil_adjacency,
             additional_str, csv_schedules,
             hvac_check, geo_names, res_names, output_file)
     except Exception as e:
@@ -366,10 +367,10 @@ def model_to_idf_cli(
 
 def model_to_idf(
     model_file, sim_par_json=None,
-    full_geometry=False, plenum=False, ceil_adjacency=False,
+    full_geometry=False, no_plenum=False, ceil_adjacency=False,
     additional_str='', csv_schedules=False, hvac_check=False,
     geometry_names=False, resource_names=False, output_file=None,
-    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    multiplier=True, plenum=True, no_ceil_adjacency=True,
     compact_schedules=True, hvac_to_ideal_air=True, geometry_ids=True, resource_ids=True
 ):
     """Translate a Dragonfly Model to an IDF using direct-to-idf translators.
@@ -387,8 +388,9 @@ def model_to_idf(
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
             building. (Default: False).
-        plenum: Boolean to indicate whether ceiling/floor plenums should be
-            auto-generated for the Rooms. (Default: False).
+        no_plenum: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should generate distinct 3D Rooms in the
+            translation. (Default: False).
         ceil_adjacency: Boolean to indicate whether adjacencies should be solved
             between interior stories when Room2Ds perfectly match one another
             in their floor plate. This ensures that Surface boundary conditions
@@ -444,7 +446,7 @@ def model_to_idf(
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
-        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
 
@@ -482,9 +484,9 @@ def model_to_idf(
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
               'whether adjacencies should be solved between interior stories when '
               'Room2Ds perfectly match one another in their floor plate. This ensures '
@@ -523,7 +525,7 @@ def model_to_idf(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_gbxml_cli(
-    model_file, multiplier, no_plenum, no_ceil_adjacency,
+    model_file, multiplier, plenum, no_ceil_adjacency,
     osw_folder, default_subfaces, triangulate_non_planar, minimal,
     interior_face_type, ground_face_type, output_file
 ):
@@ -536,13 +538,13 @@ def model_to_gbxml_cli(
     """
     try:
         full_geometry = not multiplier
-        plenum = not no_plenum
+        no_plenum = not plenum
         ceil_adjacency = not no_ceil_adjacency
         triangulate_subfaces = not default_subfaces
         permit_non_planar = not triangulate_non_planar
         complete_geometry = not minimal
         model_to_gbxml(
-            model_file, osw_folder, full_geometry, plenum, ceil_adjacency,
+            model_file, osw_folder, full_geometry, no_plenum, ceil_adjacency,
             triangulate_subfaces, permit_non_planar, complete_geometry,
             interior_face_type, ground_face_type, output_file)
     except Exception as e:
@@ -553,10 +555,11 @@ def model_to_gbxml_cli(
 
 
 def model_to_gbxml(
-    model_file, osw_folder=None, full_geometry=False, plenum=False, ceil_adjacency=False,
+    model_file, osw_folder=None, full_geometry=False,
+    no_plenum=False, ceil_adjacency=False,
     triangulate_subfaces=False, permit_non_planar=False, complete_geometry=False,
     interior_face_type='', ground_face_type='', output_file=None,
-    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    multiplier=True, plenum=True, no_ceil_adjacency=True,
     default_subfaces=True, triangulate_non_planar=True, minimal=True,
 ):
     """Translate a Dragonfly Model to a gbXML file.
@@ -571,8 +574,9 @@ def model_to_gbxml(
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
             building. (Default: False).
-        plenum: Boolean to indicate whether ceiling/floor plenums should be
-            auto-generated for the Rooms. (Default: False).
+        no_plenum: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should generate distinct 3D Rooms in the
+            translation. (Default: False).
         ceil_adjacency: Boolean to indicate whether adjacencies should be solved
             between interior stories when Room2Ds perfectly match one another
             in their floor plate. This ensures that Surface boundary conditions
@@ -628,7 +632,7 @@ def model_to_gbxml(
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
-        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
 
@@ -674,9 +678,9 @@ def model_to_gbxml(
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
               'whether adjacencies should be solved between interior stories when '
               'Room2Ds perfectly match one another in their floor plate. This ensures '
@@ -710,7 +714,7 @@ def model_to_gbxml(
               'of the translation. By default it printed out to stdout.', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_trace_gbxml_cli(
-    model_file, multiplier, no_plenum, no_ceil_adjacency,
+    model_file, multiplier, plenum, no_ceil_adjacency,
     single_window, rect_sub_distance, frame_merge_distance,
     osw_folder, output_file
 ):
@@ -723,11 +727,11 @@ def model_to_trace_gbxml_cli(
     """
     try:
         full_geometry = not multiplier
-        plenum = not no_plenum
+        no_plenum = not plenum
         ceil_adjacency = not no_ceil_adjacency
         detailed_windows = not single_window
         model_to_trace_gbxml(
-            model_file, full_geometry, plenum, ceil_adjacency, detailed_windows,
+            model_file, full_geometry, no_plenum, ceil_adjacency, detailed_windows,
             rect_sub_distance, frame_merge_distance, osw_folder, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -737,10 +741,10 @@ def model_to_trace_gbxml_cli(
 
 
 def model_to_trace_gbxml(
-    model_file, full_geometry=False, plenum=False, ceil_adjacency=False,
+    model_file, full_geometry=False, no_plenum=False, ceil_adjacency=False,
     detailed_windows=False, rect_sub_distance='0.15m',
     frame_merge_distance='0.2m', osw_folder=None, output_file=None,
-    multiplier=True, no_plenum=True, no_ceil_adjacency=True, single_window=True
+    multiplier=True, plenum=True, no_ceil_adjacency=True, single_window=True
 ):
     """Translate a Dragonfly Model to a gbXML file that is compatible with TRACE.
 
@@ -751,8 +755,9 @@ def model_to_trace_gbxml(
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
             building. (Default: False).
-        plenum: Boolean to indicate whether ceiling/floor plenums should be
-            auto-generated for the Rooms. (Default: False).
+        no_plenum: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should generate distinct 3D Rooms in the
+            translation. (Default: False).
         ceil_adjacency: Boolean to indicate whether adjacencies should be solved
             between interior stories when Room2Ds perfectly match one another
             in their floor plate. This ensures that Surface boundary conditions
@@ -804,7 +809,7 @@ def model_to_trace_gbxml(
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
-        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
     hb_model_file = os.path.join(out_directory, 'in.hbjson')
@@ -837,9 +842,9 @@ def model_to_trace_gbxml(
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
               'whether adjacencies should be solved between interior stories when '
               'Room2Ds perfectly match one another in their floor plate. This ensures '
@@ -872,7 +877,7 @@ def model_to_trace_gbxml(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_sdd_cli(
-    model_file, multiplier, no_plenum, no_ceil_adjacency, osw_folder,
+    model_file, multiplier, plenum, no_ceil_adjacency, osw_folder,
     geometry_ids, resource_ids, output_file
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
@@ -884,12 +889,12 @@ def model_to_sdd_cli(
     """
     try:
         full_geometry = not multiplier
-        plenum = not no_plenum
+        no_plenum = not plenum
         ceil_adjacency = not no_ceil_adjacency
         geo_names = not geometry_ids
         res_names = not resource_ids
         model_to_sdd(
-            model_file, full_geometry, plenum, ceil_adjacency,
+            model_file, full_geometry, no_plenum, ceil_adjacency,
             osw_folder, geo_names, res_names, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -899,9 +904,9 @@ def model_to_sdd_cli(
 
 
 def model_to_sdd(
-    model_file, full_geometry=False, plenum=False, ceil_adjacency=False,
+    model_file, full_geometry=False, no_plenum=False, ceil_adjacency=False,
     osw_folder=None, geometry_names=False, resource_names=False, output_file=None,
-    multiplier=True, no_plenum=True, no_ceil_adjacency=True,
+    multiplier=True, plenum=True, no_ceil_adjacency=True,
     geometry_ids=True, resource_ids=True
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
@@ -913,8 +918,9 @@ def model_to_sdd(
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
             building. (Default: False).
-        plenum: Boolean to indicate whether ceiling/floor plenums should be
-            auto-generated for the Rooms. (Default: False).
+        no_plenum: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should generate distinct 3D Rooms in the
+            translation. (Default: False).
         ceil_adjacency: Boolean to indicate whether adjacencies should be solved
             between interior stories when Room2Ds perfectly match one another
             in their floor plate. This ensures that Surface boundary conditions
@@ -967,7 +973,7 @@ def model_to_sdd(
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
-        add_plenum=plenum, solve_ceiling_adjacencies=ceil_adjacency,
+        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         enforce_adj=False)
     hb_model = hb_models[0]
 

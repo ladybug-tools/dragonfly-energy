@@ -15,7 +15,7 @@ from honeybee.model import Model as hb_model
 
 def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
-    add_plenum=False, solve_ceiling_adjacencies=False,
+    exclude_plenums=False, solve_ceiling_adjacencies=False,
     des_loop=None, electrical_network=None, road_network=None, ground_pv=None,
     folder=None, tolerance=None
 ):
@@ -41,8 +41,11 @@ def model_to_urbanopt(
             will be multiplied. If False, full geometry objects will be written
             for each and every floor in the building that are represented through
             multipliers and all resulting multipliers will be 1. (Default: True).
-        add_plenum: Boolean to indicate whether ceiling/floor plenums should
-            be auto-generated for the Rooms. (Default: False).
+        exclude_plenums: Boolean to indicate whether ceiling/floor plenum depths
+            assigned to Room2Ds should be ignored during translation. This
+            results in each Room2D translating to a single Honeybee Room at
+            the full floor_to_ceiling_height instead of a base Room with (a)
+            plenum Room(s). (Default: False).
         solve_ceiling_adjacencies: Boolean to note whether adjacencies should be
             solved between interior stories when Room2Ds perfectly match one
             another in their floor plate. This ensures that Surface boundary
@@ -198,7 +201,7 @@ def model_to_urbanopt(
     # write out the honeybee Model JSONs from the model
     hb_model_jsons = []
     hb_models = model.to_honeybee(
-        'Building', shade_distance, use_multiplier, add_plenum,
+        'Building', shade_distance, use_multiplier, exclude_plenums,
         solve_ceiling_adjacencies=solve_ceiling_adjacencies, tolerance=tolerance)
     for bldg_model in hb_models:
         try:
