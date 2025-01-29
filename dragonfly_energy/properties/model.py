@@ -93,7 +93,8 @@ class ModelEnergyProperties(object):
     def face_constructions(self):
         """Get a list of all unique constructions assigned to Faces, Apertures and Doors.
 
-        These objects only exist under the Building.room_3ds property
+        These objects only exist under the Building.room_3ds property and in
+        the Building's ceiling_plenum_construction and floor_plenum_construction.
         """
         constructions = []
         for bldg in self.host.buildings:
@@ -103,6 +104,14 @@ class ModelEnergyProperties(object):
                     self._check_and_add_obj_construction(ap, constructions)
                 for dr in face.doors:
                     self._check_and_add_obj_construction(dr, constructions)
+            constr = bldg.properties.energy._ceiling_plenum_construction
+            if constr is not None:
+                if not self._instance_in_array(constr, constructions):
+                    constructions.append(constr)
+            constr = bldg.properties.energy._floor_plenum_construction
+            if constr is not None:
+                if not self._instance_in_array(constr, constructions):
+                    constructions.append(constr)
         return list(set(constructions))
 
     @property
@@ -450,7 +459,7 @@ class ModelEnergyProperties(object):
         for bldg, b_dict in zip(self.host.buildings, building_e_dicts):
             if b_dict is not None:
                 bldg.properties.energy.apply_properties_from_dict(
-                    b_dict, construction_sets)
+                    b_dict, construction_sets, constructions)
             if bldg.has_room_3ds and b_dict is not None and 'room_3ds' in b_dict and \
                     b_dict['room_3ds'] is not None:
                 room_e_dicts, face_e_dicts, shd_e_dicts, ap_e_dicts, dr_e_dicts = \
