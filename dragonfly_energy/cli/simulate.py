@@ -39,9 +39,9 @@ def simulate():
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
-@click.option('--no-plenum/--plenum', ' /-p', help='Flag to indicate whether '
-              'ceiling/floor plenums should be auto-generated for the Rooms.',
-              default=True, show_default=True)
+@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+              'ceiling/floor plenum depths assigned to Room2Ds should generate '
+              'distinct 3D Rooms in the translation.', default=True, show_default=True)
 @click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
               'buildings should be capped with a top face.',
               default=True, show_default=True)
@@ -75,7 +75,7 @@ def simulate():
               'osm, idf, sql. By default the list will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier,
-                   no_plenum, no_cap, shade_dist, no_ceil_adjacency,
+                   plenum, no_cap, shade_dist, no_ceil_adjacency,
                    measures, folder, log_file):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
 
@@ -156,11 +156,11 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
             model.separate_top_bottom_floors()
 
         # convert Dragonfly Model to Honeybee
-        add_plenum = not no_plenum
+        no_plenum = not plenum
         cap = not no_cap
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
-            obj_per_model, shade_dist, multiplier, add_plenum, cap, ceil_adjacency)
+            obj_per_model, shade_dist, multiplier, no_plenum, cap, ceil_adjacency)
 
         # write out the honeybee JSONs
         osms = []
