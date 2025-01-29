@@ -11,10 +11,12 @@ from ladybug.datatype.time import Time
 from honeybee_energy.config import folders
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
+from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.hvac import HVAC_TYPES_DICT
 from honeybee_energy.shw import SHWSystem
+from honeybee_energy.lib.constructions import ceiling_plenum_bottom, floor_plenum_top
 from honeybee_energy.lib.constructionsets import generic_construction_set, \
     construction_set_by_identifier
 from honeybee_energy.lib.programtypes import building_program_type_by_identifier
@@ -34,6 +36,8 @@ class BuildingEnergyProperties(object):
     Properties:
         * host
         * construction_set
+        * ceiling_plenum_construction
+        * floor_plenum_construction
         * des_cooling_load
         * des_heating_load
         * des_hot_water_load
@@ -53,6 +57,7 @@ class BuildingEnergyProperties(object):
     }
     __slots__ = (
         '_host', '_construction_set',
+        '_ceiling_plenum_construction', '_floor_plenum_construction',
         '_des_cooling_load', '_des_heating_load', '_des_hot_water_load'
     )
 
@@ -60,6 +65,8 @@ class BuildingEnergyProperties(object):
         """Initialize Building energy properties."""
         self._host = host
         self.construction_set = construction_set
+        self._ceiling_plenum_construction = None  # can be set later
+        self._floor_plenum_construction = None  # can be set later
         self._des_cooling_load = None  # can be set later
         self._des_heating_load = None  # can be set later
         self._des_hot_water_load = None  # can be set later
@@ -87,6 +94,46 @@ class BuildingEnergyProperties(object):
                 'Expected ConstructionSet. Got {}'.format(type(value))
             value.lock()   # lock in case construction set has multiple references
         self._construction_set = value
+
+    @property
+    def ceiling_plenum_construction(self):
+        """Get or set an opaque construction for the bottoms of ceiling plenums.
+
+        Materials should be ordered from the plenum side to the room side.
+        By default, this is a simple acoustic tile construction.
+        """
+        if self._ceiling_plenum_construction:  # set by user
+            return self._ceiling_plenum_construction
+        return ceiling_plenum_bottom
+
+    @ceiling_plenum_construction.setter
+    def ceiling_plenum_construction(self, value):
+        if value is not None:
+            assert isinstance(value, OpaqueConstruction), \
+                'Expected Opaque Construction for ceiling_plenum_construction. ' \
+                'Got {}'.format(type(value))
+            value.lock()  # lock editing in case construction has multiple references
+        self._ceiling_plenum_construction = value
+
+    @property
+    def floor_plenum_construction(self):
+        """Get or set an opaque construction for the tops of floor plenums.
+
+        Materials should be ordered from the plenum side to the room side.
+        By default, this is a simple wood plank construction.
+        """
+        if self._floor_plenum_construction:  # set by user
+            return self._floor_plenum_construction
+        return floor_plenum_top
+
+    @floor_plenum_construction.setter
+    def floor_plenum_construction(self, value):
+        if value is not None:
+            assert isinstance(value, OpaqueConstruction), \
+                'Expected Opaque Construction for floor_plenum_construction. ' \
+                'Got {}'.format(type(value))
+            value.lock()  # lock editing in case construction has multiple references
+        self._floor_plenum_construction = value
 
     @property
     def des_cooling_load(self):
@@ -297,6 +344,95 @@ class BuildingEnergyProperties(object):
                 schedule_offset, timestep)
             for room, d_prog in zip(rooms, div_programs):
                 room.properties.energy.program_type = d_prog
+
+    def make_plenums(self, room_ids, conditioned=False, remove_infiltration=False):
+        """Turn Room2Ds on this host Building into plenums with no internal loads.
+
+        This includes removing all people, lighting, equipment, hot water, and
+        mechanical ventilation. By default, the heating/cooling system and
+        setpoints will also be removed but they can optionally be kept. Infiltration
+        is kept by default but can optionally be removed as well.
+
+        This is useful to appropriately assign properties for closets,
+        underfloor spaces, and drop ceilings.
+
+        Args:
+            room_ids: A list of identifiers for Room2Ds on this Building to be
+                converted into plenums.
+            conditioned: Boolean to indicate whether the plenums are conditioned with
+                heating/cooling systems. If True, the setpoints of the Room will also
+                be kept in addition to the heating/cooling system (Default: False).
+            remove_infiltration: Boolean to indicate whether infiltration should be
+                removed from the Rooms. (Default: False).
+        """
+        # set up variables to be used in plenum property assignment
+        room_ids = set(room_ids)
+        plenum_programs = {}
+        # loop through the Room2Ds and split the plenum if they're selected
+        for rm in self.host.unique_room_2ds:
+            if rm.identifier in room_ids:
+                rm_props = rm.properties.energy
+                # remove or add the HVAC system as needed
+                if conditioned and not rm_props.is_conditioned:
+                    rm.add_default_ideal_air()
+                elif not conditioned:
+                    rm_props.hvac = None
+                rm_props._shw = None
+                # remove process loads and operable windows
+                rm_props._process_loads = []
+                rm_props._window_vent_control = None
+                rm_props._window_vent_opening = None
+                # remove the loads and reapply infiltration/setpoints as needed
+                infiltration = None if remove_infiltration or \
+                    rm_props.program_type is None else rm_props.program_type.infiltration
+                setpoint = None if not conditioned or rm_props.program_type is None \
+                    else rm_props.program_type.infiltration
+                if infiltration is None and setpoint is None:
+                    rm_props.program_type = None
+                else:
+                    pln_prog_id = '{} Plenum'.format(rm_props.program_type.identifier)
+                    try:  # see if we already have a program created
+                        pln_prog = plenum_programs[pln_prog_id]
+                    except KeyError:  # create a new plenum program type
+                        pln_prog = ProgramType(pln_prog_id, infiltration=infiltration,
+                                               setpoint=setpoint)
+                        plenum_programs[pln_prog_id] = pln_prog
+                    rm_props.program_type = pln_prog
+
+    def apply_ceiling_plenum_face_properties(self, room_faces, plenum_faces):
+        """Apply the ceiling_plenum_construction to Honeybee Faces.
+
+        Args:
+            room_faces: A list of Honeybee Faces for the occupied Rooms that
+                interface with ceiling plenums.
+            plenum_faces: A list of Honeybee Faces for the ceiling plenum Rooms
+                that interface with the occupied Rooms.
+        """
+        self._apply_plenum_face_properties(
+            self.ceiling_plenum_construction, room_faces, plenum_faces)
+
+    def apply_floor_plenum_face_properties(self, room_faces, plenum_faces):
+        """Apply the floor_plenum_construction to Honeybee Faces.
+
+        Args:
+            room_faces: A list of Honeybee Faces for the occupied Rooms that
+                interface with floor plenums.
+            plenum_faces: A list of Honeybee Faces for the floor plenum Rooms
+                that interface with the occupied Rooms.
+        """
+        self._apply_plenum_face_properties(
+            self.floor_plenum_construction, room_faces, plenum_faces)
+
+    @staticmethod
+    def _apply_plenum_face_properties(room_con, room_faces, plenum_faces):
+        """Base function for applying plenum constructions"""
+        plenum_con = room_con if room_con.is_symmetric else \
+            OpaqueConstruction('{} Rev'.format(room_con.identifier),
+                               tuple(reversed(room_con.materials)))
+        for r_face in room_faces:
+            r_face.properties.energy.construction = room_con
+        for p_face in plenum_faces:
+            p_face.properties.energy.construction = plenum_con
 
     @classmethod
     def from_dict(cls, data, host):
