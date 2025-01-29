@@ -452,6 +452,14 @@ class BuildingEnergyProperties(object):
         if 'construction_set' in data and data['construction_set'] is not None:
             new_prop.construction_set = \
                 ConstructionSet.from_dict(data['construction_set'])
+        if 'ceiling_plenum_construction' in data and \
+                data['ceiling_plenum_construction'] is not None:
+            new_prop.ceiling_plenum_construction = \
+                OpaqueConstruction.from_dict(data['ceiling_plenum_construction'])
+        if 'floor_plenum_construction' in data and \
+                data['floor_plenum_construction'] is not None:
+            new_prop.ceiling_plenum_construction = \
+                OpaqueConstruction.from_dict(data['floor_plenum_construction'])
         if 'des_cooling_load' in data and data['des_cooling_load'] is not None:
             new_prop.des_cooling_load = \
                 HourlyContinuousCollection.from_dict(data['des_cooling_load'])
@@ -463,7 +471,7 @@ class BuildingEnergyProperties(object):
                 HourlyContinuousCollection.from_dict(data['des_hot_water_load'])
         return new_prop
 
-    def apply_properties_from_dict(self, abridged_data, construction_sets):
+    def apply_properties_from_dict(self, abridged_data, construction_sets, constructions):
         """Apply properties from a BuildingEnergyPropertiesAbridged dictionary.
 
         Args:
@@ -471,10 +479,20 @@ class BuildingEnergyProperties(object):
                 coming from a Model).
             construction_sets: A dictionary of ConstructionSets with identifiers
                 of the sets as keys, which will be used to re-assign construction_sets.
+            constructions: A dictionary with construction identifiers as keys
+                and honeybee construction objects as values.
         """
         if 'construction_set' in abridged_data and \
                 abridged_data['construction_set'] is not None:
             self.construction_set = construction_sets[abridged_data['construction_set']]
+        if 'ceiling_plenum_construction' in abridged_data and \
+                abridged_data['ceiling_plenum_construction'] is not None:
+            self.ceiling_plenum_construction = \
+                constructions[abridged_data['ceiling_plenum_construction']]
+        if 'floor_plenum_construction' in abridged_data and \
+                abridged_data['floor_plenum_construction'] is not None:
+            self.floor_plenum_construction = \
+                constructions[abridged_data['floor_plenum_construction']]
         if 'des_cooling_load' in abridged_data and \
                 abridged_data['des_cooling_load'] is not None:
             self.des_cooling_load = \
@@ -540,6 +558,14 @@ class BuildingEnergyProperties(object):
             base['energy']['construction_set'] = \
                 self._construction_set.identifier if abridged else \
                 self._construction_set.to_dict()
+        if self._ceiling_plenum_construction is not None:
+            base['energy']['ceiling_plenum_construction'] = \
+                self._ceiling_plenum_construction.identifier if abridged else \
+                self._ceiling_plenum_construction.to_dict()
+        if self._floor_plenum_construction is not None:
+            base['energy']['floor_plenum_construction'] = \
+                self._floor_plenum_construction.identifier if abridged else \
+                self._floor_plenum_construction.to_dict()
         if self._des_cooling_load is not None:
             base['energy']['des_cooling_load'] = self._des_cooling_load.to_dict()
         if self._des_heating_load is not None:
@@ -596,6 +622,8 @@ class BuildingEnergyProperties(object):
         """
         _host = new_host or self._host
         new_prop = BuildingEnergyProperties(_host, self._construction_set)
+        new_prop._ceiling_plenum_construction = self._ceiling_plenum_construction
+        new_prop._floor_plenum_construction = self._floor_plenum_construction
         new_prop._des_cooling_load = self._des_cooling_load
         new_prop._des_heating_load = self._des_heating_load
         new_prop._des_hot_water_load = self._des_hot_water_load

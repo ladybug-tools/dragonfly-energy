@@ -232,6 +232,55 @@ def test_to_from_dict():
     assert new_model.context_shades[0].properties.energy.transmittance_schedule == tree_trans
 
 
+def test_to_from_dict_plenum_construction():
+    """Test the Model to_dict and from_dict method with plenum constructions."""
+    # simple 10 x 10 rooms
+    pts1 = (Point3D(0, 0, 0), Point3D(10, 0, 0), Point3D(10, 10, 0), Point3D(0, 10, 0))
+    pts2 = (Point3D(10, 0, 0), Point3D(20, 0, 0), Point3D(20, 10, 0), Point3D(10, 10, 0))
+
+    # Two rooms with different floor heights
+    room2d_full = Room2D(
+        'R1-full', floor_geometry=Face3D(pts1), floor_to_ceiling_height=4,
+        is_ground_contact=True, is_top_exposed=True)
+    room2d_plenum = Room2D(
+        'R2-plenum', floor_geometry=Face3D(pts2), floor_to_ceiling_height=4,
+        is_ground_contact=True, is_top_exposed=True)
+    room2d_plenum.ceiling_plenum_depth = 0.5
+    room2d_plenum.floor_plenum_depth = 0.5
+
+    story = Story('S1', [room2d_full, room2d_plenum])
+    story.solve_room_2d_adjacency(0.01)
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
+    story.multiplier = 4
+    building = Building('Office_Building_1234', [story])
+
+    concrete = EnergyMaterial('Concrete', 0.15, 2.31, 2322, 832, 'MediumRough',
+                              0.95, 0.75, 0.8)
+    gypsum = EnergyMaterial('Gypsum', 0.0127, 0.16, 784.9, 830, 'MediumRough',
+                            0.93, 0.6, 0.65)
+    ceil_constr = OpaqueConstruction('Gypsum Ceiling', [gypsum])
+    floor_constr = OpaqueConstruction('Concrete Floor', [concrete])
+    building.properties.energy.ceiling_plenum_construction = ceil_constr
+    building.properties.energy.floor_plenum_construction = floor_constr
+
+    plenum_model = building.to_honeybee(tolerance=0.01)
+    plenum_rooms = plenum_model.rooms
+    assert len(plenum_rooms) == 4
+    plenum = plenum_rooms[0]
+    #print(plenum[-1].properties.energy.construction)
+    assert plenum[-1].properties.energy.construction == floor_constr
+    plenum = plenum_rooms[-1]
+    assert plenum[0].properties.energy.construction == ceil_constr
+
+    model = Model('NewDevelopment', [building])
+    model_dict = model.to_dict()
+    new_model = Model.from_dict(model_dict)
+    assert model_dict == new_model.to_dict()
+    new_building = new_model.buildings[0]
+    assert new_building.properties.energy.ceiling_plenum_construction == ceil_constr
+    assert new_building.properties.energy.floor_plenum_construction == floor_constr
+
+
 def test_to_honeybee():
     """Test the Model to_honeybee method."""
     pts_1 = (Point3D(0, 0, 3), Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(0, 10, 3))
