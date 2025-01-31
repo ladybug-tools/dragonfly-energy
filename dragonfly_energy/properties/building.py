@@ -592,6 +592,21 @@ class BuildingEnergyProperties(object):
             file_lines.append(','.join(text_vals))
         return '\n'.join(file_lines)
 
+    def to_building_load_json(self):
+        """Get a JSON file string of peak loads for DES simulation."""
+        _, cool, heat, water = self._building_loads()
+        peak_dict = {
+            'ExportModelicaLoads': 
+            {
+                'applicable': True,
+                'energyplus_runtime': 1,
+                'peak_cooling_load': cool.min,
+                'peak_heating_load': heat.max,
+                'peak_water_heating': water.max
+            }
+        }
+        return json.dumps(peak_dict, indent=4)
+
     def to_building_load_mos(self):
         """Get a MOS file string of building loads for DES simulation."""
         time_col, cool, heat, water = self._building_loads()
@@ -606,7 +621,7 @@ class BuildingEnergyProperties(object):
             '\n'
         ]
         file_lines.append('#Peak space cooling load = {} Watts'.format(cool.min))
-        file_lines.append('#Peak space heating load = {} Watts'.format(cool.max))
+        file_lines.append('#Peak space heating load = {} Watts'.format(heat.max))
         file_lines.append('#Peak water heating load = {} Watts'.format(water.max))
         file_lines.append('double tab1({},4)'.format(len(time_col)))
         for s, c, h, hw in zip(time_col, cool, heat, water):
