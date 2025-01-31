@@ -682,6 +682,7 @@ class BuildingEnergyProperties(object):
         water = self._des_hot_water_load \
             if self._des_hot_water_load is not None else def_col
         # negate cooling as DES simulation needs it that way
+        cool = cool.duplicate()
         neg_cool_vals = []
         for val in cool.values:
             v = -val if val != 0 else val
