@@ -315,13 +315,18 @@ def model_to_des(
     scn_dir = os.path.join(folder, 'run', 'honeybee_scenario')
     for bldg in model.buildings:
         csv_data = bldg.properties.energy.to_building_load_csv()
+        json_data = bldg.properties.energy.to_building_load_json()
         mos_data = bldg.properties.energy.to_building_load_mos()
-        bldg_dir = os.path.join(scn_dir, bldg.identifier, '004_export_modelica_loads')
-        preparedir(bldg_dir)
-        csv_path = os.path.join(bldg_dir, 'building_loads.csv')
-        mos_path = os.path.join(bldg_dir, 'modelica.mos')
+        bldg_dir = os.path.join(scn_dir, bldg.identifier)
+        measure_dir = os.path.join(bldg_dir, '004_export_modelica_loads')
+        preparedir(measure_dir)
+        csv_path = os.path.join(measure_dir, 'building_loads.csv')
+        json_path = os.path.join(bldg_dir, 'results.json')
+        mos_path = os.path.join(measure_dir, 'modelica.mos')
         with open(csv_path, 'w') as fp:
             fp.write(csv_data)
+        with open(json_path, 'w') as fp:
+            fp.write(json_data)
         with open(mos_path, 'w') as fp:
             fp.write(mos_data)
 
