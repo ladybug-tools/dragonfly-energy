@@ -39,7 +39,8 @@ def test_model_to_gbxml():
 
     output_df_folder = './tests/json/gbxml'
     output_df_model = os.path.join(output_df_folder, 'in.xml')
-    result = runner.invoke(model_to_gbxml_cli, [input_df_model, '-f', output_df_model])
+    in_args = [input_df_model, '--complete-geometry', '-f', output_df_model]
+    result = runner.invoke(model_to_gbxml_cli, in_args)
     assert result.exit_code == 0
 
     assert os.path.isfile(output_df_model)

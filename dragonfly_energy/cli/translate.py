@@ -644,6 +644,7 @@ def model_to_gbxml(
             triangulate_non_planar_orphaned=tri_non_planar)
 
     # Write the osw file and translate the model to gbXML
+    file_contents = None
     out_f = out_path if output_file is None or output_file.endswith('-') else output_file
     osw = to_gbxml_osw(hb_model_json, out_f, osw_folder)
     if not complete_geometry and not (interior_face_type or ground_face_type):
