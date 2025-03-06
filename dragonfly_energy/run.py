@@ -557,6 +557,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         des_par['ghe_parameters']['fluid'] = original_ghe_par['fluid']
         des_par['ghe_parameters']['grout'] = original_ghe_par['grout']
         des_par['ghe_parameters']['pipe'] = original_ghe_par['pipe']
+        des_par['ghe_parameters']['design'] = original_ghe_par['design']
+        des_par['ghe_parameters']['simulation'] = original_ghe_par['simulation']
         des_par['ghe_parameters']['geometric_constraints'] = \
             original_ghe_par['geometric_constraints']
         des_par['ghe_parameters']['ghe_specific_params'] = \
