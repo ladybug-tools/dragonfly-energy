@@ -674,8 +674,8 @@ class PipeParameter(object):
         out_d = data['outer_diameter'] if 'outer_diameter' in data else 0.0266
         s_spc = data['shank_spacing'] if 'shank_spacing' in data else 0.0323
         rough = data['roughness'] if 'roughness' in data else 1e-06
-        cond = data['conductivity'] if 'conductivity' in data else 2.3
-        cap = data['heat_capacity'] if 'heat_capacity' in data else 2343500
+        cond = data['conductivity'] if 'conductivity' in data else 0.4
+        cap = data['heat_capacity'] if 'heat_capacity' in data else 1542000
         arr = data['arrangement'] if 'arrangement' in data else 'SingleUTube'
         return cls(in_d, out_d, s_spc, rough, cond, cap, arr)
 
@@ -1161,7 +1161,7 @@ class GHEDesignParameter(object):
 
     def __copy__(self):
         return GHEDesignParameter(
-            self.flow_rate, self.flow_type, self.min_eft, self.max_eft,
+            self.flow_rate, self.flow_type, self.max_eft, self.min_eft,
             self.month_count, self.method)
 
     def _eft_check(self):
