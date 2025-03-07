@@ -553,6 +553,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         original_des_par = des_dict['fifth_generation']
         original_ghe_par = original_des_par['ghe_parameters']
         des_par = sp_dict['district_system']['fifth_generation']
+        des_par['horizontal_piping_parameters'] = \
+            original_des_par['horizontal_piping_parameters']
         des_par['soil'] = original_des_par['soil']
         des_par['ghe_parameters']['fluid'] = original_ghe_par['fluid']
         des_par['ghe_parameters']['grout'] = original_ghe_par['grout']

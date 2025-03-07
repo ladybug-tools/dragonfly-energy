@@ -14,7 +14,7 @@ from dragonfly.projection import meters_to_long_lat_factors, \
 
 from .ghe import GroundHeatExchanger, SoilParameter, FluidParameter, \
     PipeParameter, BoreholeParameter, GHEDesignParameter
-from .connector import ThermalConnector
+from .connector import ThermalConnector, HorizontalPipeParameter
 from .junction import ThermalJunction
 
 
@@ -55,6 +55,9 @@ class GHEThermalLoop(object):
         design_parameters: Optional GHEDesignParameter object to specify the
             design constraints across the loop. If None, default values
             will be used. (Default: None).
+        horizontal_pipe_parameters: Optional HorizontalPipeParameter object to specify
+            the properties of the horizontal pipes contained within ThermalConnectors.
+            If None, default values will be used. (Default: None).
 
     Properties:
         * identifier
@@ -67,15 +70,17 @@ class GHEThermalLoop(object):
         * pipe_parameters
         * borehole_parameters
         * design_parameters
+        * horizontal_pipe_parameters
     """
     __slots__ = (
         '_identifier', '_display_name', '_ground_heat_exchangers', '_connectors',
         '_clockwise_flow', '_soil_parameters', '_fluid_parameters', '_pipe_parameters',
-        '_borehole_parameters', '_design_parameters')
+        '_borehole_parameters', '_design_parameters', '_horizontal_pipe_parameters')
 
     def __init__(self, identifier, ground_heat_exchangers, connectors,
                  clockwise_flow=False, soil_parameters=None, fluid_parameters=None,
-                 pipe_parameters=None, borehole_parameters=None, design_parameters=None):
+                 pipe_parameters=None, borehole_parameters=None, design_parameters=None,
+                 horizontal_pipe_parameters=None):
         """Initialize GHEThermalLoop."""
         self.identifier = identifier
         self._display_name = None
@@ -87,6 +92,7 @@ class GHEThermalLoop(object):
         self.pipe_parameters = pipe_parameters
         self.borehole_parameters = borehole_parameters
         self.design_parameters = design_parameters
+        self.horizontal_pipe_parameters = horizontal_pipe_parameters
 
     @classmethod
     def from_dict(cls, data):
@@ -112,7 +118,10 @@ class GHEThermalLoop(object):
             if 'borehole_parameters' in data else None
         des = GHEDesignParameter.from_dict(data['design_parameters']) \
             if 'design_parameters' in data else None
-        loop = cls(data['identifier'], ghe, conns, clock, soil, fluid, pipe, bore, des)
+        hp = HorizontalPipeParameter.from_dict(data['horizontal_pipe_parameters']) \
+            if 'horizontal_pipe_parameters' in data else None
+        loop = cls(data['identifier'], ghe, conns, clock, soil, fluid,
+                   pipe, bore, des, hp)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -377,6 +386,20 @@ class GHEThermalLoop(object):
             ' for GroundHeatExchanger. Got {}.'.format(type(value))
         self._design_parameters = value
 
+    @property
+    def horizontal_pipe_parameters(self):
+        """Get or set a HorizontalPipeParameter object for the DES loop."""
+        return self._horizontal_pipe_parameters
+
+    @horizontal_pipe_parameters.setter
+    def horizontal_pipe_parameters(self, value):
+        if value is None:
+            value = HorizontalPipeParameter()
+        assert isinstance(value, HorizontalPipeParameter), \
+            'Expected HorizontalPipeParameter object' \
+            ' for GroundHeatExchanger. Got {}.'.format(type(value))
+        self._horizontal_pipe_parameters = value
+
     def junctions(self, tolerance=0.01):
         """Get a list of ThermalJunction objects for the unique thermal loop junctions.
 
@@ -598,6 +621,7 @@ class GHEThermalLoop(object):
         base['pipe_parameters'] = self.pipe_parameters.to_dict()
         base['borehole_parameters'] = self.borehole_parameters.to_dict()
         base['design_parameters'] = self.design_parameters.to_dict()
+        base['horizontal_pipe_parameters'] = self.horizontal_pipe_parameters.to_dict()
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -739,9 +763,21 @@ class GHEThermalLoop(object):
             else 'Autocalculate'
 
         # add the fifth generation system parameters
+        hp_par = self.horizontal_pipe_parameters
         des_param = {
             'fifth_generation': {
                 'ghe_parameters': self.to_ghe_param_dict(tolerance),
+                'horizontal_piping_parameters': {
+                    'number_of_segments': 1,
+                    'buried_depth': hp_par.buried_depth,
+                    'hydraulic_diameter': hp_par.hydraulic_diameter,
+                    'diameter_ratio': hp_par.hydraulic_diameter,
+                    'pressure_drop_per_meter': hp_par.pressure_drop_per_meter,
+                    'insulation_conductivity': hp_par.insulation_conductivity,
+                    'insulation_thickness': hp_par.insulation_thickness,
+                    'rho_cp': hp_par.heat_capacity,
+                    'roughness': hp_par.roughness
+                },
                 'soil': {
                     'conductivity': self.soil_parameters.conductivity,
                     'rho_cp': self.soil_parameters.heat_capacity,
@@ -1042,7 +1078,9 @@ class GHEThermalLoop(object):
             tuple(ghe.duplicate() for ghe in self.ground_heat_exchangers),
             tuple(conn.duplicate() for conn in self.connectors), self.clockwise_flow,
             self.soil_parameters.duplicate(), self.fluid_parameters.duplicate(),
-            self.pipe_parameters.duplicate(), self.borehole_parameters.duplicate())
+            self.pipe_parameters.duplicate(), self.borehole_parameters.duplicate(),
+            self.design_parameters.duplicate(),
+            self.horizontal_pipe_parameters.duplicate())
         new_loop._display_name = self._display_name
         return new_loop
 

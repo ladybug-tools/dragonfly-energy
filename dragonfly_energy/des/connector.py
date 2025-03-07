@@ -6,6 +6,7 @@ from .._base import _GeometryBase
 
 from ladybug_geometry.geometry2d.line import LineSegment2D
 from ladybug_geometry.geometry2d.polyline import Polyline2D
+from honeybee.typing import float_positive
 from dragonfly.projection import polygon_to_lon_lat
 
 
@@ -161,3 +162,204 @@ class ThermalConnector(_GeometryBase):
 
     def __repr__(self):
         return 'ThermalConnector: {}'.format(self.display_name)
+
+
+class HorizontalPipeParameter(object):
+    """Represents the properties of horizontal pipes contained within ThermalConnectors.
+
+    Args:
+        buried_depth: The buried depth of the pipes in meters. (Default: 1.5)
+        hydraulic_diameter: Hydraulic diameter of the distribution pipe in
+            meters. (Default: 0.072736).
+        diameter_ratio: A number for the ratio of pipe outer diameter to pipe
+            wall thickness. (Default: 11).
+        pressure_drop_per_meter: A number for the pressure drop in pascals per
+            meter of pipe. (Default: 300).
+        insulation_conductivity: A positive number for the conductivity of the pipe
+            insulation material in W/m-K. If no insulation exists, this value
+            should be a virtual insulation layer of soil since this value must
+            be greater than zero. (Default: 3.0).
+        insulation_thickness: A positive number for the thickness of pipe insulation
+            in meters. If no insulation exists, this value should be a virtual
+            insulation layer of soil since this value must be greater than
+            zero. (Default: 0.2)
+        heat_capacity: A number for the volumetric heat capacity of the pipe wall
+            material in J/m3-K. (Default: 2,139,000).
+        roughness: A number for the linear dimension of bumps on the pipe surface
+            in meters. (Default: 1e-06)
+
+    Properties:
+        * buried_depth
+        * hydraulic_diameter
+        * diameter_ratio
+        * pressure_drop_per_meter
+        * insulation_conductivity
+        * insulation_thickness
+        * heat_capacity
+        * roughness
+    """
+    __slots__ = ('_buried_depth', '_hydraulic_diameter', '_diameter_ratio',
+                 '_pressure_drop_per_meter', '_insulation_conductivity',
+                 '_insulation_thickness', '_heat_capacity', '_roughness')
+
+    def __init__(
+            self, buried_depth=1.5, hydraulic_diameter=0.072736, diameter_ratio=11,
+            pressure_drop_per_meter=300, insulation_conductivity=3.0,
+            insulation_thickness=0.2, heat_capacity=2139000, roughness=1e-06):
+        """Initialize PipeParameter."""
+        self.buried_depth = buried_depth
+        self.hydraulic_diameter = hydraulic_diameter
+        self.diameter_ratio = diameter_ratio
+        self.pressure_drop_per_meter = pressure_drop_per_meter
+        self.insulation_conductivity = insulation_conductivity
+        self.insulation_thickness = insulation_thickness
+        self.heat_capacity = heat_capacity
+        self.roughness = roughness
+
+    @classmethod
+    def from_dict(cls, data):
+        """Create a HorizontalPipeParameter object from a dictionary
+
+        Args:
+            data: A dictionary representation of an HorizontalPipeParameter object
+                in the format below.
+
+        .. code-block:: python
+
+            {
+            'type': 'HorizontalPipeParameter',
+            'buried_depth': 2.0,  # float for buried depth in meters
+            'hydraulic_diameter': 0.09  # float for diameter in meters
+            'diameter_ratio': 11,  # float for diameter ratio
+            'pressure_drop_per_meter': 250, # float for pressure drop in Pa/m
+            'insulation_conductivity': 0.6,  # float in W/m2-K
+            'insulation_thickness': 0.3,  # float for thickness in meters
+            'heat_capacity': 1542000,  # float in J/m3-K
+            'roughness': 1e-06  # float for the dimension of the surface bumps in meters
+            }
+        """
+        bur_d = data['buried_depth'] if 'buried_depth' in data else 1.5
+        hyd_d = data['hydraulic_diameter'] if 'hydraulic_diameter' in data else 0.072736
+        d_ratio = data['diameter_ratio'] if 'diameter_ratio' in data else 11
+        pd = data['pressure_drop_per_meter'] \
+            if 'pressure_drop_per_meter' in data else 300
+        cond = data['insulation_conductivity'] \
+            if 'insulation_conductivity' in data else 3.0
+        thick = data['insulation_thickness'] \
+            if 'insulation_thickness' in data else 0.2
+        cap = data['heat_capacity'] if 'heat_capacity' in data else 2139000
+        rough = data['roughness'] if 'roughness' in data else 1e-06
+        return cls(bur_d, hyd_d, d_ratio, pd, cond, thick, cap, rough)
+
+    @property
+    def buried_depth(self):
+        """Get or set a number for the buried depth of the pipes in meters."""
+        return self._buried_depth
+
+    @buried_depth.setter
+    def buried_depth(self, value):
+        self._buried_depth = float_positive(value, 'pipe buried depth')
+
+    @property
+    def hydraulic_diameter(self):
+        """Get or set a number for the diameter of the distribution pipe in meters."""
+        return self._hydraulic_diameter
+
+    @hydraulic_diameter.setter
+    def hydraulic_diameter(self, value):
+        self._hydraulic_diameter = float_positive(value, 'pipe hydraulic diameter')
+
+    @property
+    def diameter_ratio(self):
+        """Get or set a number for the ratio of pipe outer diameter to pipe wall thickness.
+        """
+        return self._diameter_ratio
+
+    @diameter_ratio.setter
+    def diameter_ratio(self, value):
+        self._diameter_ratio = float_positive(value, 'pipe diameter ratio')
+
+    @property
+    def pressure_drop_per_meter(self):
+        """Get or set a number for the pressure drop in pascals per meter of pipe."""
+        return self._pressure_drop_per_meter
+
+    @pressure_drop_per_meter.setter
+    def pressure_drop_per_meter(self, value):
+        self._pressure_drop_per_meter = \
+            float_positive(value, 'pipe pressure drop per meter')
+
+    @property
+    def insulation_conductivity(self):
+        """Get or set a number for the conductivity of the insulation material in W/m-K.
+        """
+        return self._insulation_conductivity
+
+    @insulation_conductivity.setter
+    def insulation_conductivity(self, value):
+        self._insulation_conductivity = \
+            float_positive(value, 'pipe insulation conductivity')
+        assert self._insulation_conductivity != 0, \
+            'Insulation conductivity cannot be zero.'
+
+    @property
+    def insulation_thickness(self):
+        """Get or set a number for the thickness of the insulation material in meters.
+        """
+        return self._insulation_thickness
+
+    @insulation_thickness.setter
+    def insulation_thickness(self, value):
+        self._insulation_thickness = \
+            float_positive(value, 'pipe insulation thickness')
+        assert self._insulation_thickness != 0, 'Insulation thickness cannot be zero.'
+
+    @property
+    def heat_capacity(self):
+        """Get or set a number for the volumetric heat capacity of the pipe in J/m3-K."""
+        return self._heat_capacity
+
+    @heat_capacity.setter
+    def heat_capacity(self, value):
+        self._heat_capacity = float_positive(value, 'pipe heat capacity')
+
+    @property
+    def roughness(self):
+        """Get or set a number for the dimension of the pipe surface bumps in meters."""
+        return self._roughness
+
+    @roughness.setter
+    def roughness(self, value):
+        self._roughness = float_positive(value, 'pipe roughness')
+
+    def to_dict(self):
+        """Get HorizontalPipeParameter dictionary."""
+        base = {'type': 'HorizontalPipeParameter'}
+        base['buried_depth'] = self.buried_depth
+        base['hydraulic_diameter'] = self.hydraulic_diameter
+        base['diameter_ratio'] = self.diameter_ratio
+        base['pressure_drop_per_meter'] = self.pressure_drop_per_meter
+        base['insulation_conductivity'] = self.insulation_conductivity
+        base['insulation_thickness'] = self.insulation_thickness
+        base['heat_capacity'] = self.heat_capacity
+        base['roughness'] = self.roughness
+        return base
+
+    def duplicate(self):
+        """Get a copy of this object."""
+        return self.__copy__()
+
+    def __copy__(self):
+        return HorizontalPipeParameter(
+            self.buried_depth, self.hydraulic_diameter, self.diameter_ratio,
+            self.pressure_drop_per_meter, self.insulation_conductivity,
+            self.insulation_thickness, self.heat_capacity, self.roughness)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Represent HorizontalPipeParameter."""
+        return 'HorizontalPipeParameter: [pressure drop: {} Pa/m]'.format(
+            self.pressure_drop_per_meter)
