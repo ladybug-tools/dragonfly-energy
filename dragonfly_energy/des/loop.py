@@ -770,7 +770,6 @@ class GHEThermalLoop(object):
                 'horizontal_piping_parameters': {
                     'number_of_segments': 1,
                     'buried_depth': hp_par.buried_depth,
-                    'hydraulic_diameter': hp_par.hydraulic_diameter,
                     'diameter_ratio': hp_par.diameter_ratio,
                     'pressure_drop_per_meter': hp_par.pressure_drop_per_meter,
                     'insulation_conductivity': hp_par.insulation_conductivity,
