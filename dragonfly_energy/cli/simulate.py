@@ -5,13 +5,14 @@ import os
 import logging
 import json
 
-from dragonfly.model import Model
+from ladybug.epw import EPW
+from ladybug.stat import STAT
+from ladybug.futil import preparedir
 from honeybee.config import folders
 from honeybee_energy.simulation.parameter import SimulationParameter
-from honeybee_energy.run import to_openstudio_osw, run_osw, run_idf, \
-    output_energyplus_files
-from ladybug.futil import preparedir
-from ladybug.epw import EPW
+from honeybee_energy.run import to_openstudio_sim_folder, run_osw, run_idf, \
+    output_energyplus_files, _parse_os_cli_failure
+from dragonfly.model import Model
 
 
 _logger = logging.getLogger(__name__)
@@ -89,11 +90,13 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
         # get a ddy variable that might get used later
         epw_folder, epw_file_name = os.path.split(epw_file)
         ddy_file = os.path.join(epw_folder, epw_file_name.replace('.epw', '.ddy'))
+        stat_file = os.path.join(epw_folder, epw_file_name.replace('.epw', '.stat'))
 
         # set the default folder to the default if it's not specified
         if folder is None:
-            proj_name = \
-                os.path.basename(model_json).replace('.json', '').replace('.dfjson', '')
+            proj_name = os.path.basename(model_json).replace('.json', '')
+            proj_name = proj_name.replace('.dfjson', '')
+            proj_name = proj_name.replace('.geojson', '')
             folder = os.path.join(
                 folders.default_simulation_folder, proj_name, 'OpenStudio')
         preparedir(folder, remove_content=False)
@@ -106,18 +109,12 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
                         epw_obj.approximate_design_day('SummerDesignDay')]
             sim_par.sizing_parameter.design_days = des_days
 
-        def write_sim_par(sim_par):
-            """Write simulation parameter object to a JSON."""
-            sim_par_dict = sim_par.to_dict()
-            sp_json = os.path.abspath(os.path.join(folder, 'simulation_parameter.json'))
-            with open(sp_json, 'w') as fp:
-                json.dump(sim_par_dict, fp)
-            return sp_json
-
         if sim_par_json is None:  # generate some default simulation parameters
             sim_par = SimulationParameter()
             sim_par.output.add_zone_energy_use()
             sim_par.output.add_hvac_energy_use()
+            sim_par.output.add_electricity_generation()
+            sim_par.output.reporting_frequency = 'Monthly'
         else:
             with open(sim_par_json) as json_file:
                 data = json.load(json_file)
@@ -129,7 +126,10 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
                 ddy_from_epw(epw_file, sim_par)
         elif len(sim_par.sizing_parameter.design_days) == 0:
             ddy_from_epw(epw_file, sim_par)
-        sim_par_json = write_sim_par(sim_par)
+        if sim_par.sizing_parameter.climate_zone is None and \
+                os.path.isfile(stat_file):
+            stat_obj = STAT(stat_file)
+            sim_par.sizing_parameter.climate_zone = stat_obj.ashrae_climate_zone
 
         # process the measures input if it is specified
         base_osw = None
@@ -167,50 +167,37 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
         idfs = []
         sqls = []
         for hb_model in hb_models:
-            # create the dictionary of the HBJSON for input to OpenStudio CLI
-            for room in hb_model.rooms:
-                room.remove_colinear_vertices_envelope(0.01, delete_degenerate=True)
-            model_dict = hb_model.to_dict(triangulate_sub_faces=True)
-            hb_model.properties.energy.add_autocal_properties_to_dict(model_dict)
+            # run the Model re-serialization and convert to OSM, OSW, and IDF
             directory = os.path.join(folder, hb_model.identifier)
-            hb_model_json = os.path.abspath(os.path.join(directory, 'in.hbjson'))
-            preparedir(directory, remove_content=False)  # create the directory
-            with open(hb_model_json, 'w') as fp:
-                json.dump(model_dict, fp)
+            osm, osw, idf = to_openstudio_sim_folder(
+                hb_model, directory, epw_file=epw_file, sim_par=sim_par,
+                enforce_rooms=True, base_osw=base_osw, print_progress=True)
+            osms.append(osm)
 
-            # Write the osw file to translate the model to osm
-            osw = to_openstudio_osw(directory, hb_model_json, sim_par_json,
-                                    base_osw=base_osw, epw_file=epw_file)
-
-            # run the measure to translate the model JSON to an openstudio measure
-            if osw is not None and os.path.isfile(osw):
-                if base_osw is None:  # separate the OS CLI run from the E+ run
-                    osm, idf = run_osw(osw)
-                    if idf is not None and os.path.isfile(idf):
-                        sql, eio, rdd, html, err = run_idf(idf, epw_file)
-                        osms.append(osm)
-                        idfs.append(idf)
-                        sqls.append(sql)
-                        if err is None or not os.path.isfile(err):
-                            raise Exception('Running EnergyPlus failed.')
-                    else:
-                        raise Exception('Running OpenStudio CLI failed.')
-                else:  # run the whole simulation with the OpenStudio CLI
-                    osm, idf = run_osw(osw, measures_only=False)
-                    if idf is None or not os.path.isfile(idf):
-                        raise Exception('Running OpenStudio CLI failed.')
-                    sql, eio, rdd, html, err = \
-                        output_energyplus_files(os.path.dirname(idf))
-                    if err is None or not os.path.isfile(err):
-                        raise Exception('Running EnergyPlus failed.')
-                    osms.append(osm)
-                    idfs.append(idf)
+            # run the simulation
+            sql = None
+            if idf is not None:  # run the IDF directly through E+
+                idfs.append(idf)
+                sql, zsz, rdd, html, err = run_idf(idf, epw_file)
+                if err is not None and os.path.isfile(err):
                     sqls.append(sql)
-            else:
-                raise Exception('Writing OSW file failed.')
+                else:
+                    raise Exception('Running EnergyPlus failed.')
+            else:  # run the whole simulation with the OpenStudio CLI
+                osm, idf = run_osw(osw, measures_only=False)
+                if idf is not None and os.path.isfile(idf):
+                    idfs.append(osw)
+                else:
+                    _parse_os_cli_failure(directory)
+                sql, zsz, rdd, html, err = output_energyplus_files(os.path.dirname(idf))
+                if os.path.isfile(err):
+                    sqls.append(sql)
+                else:
+                    raise Exception('Running EnergyPlus failed.')
+
         log_file.write(json.dumps({'osm': osms, 'idf': idfs, 'sql': sqls}))
     except Exception as e:
-        _logger.exception('Model translation failed.\n{}'.format(e))
+        _logger.exception('Model simulation failed.\n{}'.format(e))
         sys.exit(1)
     else:
         sys.exit(0)
