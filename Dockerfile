@@ -24,6 +24,7 @@ COPY setup.py ${LIBRARYDIR}
 COPY setup.cfg ${LIBRARYDIR}
 COPY requirements.txt ${LIBRARYDIR}
 COPY standards-requirements.txt ${LIBRARYDIR}
+COPY openstudio-requirements.txt ${LIBRARYDIR}
 COPY README.md ${LIBRARYDIR}
 COPY LICENSE ${LIBRARYDIR}
 
