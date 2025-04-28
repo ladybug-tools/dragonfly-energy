@@ -2,6 +2,7 @@
 """Module for running geoJSON and OpenStudio files through URBANopt."""
 from __future__ import division
 
+import sys
 import os
 import json
 import shutil
@@ -231,8 +232,13 @@ def base_honeybee_osw(
     if not os.path.isdir(mappers_dir):
         preparedir(mappers_dir)
     osw_json = os.path.join(mappers_dir, 'honeybee_workflow.osw')
-    with open(osw_json, 'w') as fp:
-        json.dump(osw_dict, fp, indent=4)
+    if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
+        with open(osw_json, 'w') as fp:
+            model_str = json.dumps(osw_dict, ensure_ascii=False, indent=4)
+            fp.write(model_str.encode('utf-8'))
+    else:
+        with open(osw_json, 'w', encoding='utf-8') as fp:
+            json.dump(osw_dict, fp, ensure_ascii=False, indent=4)
 
     # copy the Honeybee.rb mapper if it exists in the config
     if folders.mapper_path:
