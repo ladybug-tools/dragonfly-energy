@@ -605,6 +605,7 @@ def model_to_gbxml(
     # re-serialize the Dragonfly Model
     model = Model.from_dfjson(model_file)
     model.convert_to_units('Meters')
+    model.tolerance = 0.01  # ensure roof calculation happens at E+ native tolerance
 
     # convert Dragonfly Model to Honeybee
     multiplier = not full_geometry
