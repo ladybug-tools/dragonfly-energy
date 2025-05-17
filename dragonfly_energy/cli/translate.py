@@ -618,7 +618,7 @@ def model_to_gbxml(
     # translate the model to a gbXML string
     gbxml_str = model_to_gbxml(
         hb_model, triangulate_non_planar_orphaned=triangulate_non_planar,
-        triangulate_subfaces=triangulate_subfaces, full_geometry=full_geometry,
+        triangulate_subfaces=triangulate_subfaces, full_geometry=complete_geometry,
         interior_face_type=interior_face_type, ground_face_type=ground_face_type
     )
 
