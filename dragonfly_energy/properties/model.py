@@ -6,6 +6,9 @@ except ImportError:
     pass   # python 3
 
 from honeybee.extensionutil import room_extension_dicts
+from honeybee.units import conversion_factor_to_meters
+from honeybee.boundarycondition import Surface
+from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.windowshade import WindowConstructionShade
 from honeybee_energy.construction.dynamic import WindowConstructionDynamic
 from honeybee_energy.construction.air import AirBoundaryConstruction
@@ -79,7 +82,7 @@ class ModelEnergyProperties(object):
     def constructions(self):
         """Get a list of all unique constructions in the model.
 
-        This includes materials across all Room2Ds, Stories, and Building
+        This includes constructions across all Room2Ds, Stories, and Building
         ConstructionSets but it does NOT include the Honeybee generic default
         construction set.
         """
@@ -346,30 +349,155 @@ class ModelEnergyProperties(object):
                         shws.append(room.properties.energy._shw)
         return shws
 
-    def check_all(self, raise_exception=True):
+    def check_for_extension(self, raise_exception=True, detailed=False):
+        """Check that the Model is valid for EnergyPlus simulation.
+
+        This process includes all relevant dragonfly-core checks as well as checks
+        that apply only for EnergyPlus.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if any errors are found. If False, this method will simply
+                return a text string with all errors that were found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A text string with all errors that were found or a list if detailed is True.
+            This string (or list) will be empty if no errors were found.
+        """
+        # set up defaults to ensure the method runs correctly
+        detailed = False if raise_exception else detailed
+        msgs = []
+        tol = self.host.tolerance
+        ang_tol = self.host.angle_tolerance
+
+        # perform checks for duplicate identifiers, which might mess with other checks
+        msgs.append(self.host.check_all_duplicate_identifiers(False, detailed))
+
+        # perform checks for key dragonfly model schema rules
+        msgs.append(self.host.check_degenerate_room_2ds(tol, False, detailed))
+        msgs.append(self.host.check_self_intersecting_room_2ds(tol, False, detailed))
+        msgs.append(self.host.check_plenum_depths(tol, False, detailed))
+        msgs.append(self.host.check_window_parameters_valid(tol, False, detailed))
+        msgs.append(self.host.check_no_room2d_overlaps(tol, False, detailed))
+        msgs.append(self.host.check_collisions_between_stories(tol, False, detailed))
+        msgs.append(self.host.check_roofs_above_rooms(tol, False, detailed))
+        msgs.append(self.host.check_room2d_floor_heights_valid(False, detailed))
+        msgs.append(self.host.check_missing_adjacencies(False, detailed))
+        msgs.append(self.host.check_all_room3d(tol, ang_tol, False, detailed))
+
+        # perform checks that are specific to EnergyPlus
+        # perform checks for specific energy simulation rules
+        msgs.append(self.check_all_zones_have_one_hvac(False, detailed))
+        msgs.append(self.check_maximum_elevation(1000, False, detailed))
+
+        # output a final report of errors or raise an exception
+        full_msgs = [msg for msg in msgs if msg]
+        if detailed:
+            return [m for msg in full_msgs for m in msg]
+        full_msg = '\n'.join(full_msgs)
+        if raise_exception and len(full_msgs) != 0:
+            raise ValueError(full_msg)
+        return full_msg
+
+    def check_all(self, raise_exception=True, detailed=False):
         """Check all of the aspects of the Model energy properties.
 
         Args:
             raise_exception: Boolean to note whether a ValueError should be raised
                 if any errors are found. If False, this method will simply
                 return a text string with all errors that were found.
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
 
         Returns:
-            A text string with all errors that were found. This string will be empty
-            of no errors were found.
+            A text string with all errors that were found or a list if detailed is True.
+            This string (or list) will be empty if no errors were found.
         """
+        # set up defaults to ensure the method runs correctly
+        detailed = False if raise_exception else detailed
         msgs = []
-        # perform checks for key honeybee model schema rules
-        msgs.append(self.check_duplicate_construction_set_identifiers(False))
-        msgs.append(self.check_duplicate_program_type_identifiers(False))
-        msgs.append(self.check_duplicate_hvac_identifiers(False))
-        msgs.append(self.check_duplicate_shw_identifiers(False))
+        # perform checks for specific energy simulation rules
+        msgs.append(self.check_all_zones_have_one_hvac(False, detailed))
+        msgs.append(self.check_maximum_elevation(1000, False, detailed))
         # output a final report of errors or raise an exception
         full_msgs = [msg for msg in msgs if msg != '']
         full_msg = '\n'.join(full_msgs)
         if raise_exception and len(full_msgs) != 0:
             raise ValueError(full_msg)
         return full_msg
+
+    def check_all_duplicate_identifiers(self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate identifiers for any geometry objects.
+
+        This includes Rooms, Faces, Apertures, Doors, Shades, and ShadeMeshes.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if any Model errors are found. If False, this method will simply
+                return a text string with all errors that were found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A text string with all errors that were found or a list if detailed is True.
+            This string (or list) will be empty if no errors were found.
+        """
+        # set up defaults to ensure the method runs correctly
+        detailed = False if raise_exception else detailed
+        msgs = []
+        # perform checks for duplicate identifiers
+        msgs.append(self.check_duplicate_material_identifiers(False, detailed))
+        msgs.append(self.check_duplicate_construction_identifiers(False, detailed))
+        msgs.append(self.check_duplicate_construction_set_identifiers(False, detailed))
+        stl_msgs = self.check_duplicate_schedule_type_limit_identifiers(False, detailed)
+        msgs.append(stl_msgs)
+        msgs.append(self.check_duplicate_schedule_identifiers(False, detailed))
+        msgs.append(self.check_duplicate_program_type_identifiers(False, detailed))
+        msgs.append(self.check_duplicate_hvac_identifiers(False, detailed))
+        msgs.append(self.check_duplicate_shw_identifiers(False, detailed))
+        # output a final report of errors or raise an exception
+        full_msgs = [msg for msg in msgs if msg]
+        if detailed:
+            return [m for msg in full_msgs for m in msg]
+        full_msg = '\n'.join(full_msgs)
+        if raise_exception and len(full_msgs) != 0:
+            raise ValueError(full_msg)
+        return full_msg
+
+    def check_duplicate_material_identifiers(self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate Material identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.materials, raise_exception, 'Material',
+            detailed, '020001', 'Energy', error_type='Duplicate Material Identifier')
+
+    def check_duplicate_construction_identifiers(
+            self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate Construction identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.constructions, raise_exception, 'Construction',
+            detailed, '020002', 'Energy', error_type='Duplicate Construction Identifier')
 
     def check_duplicate_construction_set_identifiers(
             self, raise_exception=True, detailed=False):
@@ -388,6 +516,40 @@ class ModelEnergyProperties(object):
             self.construction_sets, raise_exception, 'ConstructionSet',
             detailed, '020003', 'Energy',
             error_type='Duplicate ConstructionSet Identifier')
+
+    def check_duplicate_schedule_type_limit_identifiers(
+            self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate ScheduleTypeLimit identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.schedule_type_limits, raise_exception, 'ScheduleTypeLimit',
+            detailed, '020004', 'Energy',
+            error_type='Duplicate ScheduleTypeLimit Identifier')
+
+    def check_duplicate_schedule_identifiers(self, raise_exception=True, detailed=False):
+        """Check that there are no duplicate Schedule identifiers in the model.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if duplicate identifiers are found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        return check_duplicate_identifiers(
+            self.schedules, raise_exception, 'Schedule', detailed, '020005', 'Energy',
+            error_type='Duplicate Schedule Identifier')
 
     def check_duplicate_program_type_identifiers(
             self, raise_exception=True, detailed=False):
@@ -437,6 +599,142 @@ class ModelEnergyProperties(object):
         return check_duplicate_identifiers(
             self.shws, raise_exception, 'SHW', detailed, '020008', 'Energy',
             error_type='Duplicate SHW Identifier')
+
+    def check_all_zones_have_one_hvac(self, raise_exception=True, detailed=False):
+        """Check that all rooms within each zone have only one HVAC assigned to them.
+
+        Multiple HVAC systems serving one zone typically causes EnergyPlus simulation
+        failures and is often a mistake that results from changing zoning strategies
+        without changing the HVAC to be coordinated with the new zones.
+
+        Note that having some Rooms in the zone referencing the HVAC and others
+        with no HVAC is considered permissible since this just implies that the
+        thermostat or zone equipment may be in one of the rooms but the whole
+        zone is conditioned by this equipment.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised if
+                there are rooms within zones that have different HVAC systems
+                assigned to them. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        detailed = False if raise_exception else detailed
+        # gather a list of all the missing rooms
+        invalid_zones = {}
+        for bldg in self.host.buildings:
+            for zone, rooms in bldg.zone_dict.items():
+                if len(rooms) == 1:
+                    continue
+                hvacs = [r.properties.energy.hvac for r in rooms
+                         if r.properties.energy.hvac is not None]
+                if len(hvacs) > 1:
+                    invalid_zones[zone] = [rooms, hvacs]
+
+        # if missing rooms were found, then report the issue
+        if len(invalid_zones) != 0:
+            if detailed:
+                all_err = []
+                for zone, data in invalid_zones.items():
+                    rooms, hvacs = data
+                    hvac_names = [h.display_name for h in hvacs]
+                    msg = 'Zone "{}" is served by the following different HVAC ' \
+                        'systems:\n{}'.format(zone, '\n'.join(hvac_names))
+                    error_dict = {
+                        'type': 'ValidationError',
+                        'code': '020014',
+                        'error_type': 'Zone with Different Room HVACs',
+                        'extension_type': 'Energy',
+                        'element_type': 'Room',
+                        'element_id': [r.identifier for r in rooms],
+                        'element_name': [r.display_name for r in rooms],
+                        'message': msg
+                    }
+                    all_err.append(error_dict)
+                return all_err
+            else:
+                err_zones = []
+                for zone, data in invalid_zones.items():
+                    rooms, hvacs = data
+                    hvac_names = [h.display_name for h in hvacs]
+                    err_zn = '  {} - [HVACS: {}]'.format(zone, ', '.join(hvac_names))
+                    err_zones.append(err_zn)
+                msg = 'The model has the following invalid zones served by different ' \
+                    'HVAC systems:\n{}'.format('\n'.join(err_zones))
+                if raise_exception:
+                    raise ValueError(msg)
+                return msg
+        return [] if detailed else ''
+
+    def check_maximum_elevation(self, max_elevation=1000, raise_exception=True,
+                                detailed=False):
+        """Check that no Room2Ds of the model are above a certain elevation.
+
+        EnergyPlus computes wind speeds, air pressures, and adjusts outdoor
+        temperatures to account for the height above the ground using the Z values 
+        of the geometry coordinates. This is an important consideration when modeling
+        skyscrapers but it can be detrimental when a building has been modeled
+        with its coordinates at the height above sea level and the location
+        is significantly above sea level (eg. Denver, Colorado).
+
+        This validation check is intended to catch such cases and make the user
+        aware of the repercussions.
+
+        Args:
+            max_elevation: A number for the maximum elevation in Meters that the
+                model's rooms are permitted to be at before a ValidationError is
+                reported. While EnergyPlus technically still simulates with models that
+                are 12 kilometers above the origin, better practice is to set this
+                value at the maximum height above the ground that any human-made
+                structure can reasonably obtain. For this reason, the default is
+                set to 1000 meters or roughly the height of the Burj tower.
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if a Room composed entirely of AirBoundaries is found. (Default: True).
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A string with the message or a list with a dictionary if detailed is True.
+        """
+        detailed = False if raise_exception else detailed
+        # get the maximum elevation of all the rooms
+        conv_fac = conversion_factor_to_meters(self.host.units)
+        max_elev_model = max_elevation / conv_fac
+        # loop through the buildings and check whether it exceeds the maximum
+        bldg_msgs = []
+        for bldg in self.host.buildings:
+            room_elevations = tuple(room.ceiling_height for room in bldg.unique_room_2ds)
+            max_bldg_elev = max(room_elevations)
+            # if the maximum elevation was exceeded, then report the issue
+            if max_bldg_elev > max_elev_model:
+                msg = 'The height of Building "{}" is currently {} meters above the ' \
+                    'ground given the Z values of the coordinates. This is above the ' \
+                    'maximum recommended height of {} meters.'.format(
+                        bldg.display_name, int(max_bldg_elev * conv_fac), max_elevation)
+                if detailed:
+                    msg = {
+                        'type': 'ValidationError',
+                        'code': '020101',
+                        'error_type': 'Building Height Exceeds Max Elevation',
+                        'extension_type': 'Energy',
+                        'element_type': 'Building',
+                        'element_id': [bldg.identifier],
+                        'element_name': [bldg.display_name],
+                        'message': msg
+                    }
+                bldg_msgs.append(msg)
+        # return the validation message if requested
+        if detailed:
+            return bldg_msgs
+        if bldg_msgs != []:
+            msg = '\n'.join(bldg_msgs)
+            if raise_exception:
+                raise ValueError(msg)
+            return msg
+        return ''
 
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
@@ -516,6 +814,69 @@ class ModelEnergyProperties(object):
         Args:
             new_host: A honeybee-core Model object that will host these properties.
         """
+        # check whether construction sets in this model can create interior conflicts
+        can_conflict = True
+        construction_sets = []
+        for room in self.host.room_2ds:
+            c_set = room.properties.energy.construction_set
+            if not self._instance_in_array(c_set, construction_sets):
+                construction_sets.append(c_set)
+        if len(construction_sets) == 1 and construction_sets[0].is_interior_symmetric:
+            can_conflict = False  # typical case of only one construction set
+        elif all(c_set.is_interior_defaulted for c_set in construction_sets):
+            can_conflict = False  # typical case of only editing exterior constructions
+
+        # if construction sets can create conflicts, loop through new_host and fix them
+        if can_conflict:
+            # first gather all interior faces in the model and their adjacent object
+            adj_constr, base_objs, adj_ids = [], [], []
+            for face in new_host.faces:
+                if isinstance(face.boundary_condition, Surface):
+                    const = face.properties.energy.construction
+                    if not isinstance(const, AirBoundaryConstruction):
+                        adj_constr.append(face.properties.energy.construction)
+                        base_objs.append(face)
+                        adj_ids.append(face.boundary_condition.boundary_condition_object)
+            # next, get the adjacent objects
+            valid_adjacencies = True
+            try:
+                adj_faces = new_host.faces_by_identifier(adj_ids)
+            except ValueError:  # the model has missing adjacencies
+                valid_adjacencies = False
+            # loop through the adjacent face pairs and report if materials are not matched
+            if valid_adjacencies:
+                rev_cons, reported_items = {}, set()
+                for base_c, base_f, adj_f in zip(adj_constr, base_objs, adj_faces):
+                    if (base_f.identifier, adj_f.identifier) in reported_items:
+                        continue
+                    adj_c = adj_f.properties.energy.construction
+                    if not base_c.materials == tuple(reversed(adj_c.materials)):
+                        reported_items.add((adj_f.identifier, base_f.identifier))
+                        # resolve the conflict by assigning the higher R-value
+                        if base_c.r_value > adj_c.r_value:
+                            if base_c.is_symmetric:
+                                rev_con = base_c
+                            else:
+                                rev_con_id = '{} Rev'.format(base_c.identifier)
+                                try:
+                                    rev_con = rev_cons[rev_con_id]
+                                except KeyError:  # create the reversed construction
+                                    rev_con = OpaqueConstruction(
+                                        rev_con_id, tuple(reversed(base_c.materials)))
+                            adj_f.properties.energy.construction = rev_con
+                        else:
+                            if adj_c.is_symmetric:
+                                rev_con = adj_c
+                            else:
+                                rev_con_id = '{} Rev'.format(adj_c.identifier)
+                                try:
+                                    rev_con = rev_cons[rev_con_id]
+                                except KeyError:  # create the reversed construction
+                                    rev_con = OpaqueConstruction(
+                                        rev_con_id, tuple(reversed(adj_c.materials)))
+                            base_f.properties.energy.construction = rev_con
+
+        # create the honeybee ModelEnergyProperties
         return hb_model_properties.ModelEnergyProperties(new_host)
 
     def duplicate(self, new_host=None):
