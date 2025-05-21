@@ -3,9 +3,7 @@ import pytest
 import os
 import json
 
-from ladybug_geometry.geometry3d.pointvector import Point3D
-from ladybug_geometry.geometry3d.plane import Plane
-from ladybug_geometry.geometry3d.face import Face3D
+from ladybug_geometry.geometry3d import Vector3D, Point3D, Plane, Face3D
 from ladybug.location import Location
 from ladybug.futil import nukedir
 
@@ -118,11 +116,16 @@ def test_check_duplicate_construction_set_identifiers():
     model = Model('NewDevelopment', [building], [tree_canopy])
 
     assert model.properties.energy.check_duplicate_construction_set_identifiers(False) == ''
+    assert model.properties.energy.check_all_duplicate_identifiers(False) == ''
+
     constr_set2 = ConstructionSet('Attic Construction Set')
     building.unique_room_2ds[-2].properties.energy.construction_set = constr_set2
     assert model.properties.energy.check_duplicate_construction_set_identifiers(False) != ''
     with pytest.raises(ValueError):
         model.properties.energy.check_duplicate_construction_set_identifiers(True)
+    assert model.properties.energy.check_all_duplicate_identifiers(False) != ''
+    with pytest.raises(ValueError):
+        model.properties.energy.check_all_duplicate_identifiers(True)
 
 
 def test_check_duplicate_program_type_identifiers():
@@ -157,12 +160,75 @@ def test_check_duplicate_program_type_identifiers():
     model = Model('NewDevelopment', [building], [tree_canopy])
 
     assert model.properties.energy.check_duplicate_program_type_identifiers(False) == ''
+    assert model.properties.energy.check_all_duplicate_identifiers(False) == ''
+
     attic_program_type.unlock()
     attic_program_type.identifier = office_program.identifier
     attic_program_type.lock()
     assert model.properties.energy.check_duplicate_program_type_identifiers(False) != ''
     with pytest.raises(ValueError):
         model.properties.energy.check_duplicate_program_type_identifiers(True)
+    assert model.properties.energy.check_all_duplicate_identifiers(False) != ''
+    with pytest.raises(ValueError):
+        model.properties.energy.check_all_duplicate_identifiers(True)
+
+
+def test_check_all_zones_have_one_hvac():
+    """Test the check_all_zones_have_one_hvac method."""
+    pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
+    pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
+    story.solve_room_2d_adjacency(0.01)
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
+    story.multiplier = 4
+    building = Building('OfficeBuilding', [story])
+    building.separate_top_bottom_floors()
+    for room in story.room_2ds:
+        room.properties.energy.program_type = office_program
+        room.properties.energy.add_default_ideal_air()
+    model = Model('NewDevelopment', [building])
+
+    assert model.properties.energy.check_all_zones_have_one_hvac(False) == ''
+    room2d_1.zone = room2d_2.zone = 'Main House'
+    assert model.properties.energy.check_all_zones_have_one_hvac(False) != ''
+    with pytest.raises(ValueError):
+        model.properties.energy.check_all_zones_have_one_hvac(True)
+    model.properties.energy.check_all_zones_have_one_hvac(False, True)
+
+    room2d_2.zone = 'Main House2'
+    assert model.properties.energy.check_all_zones_have_one_hvac(False) == ''
+    for attic in building.unique_stories[-1].room_2ds:
+        attic.zone = 'Main House2'
+    assert model.properties.energy.check_all_zones_have_one_hvac(False) == ''
+
+
+def test_check_maximum_elevation():
+    """Test the check_maximum_elevation method."""
+    pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
+    pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
+    story.solve_room_2d_adjacency(0.01)
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
+    story.multiplier = 4
+    for room in story.room_2ds:
+        room.properties.energy.program_type = office_program
+        room.properties.energy.add_default_ideal_air()
+    building = Building('OfficeBuilding', [story])
+    building.separate_top_bottom_floors()
+    model = Model('NewDevelopment', [building])
+
+    assert model.properties.energy.check_maximum_elevation(1000, False) == ''
+
+    model.convert_to_units('Feet')
+    model.move(Vector3D(0, 0, 4000))
+
+    assert model.properties.energy.check_maximum_elevation(1000, False) != ''
+    with pytest.raises(ValueError):
+        model.properties.energy.check_maximum_elevation(1000, True)
 
 
 def test_to_from_dict():
@@ -267,7 +333,6 @@ def test_to_from_dict_plenum_construction():
     plenum_rooms = plenum_model.rooms
     assert len(plenum_rooms) == 4
     plenum = plenum_rooms[0]
-    #print(plenum[-1].properties.energy.construction)
     assert plenum[-1].properties.energy.construction == floor_constr
     plenum = plenum_rooms[-1]
     assert plenum[0].properties.energy.construction == ceil_constr
@@ -360,6 +425,49 @@ def test_to_honeybee():
 
     assert bright_leaves not in hb_models[-1].properties.energy.constructions
     assert tree_trans not in hb_models[-1].properties.energy.schedules
+
+
+def test_to_honeybee_construction_resolution():
+    """Test the to_honeybee method with construction sets that conflict interiors."""
+    pts_1 = (Point3D(0, 0, 3), Point3D(0, 10, 3), Point3D(10, 10, 3), Point3D(10, 0, 3))
+    pts_2 = (Point3D(10, 0, 3), Point3D(10, 10, 3), Point3D(20, 10, 3), Point3D(20, 0, 3))
+    room2d_1 = Room2D('Office1', Face3D(pts_1), 3)
+    room2d_2 = Room2D('Office2', Face3D(pts_2), 3)
+    story = Story('OfficeFloor', [room2d_1, room2d_2])
+    story.solve_room_2d_adjacency(0.01)
+    story.set_outdoor_window_parameters(SimpleWindowRatio(0.4))
+    story.multiplier = 4
+    building = Building('OfficeBuilding', [story])
+    building.separate_top_bottom_floors()
+    for room in story.room_2ds:
+        room.properties.energy.program_type = office_program
+        room.properties.energy.add_default_ideal_air()
+    model = Model('NewDevelopment', [building])
+
+    hb_model = model.to_honeybee('Building', 10, False, solve_ceiling_adjacencies=True)[0]
+    assert hb_model.check_all(False) == ''
+
+    constr_set = ConstructionSet('Attic Construction Set')
+    polyiso = EnergyMaterial('PolyIso', 0.2, 0.03, 43, 1210, 'MediumRough')
+    roof_constr = OpaqueConstruction('Attic Roof Construction',
+                                     [roof_membrane, polyiso, wood])
+    floor_constr = OpaqueConstruction('Attic Floor Construction',
+                                      [wood, insulation, wood])
+    constr_set.floor_set.interior_construction = floor_constr
+    constr_set.roof_ceiling_set.exterior_construction = roof_constr
+    building.unique_room_2ds[-1].properties.energy.construction_set = constr_set
+    building.unique_room_2ds[-2].properties.energy.construction_set = constr_set
+
+    hb_model = model.to_honeybee('Building', 10, False, solve_ceiling_adjacencies=True)[0]
+    assert hb_model.check_all(False) == ''
+    attics = [hb_model.rooms[-2], hb_model.rooms[-1]]
+    sub_attics = [hb_model.rooms[-4], hb_model.rooms[-3]]
+    for attic in attics:
+        for floor in attic.floors:
+            assert floor.properties.energy.construction == floor_constr
+    for sub_attic in sub_attics:
+        for ceiling in sub_attic.roof_ceilings:
+            assert ceiling.properties.energy.construction == floor_constr
 
 
 def test_to_urbanopt():
