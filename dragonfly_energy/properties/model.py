@@ -650,7 +650,7 @@ class ModelEnergyProperties(object):
                         'code': '020014',
                         'error_type': 'Zone with Different Room HVACs',
                         'extension_type': 'Energy',
-                        'element_type': 'Room',
+                        'element_type': 'Room2D',
                         'element_id': [r.identifier for r in rooms],
                         'element_name': [r.display_name for r in rooms],
                         'message': msg
@@ -692,7 +692,7 @@ class ModelEnergyProperties(object):
                 are 12 kilometers above the origin, better practice is to set this
                 value at the maximum height above the ground that any human-made
                 structure can reasonably obtain. For this reason, the default is
-                set to 1000 meters or roughly the height of the Burj tower.
+                set to 1000 meters.
             raise_exception: Boolean to note whether a ValueError should be raised
                 if a Room composed entirely of AirBoundaries is found. (Default: True).
             detailed: Boolean for whether the returned object is a detailed list of
@@ -722,9 +722,9 @@ class ModelEnergyProperties(object):
                         'code': '020101',
                         'error_type': 'Building Height Exceeds Max Elevation',
                         'extension_type': 'Energy',
-                        'element_type': 'Building',
-                        'element_id': [bldg.identifier],
-                        'element_name': [bldg.display_name],
+                        'element_type': 'Room2D',
+                        'element_id': [r.identifier for r in bldg.unique_room_2ds],
+                        'element_name': [r.display_name for r in bldg.unique_room_2ds],
                         'message': msg
                     }
                 bldg_msgs.append(msg)
