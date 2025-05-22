@@ -422,7 +422,9 @@ class ModelEnergyProperties(object):
         msgs.append(self.check_all_zones_have_one_hvac(False, detailed))
         msgs.append(self.check_maximum_elevation(1000, False, detailed))
         # output a final report of errors or raise an exception
-        full_msgs = [msg for msg in msgs if msg != '']
+        full_msgs = [msg for msg in msgs if msg]
+        if detailed:
+            return [m for msg in full_msgs for m in msg]
         full_msg = '\n'.join(full_msgs)
         if raise_exception and len(full_msgs) != 0:
             raise ValueError(full_msg)
