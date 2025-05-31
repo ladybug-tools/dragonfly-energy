@@ -708,8 +708,7 @@ class ModelEnergyProperties(object):
         # loop through the buildings and check whether it exceeds the maximum
         bldg_msgs = []
         for bldg in self.host.buildings:
-            room_elevations = tuple(room.ceiling_height for room in bldg.unique_room_2ds)
-            max_bldg_elev = max(room_elevations)
+            max_bldg_elev = bldg.height
             # if the maximum elevation was exceeded, then report the issue
             if max_bldg_elev > max_elev_model:
                 msg = 'The height of Building "{}" is currently {} meters above the ' \
