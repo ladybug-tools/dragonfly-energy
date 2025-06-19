@@ -387,7 +387,6 @@ class ModelEnergyProperties(object):
         msgs.append(self.host.check_missing_adjacencies(False, detailed))
         msgs.append(self.host.check_all_room3d(tol, ang_tol, False, detailed))
 
-        # perform checks that are specific to EnergyPlus
         # perform checks for specific energy simulation rules
         msgs.append(self.check_all_zones_have_one_hvac(False, detailed))
         msgs.append(self.check_maximum_elevation(1000, False, detailed))
@@ -401,8 +400,13 @@ class ModelEnergyProperties(object):
             raise ValueError(full_msg)
         return full_msg
 
-    def check_all(self, raise_exception=True, detailed=False):
-        """Check all of the aspects of the Model energy properties.
+    def check_generic(self, raise_exception=True, detailed=False):
+        """Check generic of the aspects of the Model energy properties.
+
+        This includes checks for everything except duplicate identifiers for
+        constructions, schedules, etc. Typically, these checks just add to the
+        validation time without providing useful information since extension
+        objects with duplicate IDs are lost during HBJSON serialization.
 
         Args:
             raise_exception: Boolean to note whether a ValueError should be raised
@@ -430,10 +434,42 @@ class ModelEnergyProperties(object):
             raise ValueError(full_msg)
         return full_msg
 
+    def check_all(self, raise_exception=True, detailed=False):
+        """Check all of the aspects of the Model energy properties.
+
+        Args:
+            raise_exception: Boolean to note whether a ValueError should be raised
+                if any errors are found. If False, this method will simply
+                return a text string with all errors that were found.
+            detailed: Boolean for whether the returned object is a detailed list of
+                dicts with error info or a string with a message. (Default: False).
+
+        Returns:
+            A text string with all errors that were found or a list if detailed is True.
+            This string (or list) will be empty if no errors were found.
+        """
+        # set up defaults to ensure the method runs correctly
+        detailed = False if raise_exception else detailed
+        msgs = []
+        # perform checks for duplicate identifiers
+        msgs.append(self.check_all_duplicate_identifiers(False, detailed))
+        # perform checks for specific energy simulation rules
+        msgs.append(self.check_all_zones_have_one_hvac(False, detailed))
+        msgs.append(self.check_maximum_elevation(1000, False, detailed))
+        # output a final report of errors or raise an exception
+        full_msgs = [msg for msg in msgs if msg]
+        if detailed:
+            return [m for msg in full_msgs for m in msg]
+        full_msg = '\n'.join(full_msgs)
+        if raise_exception and len(full_msgs) != 0:
+            raise ValueError(full_msg)
+        return full_msg
+
     def check_all_duplicate_identifiers(self, raise_exception=True, detailed=False):
         """Check that there are no duplicate identifiers for any geometry objects.
 
-        This includes Rooms, Faces, Apertures, Doors, Shades, and ShadeMeshes.
+        This includes Materials, Constructions, ConstructionSets, Schedules,
+        Programs, HVACs, and SHWs.
 
         Args:
             raise_exception: Boolean to note whether a ValueError should be raised
