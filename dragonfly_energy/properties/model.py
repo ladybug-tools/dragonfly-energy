@@ -45,6 +45,18 @@ class ModelEnergyProperties(object):
         * hvacs
         * shws
     """
+    ERROR_MAP = {
+        '020001': 'check_duplicate_material_identifiers',
+        '020002': 'check_duplicate_construction_identifiers',
+        '020003': 'check_duplicate_construction_set_identifiers',
+        '020004': 'check_duplicate_schedule_type_limit_identifiers',
+        '020005': 'check_duplicate_schedule_identifiers',
+        '020006': 'check_duplicate_program_type_identifiers',
+        '020007': 'check_duplicate_hvac_identifiers',
+        '020008': 'check_duplicate_shw_identifiers',
+        '020014': 'check_all_zones_have_one_hvac',
+        '020101': 'check_maximum_elevation'
+    }
 
     def __init__(self, host):
         """Initialize Model energy properties."""
