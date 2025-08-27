@@ -2,12 +2,13 @@
 """Thermal connector in a District Energy System."""
 from __future__ import division
 
-from .._base import _GeometryBase
-
 from ladybug_geometry.geometry2d.line import LineSegment2D
 from ladybug_geometry.geometry2d.polyline import Polyline2D
-from honeybee.typing import float_positive, float_in_range
+from honeybee.typing import float_positive, float_in_range, int_positive
+from honeybee_energy.altnumber import autosize
 from dragonfly.projection import polygon_to_lon_lat
+
+from .._base import _GeometryBase
 
 
 class ThermalConnector(_GeometryBase):
@@ -185,6 +186,15 @@ class HorizontalPipeParameter(object):
             material in J/m3-K. (Default: 2,139,000).
         roughness: A number for the linear dimension of bumps on the pipe surface
             in meters. (Default: 1e-06)
+        hydraulic_diameter: A number to specify the size of the hydraulic diameter
+            in meters. This can also be an Autosize object to indicate that the
+            hydraulic diameter should be autosized. (Default: Autosize).
+        pump_design_head: A number for the design pressure of the ambient
+            loop pump in Pa. This can also be an Autosize object to indicate
+            that the pump pressure should be autosized. (Default: Autosize).
+        pump_flow_rate: A number for the design volume flow rate of the ambient
+            loop pump in m3/s. This can also be an Autosize object to indicate
+            that the pump flow rate should be autosized. (Default: Autosize).
 
     Properties:
         * buried_depth
@@ -194,15 +204,22 @@ class HorizontalPipeParameter(object):
         * insulation_thickness
         * heat_capacity
         * roughness
+        * hydraulic_diameter
+        * pump_design_head
+        * pump_flow_rate
     """
-    __slots__ = ('_buried_depth', '_diameter_ratio', '_pressure_drop_per_meter',
-                 '_insulation_conductivity', '_insulation_thickness',
-                 '_heat_capacity', '_roughness')
+    __slots__ = (
+        '_buried_depth', '_diameter_ratio', '_pressure_drop_per_meter',
+        '_insulation_conductivity', '_insulation_thickness',
+        '_heat_capacity', '_roughness', '_hydraulic_diameter',
+        '_pump_design_head', '_pump_flow_rate'
+    )
 
     def __init__(
             self, buried_depth=1.5, diameter_ratio=11, pressure_drop_per_meter=300,
             insulation_conductivity=3.0, insulation_thickness=0.2,
-            heat_capacity=2139000, roughness=1e-06):
+            heat_capacity=2139000, roughness=1e-06, hydraulic_diameter=autosize,
+            pump_design_head=autosize, pump_flow_rate=autosize):
         """Initialize HorizontalPipeParameter."""
         self.buried_depth = buried_depth
         self.diameter_ratio = diameter_ratio
@@ -211,6 +228,9 @@ class HorizontalPipeParameter(object):
         self.insulation_thickness = insulation_thickness
         self.heat_capacity = heat_capacity
         self.roughness = roughness
+        self.hydraulic_diameter = hydraulic_diameter
+        self.pump_design_head = pump_design_head
+        self.pump_flow_rate = pump_flow_rate
 
     @classmethod
     def from_dict(cls, data):
@@ -230,7 +250,9 @@ class HorizontalPipeParameter(object):
             'insulation_conductivity': 0.6,  # float in W/m2-K
             'insulation_thickness': 0.3,  # float for thickness in meters
             'heat_capacity': 1542000,  # float in J/m3-K
-            'roughness': 1e-06  # float for the dimension of the surface bumps in meters
+            'roughness': 1e-06,  # float for the dimension of the surface bumps in meters
+            'pump_design_head': 60000,  # float for design pressure in Pa
+            'pump_flow_rate': 0.01  # float for design flow rate in m3/s
             }
         """
         bur_d = data['buried_depth'] if 'buried_depth' in data else 1.5
@@ -243,7 +265,22 @@ class HorizontalPipeParameter(object):
             if 'insulation_thickness' in data else 0.2
         cap = data['heat_capacity'] if 'heat_capacity' in data else 2139000
         rough = data['roughness'] if 'roughness' in data else 1e-06
-        return cls(bur_d, d_ratio, pd, cond, thick, cap, rough)
+        if 'hydraulic_diameter' not in data or \
+                data['hydraulic_diameter'] == autosize.to_dict():
+            hd = autosize
+        else:
+            hd = data['hydraulic_diameter']
+        if 'pump_design_head' not in data or \
+                data['pump_design_head'] == autosize.to_dict():
+            ph = autosize
+        else:
+            ph = data['pump_design_head']
+        if 'pump_flow_rate' not in data or \
+                data['pump_flow_rate'] == autosize.to_dict():
+            pfr = autosize
+        else:
+            pfr = data['pump_flow_rate']
+        return cls(bur_d, d_ratio, pd, cond, thick, cap, rough, hd, ph, pfr)
 
     @property
     def buried_depth(self):
@@ -272,7 +309,7 @@ class HorizontalPipeParameter(object):
     @pressure_drop_per_meter.setter
     def pressure_drop_per_meter(self, value):
         self._pressure_drop_per_meter = \
-            float_positive(value, 'pipe pressure drop per meter')
+            int_positive(value, 'pipe pressure drop per meter')
 
     @property
     def insulation_conductivity(self):
@@ -317,6 +354,42 @@ class HorizontalPipeParameter(object):
     def roughness(self, value):
         self._roughness = float_positive(value, 'pipe roughness')
 
+    @property
+    def hydraulic_diameter(self):
+        """Get or set a number for the hydraulic diameter in meters."""
+        return self._hydraulic_diameter
+
+    @hydraulic_diameter.setter
+    def hydraulic_diameter(self, value):
+        if value == autosize or value is None:
+            self._hydraulic_diameter = autosize
+        else:
+            self._hydraulic_diameter = float_positive(value, 'hydraulic diameter')
+
+    @property
+    def pump_design_head(self):
+        """Get or set a number for the pump design pressure in Pa."""
+        return self._pump_design_head
+
+    @pump_design_head.setter
+    def pump_design_head(self, value):
+        if value == autosize or value is None:
+            self._pump_design_head = autosize
+        else:
+            self._pump_design_head = float_positive(value, 'pump design head')
+
+    @property
+    def pump_flow_rate(self):
+        """Get or set a number for the pump flow rate in m3/s."""
+        return self._pump_flow_rate
+
+    @pump_flow_rate.setter
+    def pump_flow_rate(self, value):
+        if value == autosize or value is None:
+            self._pump_flow_rate = autosize
+        else:
+            self._pump_flow_rate = float_positive(value, 'pump design head')
+
     def to_dict(self):
         """Get HorizontalPipeParameter dictionary."""
         base = {'type': 'HorizontalPipeParameter'}
@@ -327,6 +400,15 @@ class HorizontalPipeParameter(object):
         base['insulation_thickness'] = self.insulation_thickness
         base['heat_capacity'] = self.heat_capacity
         base['roughness'] = self.roughness
+        base['hydraulic_diameter'] = self.hydraulic_diameter if \
+            isinstance(self.hydraulic_diameter, float) else \
+            self.hydraulic_diameter.to_dict()
+        base['pump_design_head'] = self.pump_design_head if \
+            isinstance(self.pump_design_head, float) else \
+            self.pump_design_head.to_dict()
+        base['pump_flow_rate'] = self.pump_flow_rate if \
+            isinstance(self.pump_flow_rate, float) else \
+            self.pump_flow_rate.to_dict()
         return base
 
     def duplicate(self):
@@ -337,7 +419,9 @@ class HorizontalPipeParameter(object):
         return HorizontalPipeParameter(
             self.buried_depth, self.diameter_ratio, self.pressure_drop_per_meter,
             self.insulation_conductivity, self.insulation_thickness,
-            self.heat_capacity, self.roughness)
+            self.heat_capacity, self.roughness, self.hydraulic_diameter,
+            self.pump_design_head, self.pump_flow_rate
+        )
 
     def ToString(self):
         """Overwrite .NET ToString method."""
