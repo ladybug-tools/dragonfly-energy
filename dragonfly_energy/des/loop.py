@@ -939,22 +939,6 @@ class GHEThermalLoop(object):
         assert thermal_load.header.unit == 'W', 'Expected load data collection to be in Watts. ' \
             'Got {}.'.format(thermal_load.header.unit)
 
-        # process the input geometry into the format needed for GHEDesigner
-        site_boundaries, site_holes = [], []
-        for face in site_geometry:
-            bnd_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in face.boundary])
-            bnd_poly = bnd_poly.remove_colinear_vertices(tolerance)
-            if bnd_poly.is_clockwise:
-                bnd_poly.reverse()
-            site_boundaries.append([[pt.x, pt.y] for pt in bnd_poly])
-            if face.has_holes:
-                for hole in face.holes:
-                    hole_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in hole])
-                    hole_poly = hole_poly.remove_colinear_vertices(tolerance)
-                    if hole_poly.is_clockwise:
-                        hole_poly.reverse()
-                    site_holes.append([[pt.x, pt.y] for pt in hole_poly])
-
         # set defaults if any of the inputs are unspecified
         soil = soil_parameters if soil_parameters is not None else SoilParameter()
         fluid = fluid_parameters if fluid_parameters is not None else FluidParameter()
@@ -966,57 +950,87 @@ class GHEThermalLoop(object):
         u_temp = 18.3 if soil._undisturbed_temperature is None \
             else soil.undisturbed_temperature
 
+        # loop through the geometries and format them for input to GHEDesigner
+        ghe_objs, topology = {}, []
+        for i, face in enumerate(site_geometry):
+            # add the geometry to the topology
+            top_obj = {'type': 'ground_heat_exchanger', 'name': 'ghe{}'.format(i)}
+            topology.append(top_obj)
+            # process the input geometry into the format needed for GHEDesigner
+            bnd_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in face.boundary])
+            bnd_poly = bnd_poly.remove_colinear_vertices(tolerance)
+            if bnd_poly.is_clockwise:
+                bnd_poly.reverse()
+            site_boundary = [[pt.x, pt.y] for pt in bnd_poly]
+            if face.has_holes:
+                site_holes = []
+                for hole in face.holes:
+                    hole_poly = Polygon2D([Point2D(pt.x, pt.y) for pt in hole])
+                    hole_poly = hole_poly.remove_colinear_vertices(tolerance)
+                    if hole_poly.is_clockwise:
+                        hole_poly.reverse()
+                    site_holes.append([[pt.x, pt.y] for pt in hole_poly])
+            # create the object for the ground heat exchanger
+            ghe_obj = {
+                'flow_rate': design.flow_rate,
+                'flow_type': 'BOREHOLE',
+                'grout': {
+                    'conductivity': soil.grout_conductivity,
+                    'rho_cp': soil.grout_heat_capacity
+                },
+                'soil': {
+                    'conductivity': soil.conductivity,
+                    'rho_cp': soil.heat_capacity,
+                    'undisturbed_temp': u_temp
+                },
+                'pipe': {
+                    'inner_diameter': pipe.inner_diameter,
+                    'outer_diameter': pipe.outer_diameter,
+                    'shank_spacing': pipe.shank_spacing,
+                    'roughness': pipe.roughness,
+                    'conductivity': pipe.conductivity,
+                    'rho_cp': pipe.heat_capacity,
+                    'arrangement': pipe.arrangement.upper()
+                },
+                'borehole': {
+                    'buried_depth': borehole.buried_depth,
+                    'diameter': borehole.diameter
+                },
+                'geometric_constraints': {
+                    'b_min': borehole.min_spacing,
+                    'b_max_x': borehole.max_spacing,
+                    'b_max_y': borehole.max_spacing,
+                    'property_boundary': site_boundary,
+                    'no_go_boundaries': site_holes,
+                    'method': 'BIRECTANGLECONSTRAINED'
+                },
+                'design': {
+                    'max_eft': design.max_eft,
+                    'min_eft': design.min_eft,
+                    'max_height': borehole.max_depth,
+                    'min_height': borehole.min_depth
+                },
+                'loads': {
+                    'load_values': thermal_load.values
+                }
+            }
+            ghe_objs['ghe{}'.format(i)] = ghe_obj
+
         # return a dictionary with all of the inputs
         return {
+            'version': 2,
+            'topology': topology,
             'fluid': {
-                'fluid_name': fluid.fluid_type,
+                'fluid_name': fluid.fluid_type.upper(),
                 'concentration_percent': fluid.concentration,
                 'temperature': fluid.temperature
             },
-            'grout': {
-                'conductivity': soil.grout_conductivity,
-                'rho_cp': soil.grout_heat_capacity
+            'simulation_control': {
+                'sizing_run': True,
+                'hourly_run': False,
+                'sizing_months': design.month_count
             },
-            'soil': {
-                'conductivity': soil.conductivity,
-                'rho_cp': soil.heat_capacity,
-                'undisturbed_temp': u_temp
-            },
-            'pipe': {
-                'inner_diameter': pipe.inner_diameter,
-                'outer_diameter': pipe.outer_diameter,
-                'shank_spacing': pipe.shank_spacing,
-                'roughness': pipe.roughness,
-                'conductivity': pipe.conductivity,
-                'rho_cp': pipe.heat_capacity,
-                'arrangement': pipe.arrangement.upper()
-            },
-            'borehole': {
-                'buried_depth': borehole.buried_depth,
-                'diameter': borehole.diameter
-            },
-            'simulation': {
-                'num_months': design.month_count
-            },
-            'geometric_constraints': {
-                'b_min': borehole.min_spacing,
-                'b_max_x': borehole.max_spacing,
-                'b_max_y': borehole.max_spacing,
-                'max_height': borehole.max_depth,
-                'min_height': borehole.min_depth,
-                'property_boundary': site_boundaries,
-                'no_go_boundaries': site_holes,
-                'method': 'BIRECTANGLECONSTRAINED'
-            },
-            'design': {
-                'flow_rate': design.flow_rate,
-                'flow_type': 'BOREHOLE',
-                'max_eft': design.max_eft,
-                'min_eft': design.min_eft
-            },
-            'loads': {
-                'ground_loads': thermal_load.values
-            }
+            'ground_heat_exchanger': ghe_objs
         }
 
     @staticmethod
