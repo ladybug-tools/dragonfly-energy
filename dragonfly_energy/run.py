@@ -561,20 +561,15 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         des_par = sp_dict['district_system']['fifth_generation']
         des_par['horizontal_piping_parameters'] = \
             original_des_par['horizontal_piping_parameters']
+        des_par['central_pump_parameters'] = original_des_par['central_pump_parameters']
         des_par['soil'] = original_des_par['soil']
         des_par['ghe_parameters']['fluid'] = original_ghe_par['fluid']
         des_par['ghe_parameters']['grout'] = original_ghe_par['grout']
         des_par['ghe_parameters']['pipe'] = original_ghe_par['pipe']
         des_par['ghe_parameters']['design'] = original_ghe_par['design']
         des_par['ghe_parameters']['simulation'] = original_ghe_par['simulation']
-        des_par['ghe_parameters']['geometric_constraints'] = \
-            original_ghe_par['geometric_constraints']
-        des_par['ghe_parameters']['ghe_specific_params'] = \
-            original_ghe_par['ghe_specific_params']
-        # remove geometric params so that ThermalNetwork uses GeoJSON polygon
-        rect_geo_par = []
-        for ghe_dict in des_par['ghe_parameters']['ghe_specific_params']:
-            rect_geo_par.append(ghe_dict.pop('ghe_geometric_params'))
+        des_par['ghe_parameters']['borehole'] = original_ghe_par['borehole']
+        des_par['ghe_parameters']['borefields'] = original_ghe_par['borefields']
     else:
         sp_dict['district_system'] = des_dict
     with open(sys_param_file, 'w') as spf:
@@ -602,22 +597,6 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         if 'ValueError' in stderr_str:  # pass the exception onto the user
             msg = stderr_str.split('ValueError: ')[-1].strip()
             raise ValueError(msg)
-        # add the borehole length and count to the system parameter file
-        with open(sys_param_file, 'r') as spf:
-            sp_dict = json.load(spf)
-        ghe_par_dict = sp_dict['district_system']['fifth_generation']['ghe_parameters']
-        for ghe_s_par, rect_par in zip(ghe_par_dict['ghe_specific_params'], rect_geo_par):
-            r_dir = des_par['ghe_parameters']['ghe_dir']
-            res_file = os.path.join(r_dir, ghe_s_par['ghe_id'], 'SimulationSummary.json')
-            with open(res_file, 'r') as rf:
-                res_dict = json.load(rf)
-            ghe_s_par['borehole']['length_of_boreholes'] = \
-                res_dict['ghe_system']['active_borehole_length']['value']
-            ghe_s_par['borehole']['number_of_boreholes'] = \
-                res_dict['ghe_system']['number_of_boreholes']
-            ghe_s_par['ghe_geometric_params'] = rect_par
-        with open(sys_param_file, 'w') as spf:
-            json.dump(sp_dict, spf, indent=2)
     return sys_param_file
 
 
