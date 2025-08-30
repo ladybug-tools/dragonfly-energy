@@ -35,7 +35,8 @@ def test_model_to_gbxml():
     input_df_model = './tests/json/model_complete_simple.dfjson'
 
     output_gbxml = './tests/json/in.xml'
-    in_args = [input_df_model, '--complete-geometry', '-f', output_gbxml]
+    in_args = [input_df_model, '--complete-geometry', '--program-name', 'Ladybug Tools',
+               '--program-version', '1.9', '-f', output_gbxml]
     result = runner.invoke(model_to_gbxml_cli, in_args)
     assert result.exit_code == 0
 
@@ -48,7 +49,9 @@ def test_model_to_trace_gbxml():
     input_df_model = './tests/json/model_complete_simple.dfjson'
 
     output_gbxml = './tests/json/in_trace.xml'
-    result = runner.invoke(model_to_trace_gbxml_cli, [input_df_model, '-f', output_gbxml])
+    in_args = [input_df_model, '--program-name', 'Ladybug Tools',
+               '--program-version', '1.9', '-f', output_gbxml]
+    result = runner.invoke(model_to_trace_gbxml_cli, in_args)
     assert result.exit_code == 0
 
     assert os.path.isfile(output_gbxml)
