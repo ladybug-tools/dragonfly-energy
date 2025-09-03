@@ -213,6 +213,7 @@ def base_honeybee_osw(
                         json.dump(geo_dict, fp, indent=4)
 
             # if the DES system is GSHP, specify any autocalculated ground temperatures
+            dead_band = 8  # minimum annual delta T of the ground GHEDesigner needs
             with open(sys_param_file, 'r') as spf:
                 sys_dict = json.load(spf)
             if 'district_system' in sys_dict:
@@ -222,8 +223,19 @@ def base_honeybee_osw(
                         soil_par = g5_par['soil']
                         if soil_par['undisturbed_temp'] == 'Autocalculate':
                             epw_obj = EPW(epw_file)
-                            soil_par['undisturbed_temp'] = \
-                                epw_obj.dry_bulb_temperature.average
+                            start_temp = epw_obj.dry_bulb_temperature.average
+                            if 'ghe_parameters' in g5_par and \
+                                    'design' in g5_par['ghe_parameters']:
+                                design = g5_par['ghe_parameters']['design']
+                                if 'min_eft' in design and \
+                                        design['min_eft'] + dead_band > start_temp:
+                                    # ground is too cold
+                                    start_temp = design['min_eft'] + dead_band
+                                elif 'max_eft' in design and \
+                                        design['max_eft'] - dead_band < start_temp:
+                                    # ground is too hot
+                                    start_temp = design['max_eft'] - dead_band
+                            soil_par['undisturbed_temp'] = start_temp
                             with open(sys_param_file, 'w') as fp:
                                 json.dump(sys_dict, fp, indent=4)
 
