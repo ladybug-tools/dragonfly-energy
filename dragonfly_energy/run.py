@@ -587,6 +587,7 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             '"{tn_exe}" -y "{sp_file}" -s "{scenario}" -f "{feature}" -o {out_p}'.format(
                 tn_exe=tn_exe, sp_file=sys_param_file,
                 scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
+        print(build_cmd)
         process = subprocess.Popen(
             build_cmd, stderr=subprocess.PIPE, shell=False, env=PYTHON_ENV
         )
