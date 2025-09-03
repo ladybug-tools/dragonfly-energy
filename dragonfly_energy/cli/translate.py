@@ -947,8 +947,27 @@ def model_to_sdd(
         enforce_adj=False)
     hb_model = hb_models[0]
 
+    if geometry_names:  # rename all face geometry so that it is easy to identify
+        hb_model.reset_ids()  # sets the identifiers based on the display_name
+        for room in hb_model.rooms:
+            room.display_name = None
+            for face in room.faces:
+                face.display_name = None
+                for ap in face.apertures:
+                    ap.display_name = None
+                for dr in face.apertures:
+                    dr.display_name = None
+            room.rename_faces_by_attribute()
+            room.rename_apertures_by_attribute()
+            room.rename_doors_by_attribute()
+        hb_model.reset_ids()
+
     # convert the Honeybee model to an OpenStudio Model
-    os_model = model_to_openstudio(hb_model, use_simple_window_constructions=True)
+    os_model = model_to_openstudio(
+        hb_model,
+        use_simple_window_constructions=True,
+        use_resource_names=resource_names
+    )
 
     # write the SDD
     out_path = None
