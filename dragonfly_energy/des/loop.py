@@ -818,32 +818,27 @@ class GHEThermalLoop(object):
         # compute the geometric constraints of the borehole fields
         geo_pars = []
         for ghe in self.ground_heat_exchangers:
-            ghe_geo = ghe.boundary_2d
-            max_dim = max((ghe_geo.max.x - ghe_geo.min.x, ghe_geo.max.y - ghe_geo.min.y))
-            ang_tol = tolerance / max_dim
-            if ghe_geo.is_rectangle(ang_tol):
-                ghe_dims = (ghe_geo.segments[0].length, ghe_geo.segments[1].length)
-            else:
-                rect_geo = ghe_geo.rectangular_approximation()
-                ghe_dims = (rect_geo.segments[0].length, rect_geo.segments[1].length)
             geo_par = {
                 'ghe_id': ghe.identifier,
-                'autosized_rectangle_borefield': {
-                    'width_of_ghe': min(ghe_dims),
-                    'length_of_ghe': max(ghe_dims),
+                'autosized_birectangle_constrained_borefield': {
                     'b_min': self.borehole_parameters.min_spacing,
-                    'b_max': self.borehole_parameters.max_spacing,
+                    'b_max_x': self.borehole_parameters.max_spacing,
+                    'b_max_y': self.borehole_parameters.max_spacing,
                     'max_height': self.borehole_parameters.max_depth,
-                    'min_height': self.borehole_parameters.min_depth
+                    'min_height': self.borehole_parameters.min_depth,
+                    'property_boundary': [],  # TODO: remove when GMT is better
+                    'no_go_boundaries': []  # TODO: remove when GMT is better
                 }
             }
             geo_pars.append(geo_par)
 
         # return a dictionary with all of the information
+        fluid_con = 0 if self.fluid_parameters.fluid_type == 'Water' else \
+            self.fluid_parameters.concentration
         return {
             'fluid': {
                 'fluid_name': self.fluid_parameters.fluid_type,
-                'concentration_percent': self.fluid_parameters.concentration,
+                'concentration_percent': fluid_con,
                 'temperature': self.fluid_parameters.temperature
             },
             'grout': {
