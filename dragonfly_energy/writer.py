@@ -15,7 +15,7 @@ from honeybee.model import Model as hb_model
 
 def model_to_urbanopt(
     model, location, point=Point2D(0, 0), shade_distance=None, use_multiplier=True,
-    exclude_plenums=False, solve_ceiling_adjacencies=False,
+    exclude_plenums=False, solve_ceiling_adjacencies=False, merge_method='None',
     des_loop=None, electrical_network=None, road_network=None, ground_pv=None,
     folder=None, tolerance=None
 ):
@@ -51,6 +51,22 @@ def model_to_urbanopt(
             another in their floor plate. This ensures that Surface boundary
             conditions are used instead of Adiabatic ones. Note that this input
             has no effect when the object_per_model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting 3D Honeybee Model and, ultimately, yield
+            a faster simulation time in the destination engine with fewer results
+            to manage. Note that Room2Ds will only be merged if they form a
+            continuous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging of Room2Ds will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         des_loop: An optional District Energy System (DES) ThermalLoop that's
             associated with the dragonfly Model. (Default: None).
         electrical_network: An optional OpenDSS ElectricalNetwork that's associated
@@ -202,7 +218,9 @@ def model_to_urbanopt(
     hb_model_jsons = []
     hb_models = model.to_honeybee(
         'Building', shade_distance, use_multiplier, exclude_plenums,
-        solve_ceiling_adjacencies=solve_ceiling_adjacencies, tolerance=tolerance)
+        solve_ceiling_adjacencies=solve_ceiling_adjacencies, merge_method=merge_method,
+        tolerance=tolerance
+    )
     for bldg_model in hb_models:
         try:
             bldg_model.remove_degenerate_geometry(0.01)

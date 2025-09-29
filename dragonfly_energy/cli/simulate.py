@@ -24,60 +24,92 @@ def simulate():
 
 
 @simulate.command('model')
-@click.argument('model-json', type=click.Path(
-    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
-@click.argument('epw-file', type=click.Path(
-    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.argument(
+    'model-json',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
+)
+@click.argument(
+    'epw-file',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
+)
 @click.option(
     '--sim-par-json', '-sp', help='Full path to a honeybee energy '
     'SimulationParameter JSON that describes all of the settings for '
     'the simulation.', default=None, show_default=True,
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
-@click.option('--obj-per-model', '-o', help='Text to describe how the input Model '
-              'should be divided across the output Models. Choose from: District, '
-              'Building, Story.', type=str, default="Building", show_default=True)
-@click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
-              'multipliers on each Building story will be passed along to the '
-              'generated Honeybee Room objects or if full geometry objects should be '
-              'written for each story in the building.', default=True, show_default=True)
-@click.option('--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
-              'ceiling/floor plenum depths assigned to Room2Ds should generate '
-              'distinct 3D Rooms in the translation.', default=True, show_default=True)
-@click.option('--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
-              'buildings should be capped with a top face.',
-              default=True, show_default=True)
-@click.option('--shade-dist', '-sd', help='An optional number to note the distance '
-              'beyond which other buildings shade should not be exported into a given '
-              'Model. If None, all other buildings will be included as context shade in '
-              'each and every Model. Set to 0 to exclude all neighboring buildings '
-              'from the resulting models.', type=float, default=None, show_default=True)
-@click.option('--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
-              'whether adjacencies should be solved between interior stories when '
-              'Room2Ds perfectly match one another in their floor plate. This ensures '
-              'that Surface boundary conditions are used instead of Adiabatic ones. '
-              'Note that this input has no effect when the object-per-model is Story.',
-              default=True, show_default=True)
-@click.option('--measures', '-m', help='Full path to a folder containing an OSW JSON '
-              'be used as the base for the execution of the OpenStudio CLI. While this '
-              'OSW can contain paths to measures that exist anywhere on the machine, '
-              'the best practice is to copy the measures into this measures '
-              'folder and use relative paths within the OSW. '
-              'This makes it easier to move the inputs for this command from one '
-              'machine to another.', default=None, show_default=True,
-              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
-@click.option('--folder', '-f', help='Folder on this computer, into which the IDF '
-              'and result files will be written. If None, the files will be output '
-              'to the honeybee default simulation folder and placed in a project '
-              'folder with the same name as the model json.',
-              default=None, show_default=True,
-              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
-@click.option('--log-file', '-log', help='Optional log file to output a dictionary '
-              'with the paths of the generated files under the following keys: '
-              'osm, idf, sql. By default the list will be printed out to stdout',
-              type=click.File('w'), default='-', show_default=True)
-def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier,
-                   plenum, no_cap, shade_dist, no_ceil_adjacency,
-                   measures, folder, log_file):
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
+)
+@click.option(
+    '--obj-per-model', '-o', help='Text to describe how the input Model '
+    'should be divided across the output Models. Choose from: District, '
+    'Building, Story.', type=str, default="Building", show_default=True
+)
+@click.option(
+    '--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
+    'multipliers on each Building story will be passed along to the '
+    'generated Honeybee Room objects or if full geometry objects should be '
+    'written for each story in the building.', default=True, show_default=True
+)
+@click.option(
+    '--plenum/--no-plenum', '-p/-np', help='Flag to indicate whether '
+    'ceiling/floor plenum depths assigned to Room2Ds should generate '
+    'distinct 3D Rooms in the translation.', default=True, show_default=True
+)
+@click.option(
+    '--no-cap/--cap', ' /-c', help='Flag to indicate whether context shade '
+    'buildings should be capped with a top face.', default=True, show_default=True
+)
+@click.option(
+    '--shade-dist', '-sd', help='An optional number to note the distance '
+    'beyond which other buildings shade should not be exported into a given '
+    'Model. If None, all other buildings will be included as context shade in '
+    'each and every Model. Set to 0 to exclude all neighboring buildings '
+    'from the resulting models.', type=float, default=None, show_default=True
+)
+@click.option(
+    '--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
+    'whether adjacencies should be solved between interior stories when '
+    'Room2Ds perfectly match one another in their floor plate. This ensures '
+    'that Surface boundary conditions are used instead of Adiabatic ones. '
+    'Note that this input has no effect when the object-per-model is Story.',
+    default=True, show_default=True
+)
+@click.option(
+    '--merge-method', '-m', help='Text to describe how the Room2Ds should '
+    'be merged into individual Rooms during the translation. Specifying a '
+    'value here can be an effective way to reduce the number of Room '
+    'volumes in the resulting Model and, ultimately, yield a faster simulation '
+    'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+    'Stories, PlenumStories.', type=str, default='None', show_default=True
+)
+@click.option(
+    '--measures', '-m', help='Full path to a folder containing an OSW JSON '
+    'be used as the base for the execution of the OpenStudio CLI. While this '
+    'OSW can contain paths to measures that exist anywhere on the machine, '
+    'the best practice is to copy the measures into this measures '
+    'folder and use relative paths within the OSW. '
+    'This makes it easier to move the inputs for this command from one '
+    'machine to another.', default=None, show_default=True,
+    type=click.Path(file_okay=False, dir_okay=True, resolve_path=True)
+)
+@click.option(
+    '--folder', '-f', help='Folder on this computer, into which the IDF '
+    'and result files will be written. If None, the files will be output '
+    'to the honeybee default simulation folder and placed in a project '
+    'folder with the same name as the model json.',
+    default=None, show_default=True,
+    type=click.Path(file_okay=False, dir_okay=True, resolve_path=True)
+)
+@click.option(
+    '--log-file', '-log', help='Optional log file to output a dictionary '
+    'with the paths of the generated files under the following keys: '
+    'osm, idf, sql. By default the list will be printed out to stdout',
+    type=click.File('w'), default='-', show_default=True
+)
+def simulate_model(
+    model_json, epw_file, sim_par_json, obj_per_model, multiplier,
+    plenum, no_cap, shade_dist, no_ceil_adjacency, merge_method,
+    measures, folder, log_file
+):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
 
     \b
@@ -160,7 +192,10 @@ def simulate_model(model_json, epw_file, sim_par_json, obj_per_model, multiplier
         cap = not no_cap
         ceil_adjacency = not no_ceil_adjacency
         hb_models = model.to_honeybee(
-            obj_per_model, shade_dist, multiplier, no_plenum, cap, ceil_adjacency)
+            obj_per_model, shade_dist, use_multiplier=multiplier,
+            exclude_plenums=no_plenum, cap=cap,
+            solve_ceiling_adjacencies=ceil_adjacency, merge_method=merge_method
+        )
 
         # write out the honeybee JSONs
         osms = []
