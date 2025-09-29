@@ -54,6 +54,12 @@ def translate():
               'that Surface boundary conditions are used instead of Adiabatic ones. '
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
+@click.option('--merge-method', '-m', help='Text to describe how the Room2Ds should '
+              'be merged into individual Rooms during the translation. Specifying a '
+              'value here can be an effective way to reduce the number of Room '
+              'volumes in the resulting Model and, ultimately, yield a faster simulation '
+              'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+              'Stories, PlenumStories.', type=str, default='None', show_default=True)
 @click.option('--folder', '-f', help='Deprecated input that is no longer used.',
               default=None, show_default=True,
               type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
@@ -87,8 +93,10 @@ def translate():
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_osm_cli(
-        model_file, sim_par_json, epw_file, multiplier, plenum, no_ceil_adjacency,
-        folder, osm_file, idf_file, geometry_ids, resource_ids, log_file):
+    model_file, sim_par_json, epw_file,
+    multiplier, plenum, no_ceil_adjacency, merge_method,
+    folder, osm_file, idf_file, geometry_ids, resource_ids, log_file
+):
     """Translate a Dragonfly Model to an OpenStudio Model.
 
     \b
@@ -103,8 +111,10 @@ def model_to_osm_cli(
         geo_names = not geometry_ids
         res_names = not resource_ids
         model_to_osm(
-            model_file, sim_par_json, epw_file, full_geometry, no_plenum, ceil_adjacency,
-            folder, osm_file, idf_file, geo_names, res_names, log_file)
+            model_file, sim_par_json, epw_file,
+            full_geometry, no_plenum, ceil_adjacency, merge_method,
+            folder, osm_file, idf_file, geo_names, res_names, log_file
+        )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -114,7 +124,7 @@ def model_to_osm_cli(
 
 def model_to_osm(
     model_file, sim_par_json=None, epw_file=None,
-    full_geometry=False, no_plenum=False, ceil_adjacency=False,
+    full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     folder=None, osm_file=None, idf_file=None,
     geometry_names=False, resource_names=False, log_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
@@ -145,6 +155,21 @@ def model_to_osm(
             in their floor plate. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting Model and, ultimately, yield a faster simulation
+            time with less results to manage. Note that Room2Ds will only be merged if
+            they form a contiguous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         folder: Deprecated input that is no longer used.
         osm_file: Optional path where the OSM will be copied after it is translated
             in the folder. If None, the file will not be copied.
@@ -238,7 +263,8 @@ def model_to_osm(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        enforce_adj=False)
+        merge_method=merge_method, enforce_adj=False
+    )
     hb_model = hb_models[0]
 
     # create the HBJSON for input to OpenStudio CLI
@@ -286,6 +312,12 @@ def model_to_osm(
               'that Surface boundary conditions are used instead of Adiabatic ones. '
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
+@click.option('--merge-method', '-m', help='Text to describe how the Room2Ds should '
+              'be merged into individual Rooms during the translation. Specifying a '
+              'value here can be an effective way to reduce the number of Room '
+              'volumes in the resulting Model and, ultimately, yield a faster simulation '
+              'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+              'Stories, PlenumStories.', type=str, default='None', show_default=True)
 @click.option('--additional-str', '-a', help='Text string for additional lines that '
               'should be added to the IDF.', type=str, default='', show_default=True)
 @click.option('--compact-schedules/--csv-schedules', ' /-c', help='Flag to note '
@@ -320,7 +352,7 @@ def model_to_osm(
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_idf_cli(
-    model_file, sim_par_json, multiplier, plenum, no_ceil_adjacency,
+    model_file, sim_par_json, multiplier, plenum, no_ceil_adjacency, merge_method,
     additional_str, compact_schedules, hvac_to_ideal_air,
     geometry_ids, resource_ids, output_file
 ):
@@ -344,7 +376,7 @@ def model_to_idf_cli(
         res_names = not resource_ids
         model_to_idf(
             model_file, sim_par_json, full_geometry, no_plenum, ceil_adjacency,
-            additional_str, csv_schedules,
+            merge_method, additional_str, csv_schedules,
             hvac_check, geo_names, res_names, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}\n'.format(e))
@@ -355,7 +387,7 @@ def model_to_idf_cli(
 
 def model_to_idf(
     model_file, sim_par_json=None,
-    full_geometry=False, no_plenum=False, ceil_adjacency=False,
+    full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     additional_str='', csv_schedules=False, hvac_check=False,
     geometry_names=False, resource_names=False, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
@@ -384,6 +416,21 @@ def model_to_idf(
             in their floor plate. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting Model and, ultimately, yield a faster simulation
+            time with less results to manage. Note that Room2Ds will only be merged if
+            they form a contiguous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         additional_str: Text string for additional lines that should be added
             to the IDF.
         csv_schedules: Boolean to note whether any ScheduleFixedIntervals in the
@@ -435,7 +482,8 @@ def model_to_idf(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        enforce_adj=False)
+        merge_method=merge_method, enforce_adj=False
+    )
     hb_model = hb_models[0]
 
     # reset the IDs to be derived from the display_names if requested
@@ -481,6 +529,12 @@ def model_to_idf(
               'that Surface boundary conditions are used instead of Adiabatic ones. '
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
+@click.option('--merge-method', '-m', help='Text to describe how the Room2Ds should '
+              'be merged into individual Rooms during the translation. Specifying a '
+              'value here can be an effective way to reduce the number of Room '
+              'volumes in the resulting Model and, ultimately, yield a faster simulation '
+              'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+              'Stories, PlenumStories.', type=str, default='None', show_default=True)
 @click.option('--osw-folder', '-osw', help='Deprecated input that is no longer used.',
               default=None,
               type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
@@ -524,7 +578,7 @@ def model_to_idf(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_gbxml_cli(
-    model_file, multiplier, plenum, no_ceil_adjacency,
+    model_file, multiplier, plenum, no_ceil_adjacency, merge_method,
     osw_folder, default_subfaces, triangulate_non_planar, minimal,
     interior_face_type, ground_face_type, program_name, program_version, output_file
 ):
@@ -543,7 +597,7 @@ def model_to_gbxml_cli(
         permit_non_planar = not triangulate_non_planar
         complete_geometry = not minimal
         model_to_gbxml(
-            model_file, osw_folder, full_geometry, no_plenum, ceil_adjacency,
+            model_file, osw_folder, full_geometry, no_plenum, ceil_adjacency, merge_method,
             triangulate_subfaces, permit_non_planar, complete_geometry,
             interior_face_type, ground_face_type, program_name, program_version,
             output_file)
@@ -556,7 +610,7 @@ def model_to_gbxml_cli(
 
 def model_to_gbxml(
     model_file, osw_folder=None, full_geometry=False,
-    no_plenum=False, ceil_adjacency=False,
+    no_plenum=False, ceil_adjacency=False, merge_method='None',
     triangulate_subfaces=False, permit_non_planar=False, complete_geometry=False,
     interior_face_type='', ground_face_type='',
     program_name=None, program_version=None, output_file=None,
@@ -581,6 +635,21 @@ def model_to_gbxml(
             in their floor plate. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting Model and, ultimately, yield a faster simulation
+            time with less results to manage. Note that Room2Ds will only be merged if
+            they form a contiguous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         triangulate_subfaces: Boolean to note whether sub-faces (including
             Apertures and Doors) should be triangulated if they have more
             than 4 sides (True) or whether they should be left as they are (False).
@@ -632,7 +701,7 @@ def model_to_gbxml(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        enforce_adj=False)
+        merge_method=merge_method, enforce_adj=False)
     hb_model = hb_models[0]
 
     # translate the model to a gbXML string
@@ -664,6 +733,12 @@ def model_to_gbxml(
               'that Surface boundary conditions are used instead of Adiabatic ones. '
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
+@click.option('--merge-method', '-m', help='Text to describe how the Room2Ds should '
+              'be merged into individual Rooms during the translation. Specifying a '
+              'value here can be an effective way to reduce the number of Room '
+              'volumes in the resulting Model and, ultimately, yield a faster simulation '
+              'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+              'Stories, PlenumStories.', type=str, default='None', show_default=True)
 @click.option('--single-window/--detailed-windows', ' /-dw', help='Flag to note '
               'whether all windows within walls should be converted to a single '
               'window with an area that matches the original geometry.',
@@ -702,7 +777,7 @@ def model_to_gbxml(
               'of the translation. By default it printed out to stdout.', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_trace_gbxml_cli(
-    model_file, multiplier, plenum, no_ceil_adjacency,
+    model_file, multiplier, plenum, no_ceil_adjacency, merge_method,
     single_window, rect_sub_distance, frame_merge_distance,
     program_name, program_version, osw_folder, output_file
 ):
@@ -719,8 +794,8 @@ def model_to_trace_gbxml_cli(
         ceil_adjacency = not no_ceil_adjacency
         detailed_windows = not single_window
         model_to_trace_gbxml(
-            model_file, full_geometry, no_plenum, ceil_adjacency, detailed_windows,
-            rect_sub_distance, frame_merge_distance, osw_folder,
+            model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
+            detailed_windows, rect_sub_distance, frame_merge_distance, osw_folder,
             program_name, program_version, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -730,7 +805,8 @@ def model_to_trace_gbxml_cli(
 
 
 def model_to_trace_gbxml(
-    model_file, full_geometry=False, no_plenum=False, ceil_adjacency=False,
+    model_file, full_geometry=False,
+    no_plenum=False, ceil_adjacency=False, merge_method='None',
     detailed_windows=False, rect_sub_distance='0.15m', frame_merge_distance='0.2m',
     program_name=None, program_version=None, osw_folder=None, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True, single_window=True
@@ -752,6 +828,21 @@ def model_to_trace_gbxml(
             in their floor plate. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting Model and, ultimately, yield a faster simulation
+            time with less results to manage. Note that Room2Ds will only be merged if
+            they form a contiguous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         detailed_windows: A boolean for whether all windows within walls should be
             left as they are (True) or converted to a single window with an area
             that matches the original geometry (False). (Default: False).
@@ -799,7 +890,7 @@ def model_to_trace_gbxml(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        enforce_adj=False)
+        merge_method=merge_method, enforce_adj=False)
     hb_model = hb_models[0]
 
     # translate the honeybee model to a TRACE-compatible gbXML string
@@ -831,6 +922,12 @@ def model_to_trace_gbxml(
               'that Surface boundary conditions are used instead of Adiabatic ones. '
               'Note that this input has no effect when the object-per-model is Story.',
               default=True, show_default=True)
+@click.option('--merge-method', '-m', help='Text to describe how the Room2Ds should '
+              'be merged into individual Rooms during the translation. Specifying a '
+              'value here can be an effective way to reduce the number of Room '
+              'volumes in the resulting Model and, ultimately, yield a faster simulation '
+              'time with less results to manage. Choose from: None, Zones, PlenumZones, '
+              'Stories, PlenumStories.', type=str, default='None', show_default=True)
 @click.option('--osw-folder', '-osw', help='Deprecated input that is no longer used.',
               default=None,
               type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
@@ -856,8 +953,8 @@ def model_to_trace_gbxml(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_sdd_cli(
-    model_file, multiplier, plenum, no_ceil_adjacency, osw_folder,
-    geometry_ids, resource_ids, output_file
+    model_file, multiplier, plenum, no_ceil_adjacency, merge_method,
+    osw_folder, geometry_ids, resource_ids, output_file
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
 
@@ -873,7 +970,7 @@ def model_to_sdd_cli(
         geo_names = not geometry_ids
         res_names = not resource_ids
         model_to_sdd(
-            model_file, full_geometry, no_plenum, ceil_adjacency,
+            model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
             osw_folder, geo_names, res_names, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -883,7 +980,8 @@ def model_to_sdd_cli(
 
 
 def model_to_sdd(
-    model_file, full_geometry=False, no_plenum=False, ceil_adjacency=False,
+    model_file, full_geometry=False,
+    no_plenum=False, ceil_adjacency=False, merge_method='None',
     osw_folder=None, geometry_names=False, resource_names=False, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
     geometry_ids=True, resource_ids=True
@@ -905,6 +1003,21 @@ def model_to_sdd(
             in their floor plate. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
+        merge_method: An optional text string to describe how the Room2Ds should
+            be merged into individual Rooms during the translation. Specifying a
+            value here can be an effective way to reduce the number of Room
+            volumes in the resulting Model and, ultimately, yield a faster simulation
+            time with less results to manage. Note that Room2Ds will only be merged if
+            they form a contiguous volume. Otherwise, there will be multiple Rooms per
+            zone or story, each with an integer added at the end of their
+            identifiers. Choose from the following options:
+
+            * None - No merging will occur
+            * Zones - Room2Ds in the same zone will be merged
+            * PlenumZones - Only plenums in the same zone will be merged
+            * Stories - Rooms in the same story will be merged
+            * PlenumStories - Only plenums in the same story will be merged
+
         osw_folder: Deprecated input that is no longer used.
         geometry_names: Boolean to note whether a cleaned version of all geometry
             display names should be used instead of identifiers when translating
