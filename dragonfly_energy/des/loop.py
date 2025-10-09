@@ -798,7 +798,7 @@ class GHEThermalLoop(object):
         # add the fifth generation system parameters
         des_param = {
             'fifth_generation': {
-                'ghe_parameters': self.to_ghe_param_dict(tolerance),
+                'ghe_parameters': self.to_ghe_param_dict(),
                 'central_pump_parameters': pump_par,
                 'horizontal_piping_parameters': horiz_par,
                 'soil': soil_par
@@ -809,11 +809,6 @@ class GHEThermalLoop(object):
 
     def to_ghe_param_dict(self, tolerance=0.01):
         """Get the GroundHeatExchanger as it appears in a System Parameter dictionary.
-
-        Args:
-            tolerance: The minimum difference between the coordinate values of two
-                geometries at which they are considered co-located. (Default: 0.01,
-                suitable for objects in meters).
         """
         # compute the geometric constraints of the borehole fields
         geo_pars = []
@@ -825,9 +820,7 @@ class GHEThermalLoop(object):
                     'b_max_x': self.borehole_parameters.max_spacing,
                     'b_max_y': self.borehole_parameters.max_spacing,
                     'max_height': self.borehole_parameters.max_depth,
-                    'min_height': self.borehole_parameters.min_depth,
-                    'property_boundary': [],  # TODO: remove when GMT is better
-                    'no_go_boundaries': []  # TODO: remove when GMT is better
+                    'min_height': self.borehole_parameters.min_depth
                 }
             }
             geo_pars.append(geo_par)
