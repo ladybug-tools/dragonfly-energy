@@ -213,7 +213,9 @@ def base_honeybee_osw(
                         json.dump(geo_dict, fp, indent=4)
 
             # if the DES system is GSHP, specify any autocalculated ground temperatures
-            dead_band = 8  # minimum annual delta T of the ground GHEDesigner needs
+            msg_template = 'Autocalculated EPW ground temperature in this climate is ' \
+                '{}C, which is too {} for a {} EFT of {}C. {} EFT is being reset to {}.'
+            dead_band = 12  # minimum annual delta T of the ground GHEDesigner needs
             with open(sys_param_file, 'r') as spf:
                 sys_dict = json.load(spf)
             if 'district_system' in sys_dict:
@@ -230,11 +232,27 @@ def base_honeybee_osw(
                                 if 'min_eft' in design and \
                                         design['min_eft'] + dead_band > start_temp:
                                     # ground is too cold
-                                    start_temp = design['min_eft'] + dead_band
+                                    new_min_eft = round(start_temp - dead_band)
+                                    if new_min_eft < -6.67:  # just too cold
+                                        new_min_eft = -6.67
+                                    msg = msg_template.format(
+                                        start_temp, 'cold', 'min', design['min_eft'],
+                                        'Min', new_min_eft)
+                                    print(msg)
+                                    design['min_eft'] = new_min_eft
+                                    # set fluid to ensure it does not freeze
+                                    fluid = g5_par['ghe_parameters']['fluid']
+                                    fluid['fluid_name'] = 'PropyleneGlycol'
+                                    fluid['concentration_percent'] = 25
                                 elif 'max_eft' in design and \
                                         design['max_eft'] - dead_band < start_temp:
                                     # ground is too hot
-                                    start_temp = design['max_eft'] - dead_band
+                                    new_max_eft = round(start_temp + dead_band)
+                                    msg = msg_template.format(
+                                        start_temp, 'hot', 'max', design['max_eft'],
+                                        'Max', new_max_eft)
+                                    print(msg)
+                                    design['max_eft'] = new_max_eft
                             soil_par['undisturbed_temp'] = start_temp
                             with open(sys_param_file, 'w') as fp:
                                 json.dump(sys_dict, fp, indent=4)

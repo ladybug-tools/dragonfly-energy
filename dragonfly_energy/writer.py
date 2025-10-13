@@ -371,6 +371,9 @@ def model_to_des(
             geojson_dict['project']['weather_filename'] = epw_f_name
 
     # if the DES system is GSHP, specify any autocalculated ground temperatures
+    msg_template = 'Autocalculated EPW ground temperature in this climate is ' \
+        '{}C, which is too {} for a {} EFT of {}C. {} EFT is being reset to {}.'
+    dead_band = 12  # minimum annual delta T of the ground GHEDesigner needs
     if 'district_system' in des_dict:
         if 'fifth_generation' in des_dict['district_system']:
             g5_par = des_dict['district_system']['fifth_generation']
@@ -378,8 +381,35 @@ def model_to_des(
                 soil_par = g5_par['soil']
                 if soil_par['undisturbed_temp'] == 'Autocalculate':
                     epw_obj = EPW(epw_file)
-                    soil_par['undisturbed_temp'] = \
-                        epw_obj.dry_bulb_temperature.average
+                    start_temp = epw_obj.dry_bulb_temperature.average
+                    if 'ghe_parameters' in g5_par and \
+                            'design' in g5_par['ghe_parameters']:
+                        design = g5_par['ghe_parameters']['design']
+                        if 'min_eft' in design and \
+                                design['min_eft'] + dead_band > start_temp:
+                            # ground is too cold
+                            new_min_eft = round(start_temp - dead_band)
+                            if new_min_eft < -6.67:  # just too cold
+                                new_min_eft = -6.67
+                            msg = msg_template.format(
+                                start_temp, 'cold', 'min', design['min_eft'],
+                                'Min', new_min_eft)
+                            print(msg)
+                            design['min_eft'] = new_min_eft
+                            # set fluid to ensure it does not freeze
+                            fluid = g5_par['ghe_parameters']['fluid']
+                            fluid['fluid_name'] = 'PropyleneGlycol'
+                            fluid['concentration_percent'] = 25
+                        elif 'max_eft' in design and \
+                                design['max_eft'] - dead_band < start_temp:
+                            # ground is too hot
+                            new_max_eft = round(start_temp + dead_band)
+                            msg = msg_template.format(
+                                start_temp, 'hot', 'max', design['max_eft'],
+                                'Max', new_max_eft)
+                            print(msg)
+                            design['max_eft'] = new_max_eft
+                    soil_par['undisturbed_temp'] = start_temp
 
     # write out the GeoJSON and system parameter files
     feature_geojson = os.path.join(folder, '{}.geojson'.format(model.identifier))
