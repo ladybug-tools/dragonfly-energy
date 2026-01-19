@@ -218,6 +218,7 @@ def base_honeybee_osw(
             dead_band = 12  # minimum annual delta T of the ground GHEDesigner needs
             with open(sys_param_file, 'r') as spf:
                 sys_dict = json.load(spf)
+            sys_dict['weather'] = mos_file
             if 'district_system' in sys_dict:
                 if 'fifth_generation' in sys_dict['district_system']:
                     g5_par = sys_dict['district_system']['fifth_generation']

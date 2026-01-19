@@ -371,6 +371,8 @@ def model_to_des(
             geojson_dict['project']['weather_filename'] = epw_f_name
         if 'weather' not in geojson_dict['project']:
             geojson_dict['project']['weather'] = epw_f_name
+    # write the EPW path into the System parameter
+    des_dict['weather'] = mos_file
 
     # if the DES system is GSHP, specify any autocalculated ground temperatures
     msg_template = 'Autocalculated EPW ground temperature in this climate is ' \
@@ -401,7 +403,7 @@ def model_to_des(
                             # set fluid to ensure it does not freeze
                             fluid = g5_par['ghe_parameters']['fluid']
                             fluid['fluid_name'] = 'PropyleneGlycol'
-                            fluid['concentration_percent'] = 25
+                            fluid['concentration_percent'] = 25.0
                         elif 'max_eft' in design and \
                                 design['max_eft'] - dead_band < start_temp:
                             # ground is too hot
