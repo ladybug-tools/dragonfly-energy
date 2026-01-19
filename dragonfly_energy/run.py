@@ -243,7 +243,7 @@ def base_honeybee_osw(
                                     # set fluid to ensure it does not freeze
                                     fluid = g5_par['ghe_parameters']['fluid']
                                     fluid['fluid_name'] = 'PropyleneGlycol'
-                                    fluid['concentration_percent'] = 25
+                                    fluid['concentration_percent'] = 25.0
                                 elif 'max_eft' in design and \
                                         design['max_eft'] - dead_band < start_temp:
                                     # ground is too hot

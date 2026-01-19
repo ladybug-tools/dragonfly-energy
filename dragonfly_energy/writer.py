@@ -369,6 +369,8 @@ def model_to_des(
     if 'project' in geojson_dict:
         if 'weather_filename' not in geojson_dict['project']:
             geojson_dict['project']['weather_filename'] = epw_f_name
+        if 'weather' not in geojson_dict['project']:
+            geojson_dict['project']['weather'] = epw_f_name
 
     # if the DES system is GSHP, specify any autocalculated ground temperatures
     msg_template = 'Autocalculated EPW ground temperature in this climate is ' \
