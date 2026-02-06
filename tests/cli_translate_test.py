@@ -35,8 +35,10 @@ def test_model_to_gbxml():
     input_df_model = './tests/json/model_complete_simple.dfjson'
 
     output_gbxml = './tests/json/in.xml'
-    in_args = [input_df_model, '--complete-geometry', '--program-name', 'Ladybug Tools',
-               '--program-version', '1.9', '-f', output_gbxml]
+    in_args = [input_df_model, '--complete-geometry',
+               '--reset-geometry-ids', '--reset-resource-ids',
+               '--program-name', 'Ladybug Tools', '--program-version', '1.9',
+               '--gbxml-schema-version', '5.00', '-f', output_gbxml]
     result = runner.invoke(model_to_gbxml_cli, in_args)
     assert result.exit_code == 0
 
