@@ -23,6 +23,7 @@ from honeybee_energy.schedule.day import ScheduleDay
 from honeybee_energy.schedule.ruleset import ScheduleRuleset
 
 import honeybee_energy.lib.scheduletypelimits as schedule_types
+from honeybee_energy.lib.schedules import always_on
 
 from ladybug.dt import Time
 
@@ -273,7 +274,8 @@ def test_averaged_program_type():
     assert office_avg.ventilation.flow_per_area == pytest.approx(0.00015, rel=1e-3)
     assert office_avg.ventilation.flow_per_zone == pytest.approx(0, rel=1e-3)
     assert office_avg.ventilation.air_changes_per_hour == pytest.approx(0, rel=1e-3)
-    assert office_avg.ventilation.schedule is None
+    assert office_avg.ventilation._schedule is None
+    assert office_avg.ventilation.schedule == always_on
 
     assert office_avg.setpoint.heating_setpoint == pytest.approx(21, rel=1e-3)
     assert office_avg.setpoint.cooling_setpoint == pytest.approx(24, rel=1e-3)
