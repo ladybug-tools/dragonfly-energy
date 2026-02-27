@@ -1,0 +1,6 @@
+simulate
+========
+
+.. click:: dragonfly_energy.cli.simulate:simulate
+   :prog: dragonfly-energy simulate
+   :show-nested:

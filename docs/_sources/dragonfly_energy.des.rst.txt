@@ -1,0 +1,21 @@
+dragonfly\_energy.des package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dragonfly_energy.des.connector
+   dragonfly_energy.des.ghe
+   dragonfly_energy.des.junction
+   dragonfly_energy.des.loop
+
+Module contents
+---------------
+
+.. automodule:: dragonfly_energy.des
+   :members:
+   :undoc-members:
+   :show-inheritance:
