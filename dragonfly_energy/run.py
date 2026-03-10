@@ -12,7 +12,6 @@ from ladybug.futil import preparedir, write_to_file
 from ladybug.epw import EPW
 from ladybug.config import folders as lb_folders
 from honeybee.config import folders as hb_folders
-from honeybee_energy.config import folders as hb_energy_folders
 from honeybee_energy.result.emissions import emissions_region
 
 from .config import folders
@@ -102,9 +101,11 @@ def base_honeybee_osw(
     # assign the measure_paths to the osw_dict
     if 'measure_paths' not in osw_dict:
         osw_dict['measure_paths'] = []
-    if hb_energy_folders.honeybee_openstudio_gem_path:  # add honeybee-openstudio measure
-        m_dir = os.path.join(hb_energy_folders.honeybee_openstudio_gem_path, 'measures')
-        osw_dict['measure_paths'].append(m_dir)
+    # add honeybee-openstudio measure
+    gem_dir = os.path.join(
+        project_directory, '.bundle', 'install', 'ruby', '3.2.0', 'gems')
+    m_dir = os.path.join(gem_dir, 'honeybee-openstudio-2.38.23', 'lib', 'measures')
+    osw_dict['measure_paths'].append(m_dir)
 
     # add the emissions reporting if a year has been selected
     if emissions_year is not None and epw_file is not None:

@@ -10,13 +10,12 @@ Usage:
     print(folders.mapper_path)
     folders.mapper_path = "C:/Urbanopt_test/Honeybee.rb"
 """
-from ladybug.futil import write_to_file
-import honeybee_energy.config as hb_energy_config
-
 import os
 import platform
 import json
 import subprocess
+
+from ladybug.futil import write_to_file
 
 
 class Folders(object):
@@ -43,7 +42,7 @@ class Folders(object):
         * config_file
         * mute
     """
-    URBANOPT_VERSION = (1, 1, 0)
+    URBANOPT_VERSION = (1, 2, 0)
     COMPATIBILITY_URL = 'https://github.com/ladybug-tools/lbt-grasshopper/wiki/' \
         '1.4-Compatibility-Matrix'
 
@@ -363,32 +362,28 @@ class Folders(object):
 
     @staticmethod
     def _find_mapper_path():
-        """Find the mapper that is distributed with the honeybee-openstudio-gem."""
-        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
-        if measure_install:
-            mapper_file = os.path.join(measure_install, 'files', 'Honeybee.rb')
-            if os.path.isfile(mapper_file):
-                return mapper_file
+        """Find the mapper."""
+        mapper_file = os.path.join(os.path.dirname(__file__), 'resources', 'Honeybee.rb')
+        if os.path.isfile(mapper_file):
+            return mapper_file
         return None
 
     @staticmethod
     def _find_urbanopt_gemfile_path():
-        """Find the URBANopt Gemfile that's distributed with honeybee-openstudio-gem."""
-        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
-        if measure_install:
-            gem_file = os.path.join(measure_install, 'files', 'urbanopt_Gemfile')
-            if os.path.isfile(gem_file):
-                return gem_file
+        """Find the URBANopt Gemfile."""
+        gem_file = os.path.join(os.path.dirname(__file__),
+                                'resources', 'urbanopt_Gemfile')
+        if os.path.isfile(gem_file):
+            return gem_file
         return None
 
     @staticmethod
     def _find_reopt_assumptions_path():
-        """Find the REopt assumptions that's distributed with honeybee-openstudio-gem."""
-        measure_install = hb_energy_config.folders.honeybee_openstudio_gem_path
-        if measure_install:
-            reopt_file = os.path.join(measure_install, 'files', 'reopt_assumptions.json')
-            if os.path.isfile(reopt_file):
-                return reopt_file
+        """Find the REopt assumptions file."""
+        reopt_file = os.path.join(os.path.dirname(__file__),
+                                  'resources', 'reopt_assumptions.json')
+        if os.path.isfile(reopt_file):
+            return reopt_file
         return None
 
     @staticmethod
