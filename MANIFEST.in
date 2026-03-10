@@ -1,4 +1,7 @@
 include dragonfly_energy/config.json
+include dragonfly_energy/resources/urbanopt_Gemfile
+include dragonfly_energy/resources/Honeybee.rb
+include dragonfly_energy/resources/reopt_assumptions.json
 include dragonfly_energy/opendss/lib/electrical_database.json
 recursive-exclude tests *
 recursive-exclude docs *
