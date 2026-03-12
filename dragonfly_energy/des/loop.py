@@ -831,7 +831,7 @@ class GHEThermalLoop(object):
         return {
             'fluid': {
                 'fluid_name': self.fluid_parameters.fluid_type,
-                'concentration_percent': fluid_con,
+                'concentration_percent': fluid_con / 100,
                 'temperature': self.fluid_parameters.temperature
             },
             'grout': {

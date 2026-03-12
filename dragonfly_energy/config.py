@@ -43,6 +43,10 @@ class Folders(object):
         * mute
     """
     URBANOPT_VERSION = (1, 2, 0)
+    UO_GMT_VERSION = (0, 13, 0)
+    GHE_DESIGNER_VERSION = (2, 1, 0)
+    UO_TN_VERSION = (0, 5, 0)
+    MBL_VERSION = (12, 0, 0)
     COMPATIBILITY_URL = 'https://github.com/ladybug-tools/lbt-grasshopper/wiki/' \
         '1.4-Compatibility-Matrix'
 
