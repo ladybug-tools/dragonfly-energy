@@ -5,10 +5,14 @@ import os
 import logging
 import json
 import tempfile
+import glob
+import subprocess
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from ladybug.commandutil import process_content_to_output
 from ladybug.epw import EPW
 from ladybug.stat import STAT
+from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import HB_OS_MSG
 from honeybee_energy.writer import energyplus_idf_version, _preprocess_model_for_trace
@@ -1146,3 +1150,121 @@ def model_to_sdd(
             return file_contents
         else:
             print(file_contents)
+
+
+@translate.command('hb-models-to-osm')
+@click.argument('model-folder', type=click.Path(
+    exists=True, file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--sim-par-json', '-sp', help='Full path to a honeybee energy '
+              'SimulationParameter JSON that describes all of the settings for '
+              'the simulation. If None default parameters will be generated.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
+@click.option('--epw-file', '-epw', help='Full path to an EPW file to be associated '
+              'with the exported OSM. This is typically not necessary but may be '
+              'used when a sim-par-json is specified that requests a HVAC sizing '
+              'calculation to be run as part of the translation process but no design '
+              'days are inside this simulation parameter.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
+@click.option('--cpu-count', '-c', help='Optional integer to specify the number '
+              'of processors to be used in converting each HBJSON to an OSM.',
+              type=int, default=1, show_default=True)
+@click.option('--output-folder', '-f', help='Optional path to an output folder '
+              'where the OSM files will be written. If unspecified, this will be '
+              'the same as the folder containing HBJSONs.',
+              default=None, show_default=True,
+              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+def hb_models_to_osm_cli(model_folder, sim_par_json, epw_file, cpu_count, output_folder):
+    """Translate a folder of HBJSONs to OSMs in the same folder.
+
+    \b
+    Args:
+        model_folder: Path to a folder containing HBJSONs to be translated to OSM.
+    """
+    try:
+        hb_models_to_osm(model_folder, sim_par_json, epw_file, cpu_count, output_folder)
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def hb_models_to_osm(
+    model_folder, sim_par_json=None, epw_file=None, cpu_count=1, output_folder=None
+):
+    """Translate a folder of HBJSONs to OSMs in the same folder.
+
+    Args:
+        model_folder: Path to a folder containing HBJSONs to be translated to OSM.
+        sim_par_json: Full path to a honeybee energy SimulationParameter JSON that
+            describes all of the settings for the simulation. If None, default
+            parameters will be generated.
+        epw_file: Full path to an EPW file to be associated with the exported OSM.
+            This is typically not necessary but may be used when a sim-par-json is
+            specified that requests a HVAC sizing calculation to be run as part
+            of the translation process but no design days are inside this
+            simulation parameter.
+        cpu_count: Optional integer to specify the number of processors to be
+            used in converting each HBJSON to an OSM.
+        output_folder: Optional path to an output folder where the OSM files will
+            be written. If unspecified, this will be the same as the folder
+            containing HBJSONs.
+    """
+    # find all .hbjson files in the target directory
+    hbjson_files, out_f = [], output_folder
+    hbjson_files.extend(glob.glob(os.path.join(model_folder, '*.hbjson')))
+    hbjson_files.extend(glob.glob(os.path.join(model_folder, '*.json')))
+    if not hbjson_files:
+        print('No HBJSON files found in: {}'.format(model_folder))
+        return
+
+    # execute translations in parallel
+    print('Translating {} HBJSON files to OSM.'.format(len(hbjson_files)))
+    with ProcessPoolExecutor(max_workers=cpu_count) as executor:
+        # submit all tasks to the executor
+        futures = {
+            executor.submit(_hbjson_to_osm, path, sim_par_json, epw_file, out_f): path
+            for path in hbjson_files
+        }
+        # yield results as soon as each process completes
+        for future in as_completed(futures):
+            success, original_path, output_path, msg = future.result()
+            filename = os.path.basename(original_path)
+            if success:
+                suc_str = 'SUCCESS: Translated {} -> {}'
+                print(suc_str.format(filename, os.path.basename(output_path)))
+            else:
+                print('FAILED: Could not translate {}'.format(filename))
+                print('   Error details: {}'.format(msg.strip()))
+
+
+def _hbjson_to_osm(hbjson_path, sim_par_json, epw_file, output_folder):
+    """Translate an HBJSON file to OSM using the Honeybee Energy CLI."""
+    # Define the output OSM file path
+    osm_path = hbjson_path.replace('.hbjson', '.osm').replace('.json', '.osm')
+    if output_folder is not None:
+        osm_path = os.path.join(output_folder, os.path.basename(osm_path))
+    # honeybee-energy CLI command for translation
+    cmd = [
+        hb_folders.python_exe_path, '-m',
+        'honeybee_energy', 'translate', 'model-to-osm',
+        hbjson_path, '--osm-file', osm_path
+    ]
+    if sim_par_json is not None:
+        cmd.append('--sim-par-json')
+        cmd.append(sim_par_json)
+    if epw_file is not None:
+        cmd.append('--epw-file')
+        cmd.append(epw_file)
+    try:
+        # execute the CLI command
+        process = subprocess.run(
+            cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        return True, hbjson_path, osm_path, process.stdout
+    except subprocess.CalledProcessError as e:
+        return False, hbjson_path, None, e.stderr

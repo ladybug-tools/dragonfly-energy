@@ -97,9 +97,10 @@ module URBANopt
         osw[:description] = feature_name
 
         if feature_type == 'Building'
-            # set the honeybee JSON key to the honeybee_model measure
-            OpenStudio::Extension.set_measure_argument(
-                osw, 'from_honeybee_model', 'model_json', feature.detailed_model_filename)
+            # set the seed file of the workflow to the python-authored OSM
+            seed_file = feature.detailed_model_filename
+            seed_file[-7..-1] = '.osm'
+            osw[:seed_file] = seed_file
 
             # add any of the mapper measure variables
             if not @@mapper_measures.nil?
