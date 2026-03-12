@@ -34,6 +34,7 @@ require 'openstudio/common_measures'
 require 'openstudio/model_articulation'
 
 require 'json'
+require 'pathname'
 
 module URBANopt
     module Scenario
@@ -99,7 +100,10 @@ module URBANopt
         if feature_type == 'Building'
             # set the seed file of the workflow to the python-authored OSM
             seed_file = feature.detailed_model_filename
-            seed_file[-7..-1] = '.osm'
+            path_array = seed_file.split(/[.]/)
+            path_array[-1] = 'osm'
+            seed_file = path_array.join('.')
+            seed_file = seed_file.gsub('hb_json', 'osm')
             osw[:seed_file] = seed_file
 
             # add any of the mapper measure variables

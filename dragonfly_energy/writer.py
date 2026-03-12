@@ -95,10 +95,9 @@ def model_to_urbanopt(
             process of writing the URBANopt files.
     """
     # make sure the model is in meters and, if it's not, duplicate and scale it
-    conversion_factor, original_units = None, 'Meters'
+    conversion_factor = None
     tolerance = model.tolerance if tolerance is None else tolerance
     if model.units != 'Meters':
-        original_units = model.units
         conversion_factor = hb_model.conversion_factor_to_meters(model.units)
         point = point.scale(conversion_factor)
         if shade_distance is not None:
@@ -131,7 +130,7 @@ def model_to_urbanopt(
         assert len(folder) < 60, tr_msg.format(folder)
 
     # get rid of all simulation files that exists in the folder already
-    dir_to_delete = ('hb_json', 'mappers', 'run')
+    dir_to_delete = ('hb_json', 'osm', 'mappers', 'run')
     ext_to_delete = ('.bat', '.geojson', '.epw', '.mos')
     file_to_delete = (
         'Gemfile', 'Gemfile.lock', 'honeybee_scenario.csv', 'runner.conf',
@@ -222,22 +221,15 @@ def model_to_urbanopt(
         tolerance=tolerance
     )
     for bldg_model in hb_models:
-        try:
-            bldg_model.remove_degenerate_geometry(0.01)
-        except ValueError:
-            error = 'Failed to remove degenerate Geometry.\nYour Model units system is: {}. ' \
-                'Is this correct?'.format(original_units)
-            raise ValueError(error)
-        model_dict = bldg_model.to_dict(triangulate_sub_faces=True)
-        bldg_model.properties.energy.add_autocal_properties_to_dict(model_dict)
-        bld_path = os.path.join(hb_model_folder, '{}.json'.format(bldg_model.identifier))
+        model_dict = bldg_model.to_dict()
+        bld_path = os.path.join(hb_model_folder, '{}.hbjson'.format(bldg_model.identifier))
         if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
             with open(bld_path, 'wb') as fp:
-                obj_str = json.dumps(model_dict, indent=4, ensure_ascii=False)
+                obj_str = json.dumps(model_dict, ensure_ascii=False)
                 fp.write(obj_str.encode('utf-8'))
         else:
             with open(bld_path, 'w', encoding='utf-8') as fp:
-                obj_str = json.dump(model_dict, fp, indent=4, ensure_ascii=False)
+                obj_str = json.dump(model_dict, fp, ensure_ascii=False)
         hb_model_jsons.append(bld_path)
 
     return feature_geojson, hb_model_jsons, hb_models
