@@ -79,33 +79,9 @@ def base_honeybee_osw(
         with open(base_osw, 'r') as base_file:
             osw_dict = json.load(base_file)
 
-    # add a simulation parameter step if it is specified
-    if sim_par_json is not None:
-        sim_par_dict = {
-            'arguments': {
-                'simulation_parameter_json': sim_par_json
-            },
-            'measure_dir_name': 'from_honeybee_simulation_parameter'
-        }
-        osw_dict['steps'].insert(0, sim_par_dict)
-
-    # add the model json serialization into the steps
-    model_measure_dict = {
-        'arguments': {
-            'model_json': 'model_json_to_be_mapped.json'
-        },
-        'measure_dir_name': 'from_honeybee_model'
-    }
-    osw_dict['steps'].insert(0, model_measure_dict)
-
     # assign the measure_paths to the osw_dict
     if 'measure_paths' not in osw_dict:
         osw_dict['measure_paths'] = []
-    # add honeybee-openstudio measure
-    gem_dir = os.path.join(
-        project_directory, '.bundle', 'install', 'ruby', '3.2.0', 'gems')
-    m_dir = os.path.join(gem_dir, 'honeybee-openstudio-2.38.23', 'lib', 'measures')
-    osw_dict['measure_paths'].append(m_dir)
 
     # add the emissions reporting if a year has been selected
     if emissions_year is not None and epw_file is not None:
@@ -282,9 +258,11 @@ def base_honeybee_osw(
 def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
     """Prepare a directory with a feature geoJSON for URBANopt simulation.
 
-    This includes copying the Gemfile to the folder and generating the runner.conf
+    This includes translating all HBJSON files of individual buildings to OSM
+    files so that they can be specified as seed models for the URBANopt OSWs.
+    It also involves copying the Gemfile to the folder and generating a runner.conf
     to specify the number of CPUs to be used in the simulation. Lastly, the
-    the scenario .csv file will be generated from the feature_geojson.
+    the scenario .csv file is generated from the feature_geojson.
 
     Args:
         feature_geojson: An URBANopt feature geoJSON to be prepared for URBANopt
@@ -312,6 +290,8 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
 
     # auto-assign the number of processors if None
     cpu_count = _recommended_processor_count() if cpu_count is None else cpu_count
+
+    # TODO: translate the HBJSON files to OSM
 
     # generate the runner.conf to set the number of CPUs based on the input
     runner_dict = {
