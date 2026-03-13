@@ -608,6 +608,41 @@ class GHEThermalLoop(object):
             scale_fac = scale_fac1 / scale_fac2
             self.scale(scale_fac)
 
+    def assign_borehole_positions(self, borehole_points):
+        """Assign borehole positions to the GHEs of this object.
+
+        Each input point will be evaluated against the loop's GHE geometry
+        to determine if the borehole position lies within a given GHE.
+        Points that could not be assigned to any GHE geometry will be
+        returned from this method.
+
+        Args:
+            borehole_points: A list of Point3Ds to be assigned to the GHEs of
+                this loop in order to specify the exact locations
+                of boreholes within each borehole field geometry.
+        """
+        # determine which GHE each point belongs to
+        unassigned_points = []
+        ghe_points = [[] for _ in self.ground_heat_exchangers]
+        for pt3 in borehole_points:
+            pt2 = Point2D(pt3.x, pt3.y)
+            for i, ghe in enumerate(self.ground_heat_exchangers):
+                if ghe.boundary_2d.is_point_inside_bound_rect(pt2):
+                    holes = ghe.hole_polygon2d
+                    if holes is not None:
+                        if all(not h.is_point_inside(pt2) for h in holes):
+                            ghe_points[i].append(pt3)
+                            break
+                    else:
+                        ghe_points[i].append(pt3)
+                        break
+            else:
+                unassigned_points.append(pt3)
+        # assign the borehole points to the GHEs and return the unassigned ones
+        for ghe, pts in zip(self.ground_heat_exchangers, ghe_points):
+            ghe.borehole_positions = pts if len(pts) != 0 else None
+        return unassigned_points
+
     def to_dict(self):
         """GHEThermalLoop dictionary representation."""
         base = {'type': 'GHEThermalLoop'}
@@ -813,16 +848,34 @@ class GHEThermalLoop(object):
         # compute the geometric constraints of the borehole fields
         geo_pars = []
         for ghe in self.ground_heat_exchangers:
-            geo_par = {
-                'ghe_id': ghe.identifier,
-                'autosized_birectangle_constrained_borefield': {
-                    'b_min': self.borehole_parameters.min_spacing,
-                    'b_max_x': self.borehole_parameters.max_spacing,
-                    'b_max_y': self.borehole_parameters.max_spacing,
-                    'max_height': self.borehole_parameters.max_depth,
-                    'min_height': self.borehole_parameters.min_depth
+            if ghe.borehole_positions is None:
+                geo_par = {
+                    'ghe_id': ghe.identifier,
+                    'autosized_birectangle_constrained_borefield': {
+                        'b_min': self.borehole_parameters.min_spacing,
+                        'b_max_x': self.borehole_parameters.max_spacing,
+                        'b_max_y': self.borehole_parameters.max_spacing,
+                        'max_height': self.borehole_parameters.max_depth,
+                        'min_height': self.borehole_parameters.min_depth
+                    }
                 }
-            }
+            else:
+                # ensure that all boreholes are written with positive XY coordinates
+                min_pt = ghe.geometry.min
+                borehole_x_coordinates, borehole_y_coordinates = [], []
+                for pt in ghe.borehole_positions:
+                    coord = pt - min_pt
+                    borehole_x_coordinates.append(coord.x)
+                    borehole_y_coordinates.append(coord.y)
+                # create the geometry parameters
+                geo_par = {
+                    'ghe_id': ghe.identifier,
+                    'pre_designed_borefield': {
+                        'borehole_length': self.borehole_parameters.max_depth,
+                        'borehole_x_coordinates': borehole_x_coordinates,
+                        'borehole_y_coordinates': borehole_y_coordinates
+                    }
+                }
             geo_pars.append(geo_par)
 
         # return a dictionary with all of the information

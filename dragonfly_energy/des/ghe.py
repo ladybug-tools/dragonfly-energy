@@ -22,6 +22,12 @@ class GroundHeatExchanger(_GeometryBase):
             identify the object across the exported geoJSON and OpenDSS files.
         geometry: A Polygon2D or horizontal Face3D representing the geometry
             of the heat exchanger.
+        borehole_positions: An optional list of Point3Ds to specify the exact
+            locations of boreholes within the overall borehole field geometry.
+            If None, the GHE auto-sizing calculations will place a
+            grid of boreholes within the specified geometry. When specified,
+            these positions override this grid of auto-generated positions
+            and ensure that boreholes can only be placed at these locations.
 
     Properties:
         * identifier
@@ -29,6 +35,7 @@ class GroundHeatExchanger(_GeometryBase):
         * geometry
         * boundary_2d
         * holes_2d
+        * borehole_positions
     """
     # a list of GHE properties that are needed to represent the GHE in EnergyPlus
     PROPERTY_NAMES = (
@@ -61,9 +68,9 @@ class GroundHeatExchanger(_GeometryBase):
         ('ghe_system', 'shank_spacing', 'value')
     )
 
-    __slots__ = ()
+    __slots__ = ('_borehole_positions',)
 
-    def __init__(self, identifier, geometry):
+    def __init__(self, identifier, geometry, borehole_positions=None):
         """Initialize GroundHeatExchanger."""
         _GeometryBase.__init__(self, identifier)  # process the identifier
         assert isinstance(geometry, (Polygon2D, Face3D)), 'Expected ladybug_geometry ' \
@@ -75,7 +82,11 @@ class GroundHeatExchanger(_GeometryBase):
             # ensure a global 2D origin, which helps in solve adjacency and the dict schema
             o_pl = Plane(Vector3D(0, 0, 1), Point3D(0, 0, geometry.plane.o.z))
             geometry = Face3D(geometry.boundary, o_pl, geometry.holes)
+        else:  # convert polygons to Face3D
+            o_pl = Plane(Vector3D(0, 0, 1), Point3D(0, 0, 0))
+            geometry = Face3D([Point3D(pt.x, pt.y, 0) for pt in geometry.vertices], o_pl)
         self._geometry = geometry
+        self.borehole_positions = borehole_positions
 
     @classmethod
     def from_dict(cls, data):
@@ -90,10 +101,13 @@ class GroundHeatExchanger(_GeometryBase):
         geo = Face3D.from_dict(data['geometry']) \
             if data['geometry']['type'] == 'Face3D' \
             else Polygon2D.from_dict(data['geometry'])
-        trans = cls(data['identifier'], geo)
+        ghe = cls(data['identifier'], geo)
+        if 'borehole_positions' in data and data['borehole_positions'] is not None:
+            ghe.borehole_positions = \
+                [Point3D.from_array(pt) for pt in data['borehole_positions']]
         if 'display_name' in data and data['display_name'] is not None:
-            trans.display_name = data['display_name']
-        return trans
+            ghe.display_name = data['display_name']
+        return ghe
 
     @classmethod
     def from_geojson_dict(
@@ -122,8 +136,7 @@ class GroundHeatExchanger(_GeometryBase):
     @property
     def boundary_2d(self):
         """Get a Polygon2D for the outer boundary of the ground heat exchanger."""
-        return self._geometry.boundary_polygon2d \
-            if isinstance(self._geometry, Face3D) else self._geometry
+        return self._geometry.boundary_polygon2d
 
     @property
     def hole_polygon2d(self):
@@ -131,14 +144,86 @@ class GroundHeatExchanger(_GeometryBase):
 
         Will be None if the ground heat exchanger has no holes in it.
         """
-        return self._geometry.hole_polygon2d \
-            if isinstance(self._geometry, Face3D) else None
+        return self._geometry.hole_polygon2d
+
+    @property
+    def borehole_positions(self):
+        """Get or set a list of Point3Ds for the locations of boreholes."""
+        return self._borehole_positions
+
+    @borehole_positions.setter
+    def borehole_positions(self, value):
+        if value is not None:
+            assert isinstance(value, (list, tuple)), 'borehole_positions should ' \
+                'be a list or tuple. Got {}'.format(type(value))
+            if isinstance(value, list):
+                value = tuple(value)
+            for pt in value:
+                assert isinstance(pt, Point3D), \
+                    'Expected Point3D for borehole_positions. Got {}.'.format(type(pt))
+            if len(value) == 0:
+                value = None
+        self._borehole_positions = value
+
+    def move(self, moving_vec):
+        """Move this object along a vector.
+
+        Args:
+            moving_vec: A ladybug_geometry Vector3D with the direction and distance
+                to move the object.
+        """
+        self._geometry = self._geometry.move(moving_vec)
+        if self._borehole_positions is not None:
+            self._borehole_positions = \
+                tuple(pt.move(moving_vec) for pt in self._borehole_positions)
+
+    def rotate_xy(self, angle, origin):
+        """Rotate this object counterclockwise in the XY plane by a certain angle.
+
+        Args:
+            angle: An angle in degrees.
+            origin: A ladybug_geometry Point3D for the origin around which the
+                object will be rotated.
+        """
+        ang = math.radians(angle)
+        self._geometry = self._geometry.rotate_xy(ang, origin)
+        if self._borehole_positions is not None:
+            self._borehole_positions = \
+                tuple(pt.rotate_xy(ang, origin) for pt in self._borehole_positions)
+
+    def reflect(self, plane):
+        """Reflect this object across a plane.
+
+        Args:
+            plane: A ladybug_geometry Plane across which the object will be reflected.
+        """
+        assert plane.n.z == 0, \
+            'Plane normal must be in XY plane to use it on dragonfly object reflect.'
+        self._geometry = self._geometry.reflect(plane.n, plane.o)
+        if self._borehole_positions is not None:
+            self._borehole_positions = \
+                tuple(pt.reflect(plane.n, plane.o) for pt in self._borehole_positions)
+
+    def scale(self, factor, origin=None):
+        """Scale this object by a factor from an origin point.
+
+        Args:
+            factor: A number representing how much the object should be scaled.
+            origin: A ladybug_geometry Point3D representing the origin from which
+                to scale. If None, it will be scaled from the World origin (0, 0, 0).
+        """
+        self._geometry = self._geometry.scale(factor, origin)
+        if self._borehole_positions is not None:
+            self._borehole_positions = \
+                tuple(pt.scale(factor, origin) for pt in self._borehole_positions)
 
     def to_dict(self):
         """GroundHeatExchanger dictionary representation."""
         base = {'type': 'GroundHeatExchanger'}
         base['identifier'] = self.identifier
         base['geometry'] = self.geometry.to_dict()
+        if self._borehole_positions is not None:
+            base['borehole_positions'] = [pt.to_array() for pt in self.borehole_positions]
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -155,13 +240,10 @@ class GroundHeatExchanger(_GeometryBase):
             conversion_factors: A tuple with two values used to translate between
                 meters and longitude, latitude.
         """
-        if isinstance(self.geometry, Face3D):
-            loops = [[(pt.x, pt.y) for pt in self.geometry.boundary]]
-            if self.geometry.has_holes:
-                for hole in self.geometry.holes:
-                    loops.append([(pt.x, pt.y) for pt in hole])
-        else:
-            loops = [[(pt.x, pt.y) for pt in self.geometry.vertices]]
+        loops = [[(pt.x, pt.y) for pt in self.geometry.boundary]]
+        if self.geometry.has_holes:
+            for hole in self.geometry.holes:
+                loops.append([(pt.x, pt.y) for pt in hole])
         coords = []
         for pts in loops:
             loop = polygon_to_lon_lat(pts, origin_lon_lat, conversion_factors)
@@ -225,7 +307,7 @@ class GroundHeatExchanger(_GeometryBase):
         ghe_boreholes = [pt.move(move_vec_2d) for pt in ghe_boreholes]
 
         # sense if the geometry has a right angle and, if so, rotate it
-        if ortho_rotation:
+        if self.borehole_positions is None and ortho_rotation:
             if bound_poly.is_clockwise:
                 bound_poly = bound_poly.reverse()
             # get the point of the polygon representing the lower left corner
