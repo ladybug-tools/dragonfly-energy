@@ -196,10 +196,6 @@ def model_to_osm(
             in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new IDs
             that are derived from the name. (Default: False).
-        bypass_check: Boolean to note whether the Model should be re-serialized
-            to Python and checked before it is translated to .osm. The check is
-            not needed if the model-json was exported directly from the
-            honeybee-energy Python library. (Default: False).
         log_file: Optional log file to output the paths to the generated OSM and]
             IDF files if they were successfully created. By default this string
             will be returned from this method.

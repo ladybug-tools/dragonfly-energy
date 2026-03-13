@@ -210,6 +210,15 @@ class Folders(object):
         self._load_from_file(cfg)
         self._config_file = cfg
 
+    def retrieve_urbanopt_env_path(self):
+        """Set this object's urbanopt_env_path using the file in its default location."""
+        # search for the file in its default location
+        home_folder = os.getenv('HOME') or os.path.expanduser('~')
+        env_file = os.path.join(home_folder, '.env_uo.bat') if os.name == 'nt' else \
+            os.path.join(home_folder, '.env_uo.sh')
+        if os.path.isfile(env_file):
+            self._urbanopt_env_path = env_file
+
     def generate_urbanopt_env_path(self):
         """Run the URBANopt setup-env file to set this object's urbanopt_env_path."""
         # search for the file in its default location
