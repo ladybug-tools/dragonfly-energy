@@ -1,8 +1,6 @@
 # coding=utf-8
-from ladybug_geometry.geometry2d.pointvector import Point2D
-from ladybug_geometry.geometry2d.polygon import Polygon2D
-from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
-from ladybug_geometry.geometry3d.plane import Plane
+from ladybug_geometry.geometry2d import Point2D, Polygon2D
+from ladybug_geometry.geometry3d import Point3D, Vector3D, Plane, Face3D
 
 from dragonfly_energy.des.ghe import GroundHeatExchanger
 
@@ -17,7 +15,7 @@ def test_ghe_init():
     str(ghe)  # test the string representation
 
     assert ghe.identifier == 'GroundHeatExchanger_1'
-    assert ghe.geometry == polygon
+    assert isinstance(ghe.geometry, Face3D)
 
 
 def test_ghe_transform():
@@ -28,7 +26,7 @@ def test_ghe_transform():
 
     new_ghe = ghe.duplicate()
     new_ghe.move(Vector3D(100, 0))
-    assert new_ghe.geometry[0] == Point2D(100, 0)
+    assert new_ghe.geometry[0] == Point3D(100, 0)
 
     new_ghe = ghe.duplicate()
     new_ghe.rotate_xy(90, Point3D())
