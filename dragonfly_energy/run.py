@@ -340,9 +340,6 @@ def run_urbanopt(feature_geojson, scenario_csv, cpu_count=None):
         -   err -- Array of paths to .err files containing all errors and warnings
             from the simulation.
     """
-    # first check the URBANopt version to be sure we won't get failures further down
-    folders.check_urbanopt_version()
-
     # translate any HBJSON files to OSM
     directory = _check_urbanopt_file(feature_geojson, scenario_csv)
     hb_json_dir = os.path.join(directory, 'hb_json')
@@ -385,6 +382,10 @@ def run_urbanopt(feature_geojson, scenario_csv, cpu_count=None):
             print(stderr)
             raise Exception('Failed to translate HBJSONs to OSMs.')
 
+    # ensure that the URBANopt environment paths are set up correctly
+    folders.retrieve_urbanopt_env_path()
+    if not folders.urbanopt_env_path:
+        folders.generate_urbanopt_env_path()
     # run the simulation
     if os.name == 'nt':  # we are on Windows
         directory, stderr = \
