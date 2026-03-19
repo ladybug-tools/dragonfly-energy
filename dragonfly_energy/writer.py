@@ -131,7 +131,7 @@ def model_to_urbanopt(
 
     # get rid of all simulation files that exists in the folder already
     dir_to_delete = ('hb_json', 'osm', 'mappers', 'run')
-    ext_to_delete = ('.bat', '.geojson', '.epw', '.mos')
+    ext_to_delete = ('.bat', '.geojson', '.epw', '.mos', '.log')
     file_to_delete = (
         'Gemfile', 'Gemfile.lock', 'honeybee_scenario.csv', 'runner.conf',
         'simulation_parameter.json', 'system_params.json',
