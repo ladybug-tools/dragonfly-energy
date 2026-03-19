@@ -593,6 +593,8 @@ def run_des_sys_param(feature_geojson, scenario_csv):
             scenario=scenario_csv, feature=feature_geojson)
     if ghe_sys:
         build_cmd = '{} 5G_ghe'.format(build_cmd)
+    elif 'fifth_generation' in des_dict:
+        build_cmd = '{} 5G'.format(build_cmd)
     else:
         build_cmd = '{} 4G'.format(build_cmd)
     build_cmd = '{} time_series -o'.format(build_cmd)
