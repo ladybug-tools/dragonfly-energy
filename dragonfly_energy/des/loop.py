@@ -292,7 +292,7 @@ class FifthGenThermalLoop(object):
 
     def __init__(
         self, identifier, connectors, clockwise_flow=False,
-        soil_parameters=None, fluid_parameters=None, horizontal_pipe_parameters=None
+        soil_parameters=None, horizontal_pipe_parameters=None
     ):
         """Initialize FifthGenThermalLoop."""
         self.identifier = identifier
@@ -300,7 +300,6 @@ class FifthGenThermalLoop(object):
         self.connectors = connectors
         self.clockwise_flow = clockwise_flow
         self.soil_parameters = soil_parameters
-        self.fluid_parameters = fluid_parameters
         self.horizontal_pipe_parameters = horizontal_pipe_parameters
 
     @classmethod
@@ -754,9 +753,8 @@ class FifthGenThermalLoop(object):
         # get the footprints of the Buildings in 2D space
         footprint_2d, bldg_ids = FifthGenThermalLoop._building_footprints(
             buildings, tolerance)
-        all_feat = \
-            footprint_2d + [ghe.boundary_2d for ghe in self.ground_heat_exchangers]
-        feat_ids = bldg_ids + [ghe.identifier for ghe in self.ground_heat_exchangers]
+        all_feat = footprint_2d
+        feat_ids = bldg_ids
 
         # order the connectors correctly on the loop and translate them to features
         features_list = []
@@ -878,17 +876,20 @@ class FifthGenThermalLoop(object):
             horiz_par['hydraulic_diameter'] = hp_par.hydraulic_diameter
         else:
             horiz_par['hydraulic_diameter_autosized'] = True
+            horiz_par['hydraulic_diameter'] = 0.14
         pump_par = {}
         if isinstance(hp_par.pump_design_head, float):
             pump_par['pump_design_head_autosized'] = False
             pump_par['pump_design_head'] = hp_par.pump_design_head
         else:
             pump_par['pump_design_head_autosized'] = True
+            pump_par['pump_design_head'] = 65000  # use default as 5G has no autosize
         if isinstance(hp_par.pump_flow_rate, float):
             pump_par['pump_flow_rate_autosized'] = False
             pump_par['pump_flow_rate'] = hp_par.pump_flow_rate
         else:
             pump_par['pump_flow_rate_autosized'] = True
+            pump_par['pump_flow_rate'] = 0.02
 
         # add the fifth generation system parameters
         des_param = {
@@ -947,13 +948,6 @@ class FifthGenThermalLoop(object):
                     junctions.append(ThermalJunction(new_jct_id, jct_pt))
                     jct_ids.append(new_jct_id)
             connector_junction_ids.append(jct_ids)
-
-        # loop through district system objects to determine adjacent junctions
-        for jct in junctions:
-            for ds_obj in self.ground_heat_exchangers:
-                if ds_obj.boundary_2d.is_point_on_edge(jct.geometry, tolerance):
-                    jct.system_identifier = ds_obj.identifier
-                    break
         return junctions, connector_junction_ids
 
     @staticmethod
@@ -1849,6 +1843,33 @@ class GHEThermalLoop(FifthGenThermalLoop):
             },
             'ground_heat_exchanger': ghe_objs
         }
+
+    def _junctions_from_connectors(self, connectors, tolerance):
+        """Get a list of ThermalJunction objects given a list of ThermalConnectors.
+        """
+        # loop through the connectors and find all unique junction objects
+        junctions, connector_junction_ids = [], []
+        for connector in connectors:
+            verts = connector.geometry.vertices
+            end_pts, jct_ids = (verts[0], verts[-1]), []
+            for jct_pt in end_pts:
+                for exist_jct in junctions:
+                    if jct_pt.is_equivalent(exist_jct.geometry, tolerance):
+                        jct_ids.append(exist_jct.identifier)
+                        break
+                else:  # we have found a new unique junction
+                    new_jct_id = str(uuid.uuid4())
+                    junctions.append(ThermalJunction(new_jct_id, jct_pt))
+                    jct_ids.append(new_jct_id)
+            connector_junction_ids.append(jct_ids)
+
+        # loop through district system objects to determine adjacent junctions
+        for jct in junctions:
+            for ds_obj in self.ground_heat_exchangers:
+                if ds_obj.boundary_2d.is_point_on_edge(jct.geometry, tolerance):
+                    jct.system_identifier = ds_obj.identifier
+                    break
+        return junctions, connector_junction_ids
 
     def __copy__(self):
         new_loop = GHEThermalLoop(
