@@ -21,6 +21,12 @@ from honeybee_energy.lib.constructionsets import generic_construction_set, \
     construction_set_by_identifier
 from honeybee_energy.lib.programtypes import building_program_type_by_identifier
 
+from dragonfly_energy.des.ets import HeatPumpETS, HeatExchangerETS
+_DEFAULT_HE = HeatExchangerETS()
+_DEFAULT_HE.lock()
+_DEFAULT_HP = HeatPumpETS()
+_DEFAULT_HP.lock()
+
 
 class BuildingEnergyProperties(object):
     """Energy Properties for Dragonfly Building.
@@ -38,6 +44,8 @@ class BuildingEnergyProperties(object):
         * construction_set
         * ceiling_plenum_construction
         * floor_plenum_construction
+        * heat_exchanger_ets
+        * heat_pump_ets
         * des_cooling_load
         * des_heating_load
         * des_hot_water_load
@@ -58,6 +66,7 @@ class BuildingEnergyProperties(object):
     __slots__ = (
         '_host', '_construction_set',
         '_ceiling_plenum_construction', '_floor_plenum_construction',
+        '_heat_exchanger_ets', '_heat_pump_ets',
         '_des_cooling_load', '_des_heating_load', '_des_hot_water_load'
     )
 
@@ -67,6 +76,8 @@ class BuildingEnergyProperties(object):
         self.construction_set = construction_set
         self._ceiling_plenum_construction = None  # can be set later
         self._floor_plenum_construction = None  # can be set later
+        self._heat_exchanger_ets = None
+        self._heat_pump_ets = None
         self._des_cooling_load = None  # can be set later
         self._des_heating_load = None  # can be set later
         self._des_hot_water_load = None  # can be set later
@@ -134,6 +145,45 @@ class BuildingEnergyProperties(object):
                 'Got {}'.format(type(value))
             value.lock()  # lock editing in case construction has multiple references
         self._floor_plenum_construction = value
+
+    @property
+    def heat_exchanger_ets(self):
+        """Get or set a HeatExchangerETS object to be used when the Building is in a DES.
+
+        This type of ETS is used for fourth generation district energy systems.
+        """
+        if self._heat_exchanger_ets:  # set by user
+            return self._heat_exchanger_ets
+        return _DEFAULT_HE
+
+    @heat_exchanger_ets.setter
+    def heat_exchanger_ets(self, value):
+        if value is not None:
+            assert isinstance(value, HeatExchangerETS), \
+                'Expected HeatExchangerETS object for heat_exchanger_ets. ' \
+                'Got {}'.format(type(value))
+            value.lock()  # lock editing in case construction has multiple references
+        self._heat_exchanger_ets = value
+
+    @property
+    def heat_pump_ets(self):
+        """Get or set a HeatPumpETS object to be used when the Building is in a DES.
+
+        This type of ETS is used for fifth generation district energy systems
+        including those with ground het exchangers.
+        """
+        if self._heat_pump_ets:  # set by user
+            return self._heat_pump_ets
+        return _DEFAULT_HP
+
+    @heat_pump_ets.setter
+    def heat_pump_ets(self, value):
+        if value is not None:
+            assert isinstance(value, HeatPumpETS), \
+                'Expected HeatPumpETS object for heat_pump_ets. ' \
+                'Got {}'.format(type(value))
+            value.lock()  # lock editing in case construction has multiple references
+        self._heat_pump_ets = value
 
     @property
     def des_cooling_load(self):
@@ -460,15 +510,7 @@ class BuildingEnergyProperties(object):
                 data['floor_plenum_construction'] is not None:
             new_prop.ceiling_plenum_construction = \
                 OpaqueConstruction.from_dict(data['floor_plenum_construction'])
-        if 'des_cooling_load' in data and data['des_cooling_load'] is not None:
-            new_prop.des_cooling_load = \
-                HourlyContinuousCollection.from_dict(data['des_cooling_load'])
-        if 'des_heating_load' in data and data['des_heating_load'] is not None:
-            new_prop.des_heating_load = \
-                HourlyContinuousCollection.from_dict(data['des_heating_load'])
-        if 'des_hot_water_load' in data and data['des_hot_water_load'] is not None:
-            new_prop.des_heating_load = \
-                HourlyContinuousCollection.from_dict(data['des_hot_water_load'])
+        cls._load_unabridged_props(new_prop, data)
         return new_prop
 
     def apply_properties_from_dict(self, abridged_data, construction_sets, constructions):
@@ -493,18 +535,25 @@ class BuildingEnergyProperties(object):
                 abridged_data['floor_plenum_construction'] is not None:
             self.floor_plenum_construction = \
                 constructions[abridged_data['floor_plenum_construction']]
-        if 'des_cooling_load' in abridged_data and \
-                abridged_data['des_cooling_load'] is not None:
-            self.des_cooling_load = \
-                HourlyContinuousCollection.from_dict(abridged_data['des_cooling_load'])
-        if 'des_heating_load' in abridged_data and \
-                abridged_data['des_heating_load'] is not None:
-            self.des_heating_load = \
-                HourlyContinuousCollection.from_dict(abridged_data['des_heating_load'])
-        if 'des_hot_water_load' in abridged_data and \
-                abridged_data['des_hot_water_load'] is not None:
-            self.des_heating_load = \
-                HourlyContinuousCollection.from_dict(abridged_data['des_hot_water_load'])
+        BuildingEnergyProperties._load_unabridged_props(self, abridged_data)
+
+    @staticmethod
+    def _load_unabridged_props(new_prop, data):
+        """Load the unabridged properties from a dictionary."""
+        if 'heat_exchanger_ets' in data and data['heat_exchanger_ets'] is not None:
+            new_prop.heat_exchanger_ets = \
+                HeatExchangerETS.from_dict(data['heat_exchanger_ets'])
+        if 'heat_pump_ets' in data and data['heat_pump_ets'] is not None:
+            new_prop.heat_pump_ets = HeatPumpETS.from_dict(data['heat_pump_ets'])
+        if 'des_cooling_load' in data and data['des_cooling_load'] is not None:
+            new_prop.des_cooling_load = \
+                HourlyContinuousCollection.from_dict(data['des_cooling_load'])
+        if 'des_heating_load' in data and data['des_heating_load'] is not None:
+            new_prop.des_heating_load = \
+                HourlyContinuousCollection.from_dict(data['des_heating_load'])
+        if 'des_hot_water_load' in data and data['des_hot_water_load'] is not None:
+            new_prop.des_heating_load = \
+                HourlyContinuousCollection.from_dict(data['des_hot_water_load'])
 
     def apply_properties_from_geojson_dict(self, data):
         """Apply properties from a geoJSON dictionary.
@@ -566,6 +615,10 @@ class BuildingEnergyProperties(object):
             base['energy']['floor_plenum_construction'] = \
                 self._floor_plenum_construction.identifier if abridged else \
                 self._floor_plenum_construction.to_dict()
+        if self._heat_exchanger_ets is not None:
+            base['energy']['heat_exchanger_ets'] = self._heat_exchanger_ets.to_dict()
+        if self._heat_pump_ets is not None:
+            base['energy']['heat_pump_ets'] = self._heat_pump_ets.to_dict()
         if self._des_cooling_load is not None:
             base['energy']['des_cooling_load'] = self._des_cooling_load.to_dict()
         if self._des_heating_load is not None:
@@ -639,6 +692,8 @@ class BuildingEnergyProperties(object):
         new_prop = BuildingEnergyProperties(_host, self._construction_set)
         new_prop._ceiling_plenum_construction = self._ceiling_plenum_construction
         new_prop._floor_plenum_construction = self._floor_plenum_construction
+        new_prop._heat_exchanger_ets = self._heat_exchanger_ets
+        new_prop._heat_pump_ets = self._heat_pump_ets
         new_prop._des_cooling_load = self._des_cooling_load
         new_prop._des_heating_load = self._des_heating_load
         new_prop._des_hot_water_load = self._des_hot_water_load
