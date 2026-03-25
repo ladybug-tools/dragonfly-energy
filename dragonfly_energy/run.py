@@ -579,8 +579,14 @@ def run_des_sys_param(feature_geojson, scenario_csv):
     with open(sys_param_file, 'r') as spf:
         sp_dict = json.load(spf)
     des_dict = sp_dict['district_system']
-    ghe_sys = True if 'fifth_generation' in des_dict and \
-        'ghe_parameters' in des_dict['fifth_generation'] else False
+    g5_sys = 'fifth_generation' in des_dict
+    ghe_sys = g5_sys and 'ghe_parameters' in des_dict['fifth_generation']
+    ets_dict = {}
+    for bldg in sp_dict['buildings']:
+        if g5_sys:
+            ets_dict[bldg['geojson_id']] = bldg['fifth_gen_ets_parameters']
+        else:
+            ets_dict[bldg['geojson_id']] = bldg['ets_indirect_parameters']
 
     # run the command that adds the building loads to the system parameter
     ext = '.exe' if os.name == 'nt' else ''
@@ -630,6 +636,22 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         des_par['ghe_parameters']['borefields'] = original_ghe_par['borefields']
     else:
         sp_dict['district_system'] = des_dict
+    # also put back the properties of the ETS
+    for bldg in sp_dict['buildings']:
+        orig_ets = ets_dict[bldg['geojson_id']]
+        if g5_sys:
+            bldg['fifth_gen_ets_parameters'] = orig_ets
+        else:  # careful not to overwrite the auto-sized flow rates
+            new_ets = bldg['ets_indirect_parameters']
+            new_ets['heat_exchanger_efficiency'] = orig_ets['heat_exchanger_efficiency']
+            new_ets['heat_exchanger_secondary_pressure_drop'] = \
+                orig_ets['heat_exchanger_secondary_pressure_drop']
+            new_ets['heat_exchanger_primary_pressure_drop'] = \
+                orig_ets['heat_exchanger_primary_pressure_drop']
+            new_ets['cooling_supply_water_temperature_building'] = \
+                orig_ets['cooling_supply_water_temperature_building']
+            new_ets['heating_supply_water_temperature_building'] = \
+                orig_ets['heating_supply_water_temperature_building']
     with open(sys_param_file, 'w') as spf:
         json.dump(sp_dict, spf, indent=2)
 
@@ -647,15 +669,24 @@ def run_des_sys_param(feature_geojson, scenario_csv):
                 scenario=scn_dir, feature=feature_geojson, out_p=ghe_dir)
         print(build_cmd)
         process = subprocess.Popen(
-            build_cmd, stderr=subprocess.PIPE, shell=False, env=PYTHON_ENV
+            build_cmd, stdout=subprocess.PIPE, shell=False, env=PYTHON_ENV
         )
         # if any errors were found in the sizing simulation, raise them to the user
-        stderr = process.communicate()[1]
-        stderr_str = str(stderr.strip())
-        print(stderr_str)
-        if 'ValueError' in stderr_str:  # pass the exception onto the user
-            msg = stderr_str.split('ValueError: ')[-1].strip()
-            raise ValueError(msg)
+        stdout, _ = process.communicate()  # wait for the process to finish
+        returncode = process.wait()
+        if returncode != 0:
+            lines = [line.strip() for line in stdout.strip().splitlines()]
+            seen_lines = set()
+            unique_lines_ordered = []
+            for line in lines:
+                if line not in seen_lines:
+                    unique_lines_ordered.append(line)
+                    seen_lines.add(line)
+            log_string = '\n'.join(unique_lines_ordered)
+            error_log = os.path.join(directory, 'ghe_sizing.log')
+            with open(error_log, 'w') as el:
+                el.write(str(stdout))
+            raise ValueError('\n' + log_string)
     return sys_param_file
 
 

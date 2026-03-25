@@ -170,7 +170,7 @@ class BuildingEnergyProperties(object):
         """Get or set a HeatPumpETS object to be used when the Building is in a DES.
 
         This type of ETS is used for fifth generation district energy systems
-        including those with ground het exchangers.
+        including those with ground heat exchangers.
         """
         if self._heat_pump_ets:  # set by user
             return self._heat_pump_ets
