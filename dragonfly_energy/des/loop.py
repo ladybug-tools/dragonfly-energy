@@ -148,6 +148,7 @@ class FourthGenThermalLoop(object):
         # add the relevant buildings to the DES parameter dictionary
         bldg_array = []
         for bldg in buildings:
+            bldg_ets = bldg.properties.energy.heat_exchanger_ets
             b_dict = {
                 'geojson_id': bldg.identifier,
                 'load_model': 'time_series',
@@ -170,25 +171,7 @@ class FourthGenThermalLoop(object):
                     }
                 },
                 'ets_model': 'Indirect Heating and Cooling',
-                'ets_indirect_parameters': {
-                    'heat_flow_nominal': 8000,
-                    'heat_exchanger_efficiency': 0.8,
-                    'nominal_mass_flow_district': 0,
-                    'nominal_mass_flow_building': 0,
-                    'valve_pressure_drop': 6000,
-                    'heat_exchanger_secondary_pressure_drop': 500,
-                    'heat_exchanger_primary_pressure_drop': 500,
-                    'cooling_supply_water_temperature_building': 7,
-                    'heating_supply_water_temperature_building': 50,
-                    'delta_temp_chw_building': 5,
-                    'delta_temp_chw_district': 8,
-                    'delta_temp_hw_building': 15,
-                    'delta_temp_hw_district': 20,
-                    'cooling_controller_y_max': 1,
-                    'cooling_controller_y_min': 0,
-                    'heating_controller_y_max': 1,
-                    'heating_controller_y_min': 0
-                }
+                'ets_indirect_parameters': bldg_ets.to_des_param_dict()
             }
             bldg_array.append(b_dict)
         des_dict['buildings'] = bldg_array
@@ -797,9 +780,7 @@ class FifthGenThermalLoop(object):
                 geometries at which they are considered co-located. (Default: 0.01,
                 suitable for objects in meters).
         """
-        # set up a dictionary to be updated with the params
-        des_dict = {}
-
+        des_dict = {}  # set up a dictionary to be updated with the params
         # add the relevant buildings to the DES parameter dictionary
         footprint_2d, bldg_ids = FifthGenThermalLoop._building_footprints(
             buildings, tolerance)
@@ -810,7 +791,9 @@ class FifthGenThermalLoop(object):
                 if bldg_poly.is_point_on_edge(jct.geometry, tolerance):
                     rel_bldg_ids.add(bldg_id)
         bldg_array = []
+        bldg_dict = {bld.identifier: bld for bld in buildings}
         for bldg_id in rel_bldg_ids:
+            bldg_ets = bldg_dict[bldg_id].properties.energy.heat_pump_ets
             b_dict = {
                 'geojson_id': bldg_id,
                 'load_model': 'time_series',
@@ -833,18 +816,7 @@ class FifthGenThermalLoop(object):
                     }
                 },
                 'ets_model': 'Fifth Gen Heat Pump',
-                'fifth_gen_ets_parameters': {
-                    'chilled_water_supply_temp': 5,
-                    'heating_water_supply_temp': 50,
-                    'hot_water_supply_temp': 50,
-                    'cop_heat_pump_heating': 2.5,
-                    'cop_heat_pump_cooling': 3.5,
-                    'cop_heat_pump_hot_water': 2.5,
-                    'ets_pump_flow_rate': 0.0005,
-                    'ets_pump_head': 10000,
-                    'fan_design_flow_rate': 0.25,
-                    'fan_design_head': 150
-                }
+                'fifth_gen_ets_parameters': bldg_ets.to_des_param_dict()
             }
             bldg_array.append(b_dict)
         des_dict['buildings'] = bldg_array
@@ -1525,8 +1497,10 @@ class GHEThermalLoop(FifthGenThermalLoop):
             for bldg_poly, bldg_id in zip(footprint_2d, bldg_ids):
                 if bldg_poly.is_point_on_edge(jct.geometry, tolerance):
                     rel_bldg_ids.add(bldg_id)
+        bldg_dict = {bld.identifier: bld for bld in buildings}
         bldg_array = []
         for bldg_id in rel_bldg_ids:
+            bldg_ets = bldg_dict[bldg_id].properties.energy.heat_pump_ets
             b_dict = {
                 'geojson_id': bldg_id,
                 'load_model': 'time_series',
@@ -1549,18 +1523,7 @@ class GHEThermalLoop(FifthGenThermalLoop):
                     }
                 },
                 'ets_model': 'Fifth Gen Heat Pump',
-                'fifth_gen_ets_parameters': {
-                    'chilled_water_supply_temp': 5,
-                    'heating_water_supply_temp': 50,
-                    'hot_water_supply_temp': 50,
-                    'cop_heat_pump_heating': 2.5,
-                    'cop_heat_pump_cooling': 3.5,
-                    'cop_heat_pump_hot_water': 2.5,
-                    'ets_pump_flow_rate': 0.0005,
-                    'ets_pump_head': 10000,
-                    'fan_design_flow_rate': 0.25,
-                    'fan_design_head': 150
-                }
+                'fifth_gen_ets_parameters': bldg_ets.to_des_param_dict()
             }
             bldg_array.append(b_dict)
         des_dict['buildings'] = bldg_array
