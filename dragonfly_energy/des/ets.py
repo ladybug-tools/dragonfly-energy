@@ -13,7 +13,7 @@ class HeatExchangerETS(object):
 
     Args:
         cooling_supply_temp: A number for the Building's chilled water supply
-            temperature in Celsius. (Default: 5C).
+            temperature in Celsius. (Default: 7C).
         heating_supply_temp: A number for the Building's hot water supply temperature
             in Celsius. This serves both space heating and service hot water
             demand. (Default: 50C).
@@ -27,7 +27,6 @@ class HeatExchangerETS(object):
     Properties:
         * cooling_supply_temp
         * heating_supply_temp
-        * shw_supply_temp
         * exchanger_efficiency
         * primary_pressure_drop
         * secondary_pressure_drop
@@ -38,7 +37,7 @@ class HeatExchangerETS(object):
     )
 
     def __init__(
-        self, cooling_supply_temp=5, heating_supply_temp=50, exchanger_efficiency=0.8,
+        self, cooling_supply_temp=7, heating_supply_temp=50, exchanger_efficiency=0.8,
         primary_pressure_drop=500, secondary_pressure_drop=500
     ):
         """Initialize HeatExchangerETS."""
@@ -68,7 +67,7 @@ class HeatExchangerETS(object):
             'secondary_pressure_drop': 500  # float for secondary side pressure in Pa
             }
         """
-        cst = data['cooling_supply_temp'] if 'cooling_supply_temp' in data else 5
+        cst = data['cooling_supply_temp'] if 'cooling_supply_temp' in data else 7
         hst = data['heating_supply_temp'] if 'heating_supply_temp' in data else 50
         eff = data['exchanger_efficiency'] if 'exchanger_efficiency' in data else 0.8
         ppd = data['primary_pressure_drop'] \
