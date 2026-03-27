@@ -1265,7 +1265,7 @@ def _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv):
     write_to_file(batch_file, batch, True)
     # run the batch file
     process = subprocess.Popen(
-        '"{}"'.format(batch_file), stderr=subprocess.PIPE, env=PYTHON_ENV
+        '"{}"'.format(batch_file), shell=True, stderr=subprocess.PIPE, env=PYTHON_ENV
     )
     result = process.communicate()
     stderr = result[1]
