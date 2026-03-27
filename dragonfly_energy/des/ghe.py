@@ -373,7 +373,7 @@ class GroundHeatExchanger(_GeometryBase):
             for key in p_path[1:]:
                 val = val[key]
             if '(J/m3-K)' in p_name:
-                val = val * 0.001
+                val = val * 1000
             if 'Borehole Radius' in p_name:
                 val = val * 0.5
             if 'Number of Boreholes' in p_name:
