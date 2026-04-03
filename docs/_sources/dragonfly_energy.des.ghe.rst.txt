@@ -1,0 +1,7 @@
+dragonfly\_energy.des.ghe module
+================================
+
+.. automodule:: dragonfly_energy.des.ghe
+   :members:
+   :undoc-members:
+   :show-inheritance:
