@@ -703,7 +703,13 @@ def run_des_modelica(sys_param_json, feature_geojson, scenario_csv):
     Returns:
         The path to the folder where the Modelica files have been written.
     """
-    # run the simulation
+    # check to be sure that the system is not 5Gen without GHE; currently unsupported
+    with open(sys_param_json, 'r') as spf:
+        sp_dict = json.load(spf)
+    if 'fifth_generation' in sp_dict['district_system'] and \
+            'ghe_parameters' not in sp_dict['district_system']['fifth_generation']:
+        return None
+    # run the translation command to Modelica
     if os.name == 'nt':  # we are on Windows
         modelica_dir, stderr = \
             _generate_modelica_windows(sys_param_json, feature_geojson, scenario_csv)
