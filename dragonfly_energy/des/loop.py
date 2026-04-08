@@ -308,14 +308,13 @@ class FifthGenThermalLoop(object):
         return loop
 
     @classmethod
-    def from_geojson(
-            cls, geojson_file_path, location=None, point=None, units='Meters',
+    def from_geojson_dict(
+            cls, geojson_dict, location=None, point=None, units='Meters',
             clockwise_flow=False):
         """Get an FifthGenThermalLoop from a dictionary as it appears in a GeoJSON.
 
         Args:
-            geojson_file_path: Text for the full path to the geojson file to load
-                as FifthGenThermalLoop.
+            geojson_dict: The dictionary loaded from a GeoJSON file.
             location: An optional ladybug location object with longitude and
                 latitude data defining the origin of the geojson file. If None,
                 an attempt will be made to sense the location from the project
@@ -342,11 +341,8 @@ class FifthGenThermalLoop(object):
                 loop is clockwise (True) when viewed from above in the GeoJSON or it
                 is counterclockwise (False). (Default: False).
         """
-        # parse the geoJSON into a dictionary
-        with open(geojson_file_path, 'r') as fp:
-            data = json.load(fp)
-
         # extract the CAD coordinates and location from the GeoJSON if they exist
+        data = geojson_dict
         if 'project' in data:
             prd = data['project']
             if 'latitude' in prd and 'longitude' in prd and location is None:
@@ -388,11 +384,53 @@ class FifthGenThermalLoop(object):
             connectors.append(con_obj)
 
         # create the loop and adjust for the units
-        base_name = os.path.basename(geojson_file_path)
-        loop_id = base_name.replace('.json', '').replace('.geojson', '')
+        loop_id = 'FifthGenThermalLoop_{}'.format(str(uuid.uuid4())[:8])
         loop = cls(loop_id, connectors, clockwise_flow)
         if units != 'Meters':
             loop.convert_to_units(units)
+        return loop
+
+    @classmethod
+    def from_geojson(
+            cls, geojson_file_path, location=None, point=None, units='Meters',
+            clockwise_flow=False):
+        """Get an FifthGenThermalLoop from a GeoJSON file.
+
+        Args:
+            geojson_file_path: Text for the full path to the geojson file to load
+                as FifthGenThermalLoop.
+            location: An optional ladybug location object with longitude and
+                latitude data defining the origin of the geojson file. If None,
+                an attempt will be made to sense the location from the project
+                point in the GeoJSON (if it exists). If nothing is found, the
+                origin is autocalcualted as the bottom-left corner of the bounding
+                box of all building footprints in the geojson file. (Default: None).
+            point: A ladybug_geometry Point2D for where the location object exists
+                within the space of a scene. The coordinates of this point are
+                expected to be in the units input. If None, an attempt will be
+                made to sense the CAD coordinates from the GeoJSON if they
+                exist. If not found, they will default to (0, 0).
+            units: Text for the units system in which the model geometry
+                exists. Default: 'Meters'. Choose from the following:
+
+                * Meters
+                * Millimeters
+                * Feet
+                * Inches
+                * Centimeters
+
+                Note that this method assumes the point coordinates are in the
+                same units.
+            clockwise_flow: A boolean to note whether the direction of flow through the
+                loop is clockwise (True) when viewed from above in the GeoJSON or it
+                is counterclockwise (False). (Default: False).
+        """
+        with open(geojson_file_path) as json_file:
+            geojson_dict = json.load(json_file)
+        loop = cls.from_geojson_dict(geojson_dict, location, point, units, clockwise_flow)
+        base_name = os.path.basename(geojson_file_path)
+        loop_id = base_name.replace('.json', '').replace('.geojson', '')
+        loop.identifier = loop_id
         return loop
 
     @staticmethod
@@ -1062,14 +1100,13 @@ class GHEThermalLoop(FifthGenThermalLoop):
         return loop
 
     @classmethod
-    def from_geojson(
-            cls, geojson_file_path, location=None, point=None, units='Meters',
+    def from_geojson_dict(
+            cls, geojson_dict, location=None, point=None, units='Meters',
             clockwise_flow=False):
         """Get an GHEThermalLoop from a dictionary as it appears in a GeoJSON.
 
         Args:
-            geojson_file_path: Text for the full path to the geojson file to load
-                as GHEThermalLoop.
+            geojson_dict: The dictionary loaded from a GeoJSON file.
             location: An optional ladybug location object with longitude and
                 latitude data defining the origin of the geojson file. If None,
                 an attempt will be made to sense the location from the project
@@ -1096,11 +1133,8 @@ class GHEThermalLoop(FifthGenThermalLoop):
                 loop is clockwise (True) when viewed from above in the GeoJSON or it
                 is counterclockwise (False). (Default: False).
         """
-        # parse the geoJSON into a dictionary
-        with open(geojson_file_path, 'r') as fp:
-            data = json.load(fp)
-
         # extract the CAD coordinates and location from the GeoJSON if they exist
+        data = geojson_dict
         if 'project' in data:
             prd = data['project']
             if 'latitude' in prd and 'longitude' in prd and location is None:
@@ -1152,11 +1186,53 @@ class GHEThermalLoop(FifthGenThermalLoop):
             ghe_fields.append(ghe_field)
 
         # create the loop and adjust for the units
-        base_name = os.path.basename(geojson_file_path)
-        loop_id = base_name.replace('.json', '').replace('.geojson', '')
+        loop_id = 'FifthGenThermalLoop_{}'.format(str(uuid.uuid4())[:8])
         loop = cls(loop_id, ghe_fields, connectors, clockwise_flow)
         if units != 'Meters':
             loop.convert_to_units(units)
+        return loop
+
+    @classmethod
+    def from_geojson(
+            cls, geojson_file_path, location=None, point=None, units='Meters',
+            clockwise_flow=False):
+        """Get an GHEThermalLoop from a GeoJSON file.
+
+        Args:
+            geojson_file_path: Text for the full path to the geojson file to load
+                as GHEThermalLoop.
+            location: An optional ladybug location object with longitude and
+                latitude data defining the origin of the geojson file. If None,
+                an attempt will be made to sense the location from the project
+                point in the GeoJSON (if it exists). If nothing is found, the
+                origin is autocalcualted as the bottom-left corner of the bounding
+                box of all building footprints in the geojson file. (Default: None).
+            point: A ladybug_geometry Point2D for where the location object exists
+                within the space of a scene. The coordinates of this point are
+                expected to be in the units input. If None, an attempt will be
+                made to sense the CAD coordinates from the GeoJSON if they
+                exist. If not found, they will default to (0, 0).
+            units: Text for the units system in which the model geometry
+                exists. Default: 'Meters'. Choose from the following:
+
+                * Meters
+                * Millimeters
+                * Feet
+                * Inches
+                * Centimeters
+
+                Note that this method assumes the point coordinates are in the
+                same units.
+            clockwise_flow: A boolean to note whether the direction of flow through the
+                loop is clockwise (True) when viewed from above in the GeoJSON or it
+                is counterclockwise (False). (Default: False).
+        """
+        with open(geojson_file_path) as json_file:
+            geojson_dict = json.load(json_file)
+        loop = cls.from_geojson_dict(geojson_dict, location, point, units, clockwise_flow)
+        base_name = os.path.basename(geojson_file_path)
+        loop_id = base_name.replace('.json', '').replace('.geojson', '')
+        loop.identifier = loop_id
         return loop
 
     @property
