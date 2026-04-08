@@ -7,7 +7,7 @@ import json
 from ladybug_geometry.geometry2d import Point2D, LineSegment2D, Polyline2D, Polygon2D
 from ladybug.location import Location
 from ladybug.datacollection import HourlyContinuousCollection
-from honeybee.typing import valid_ep_string
+from honeybee.typing import valid_ep_string, valid_string
 from honeybee.units import conversion_factor_to_meters
 from dragonfly.projection import meters_to_long_lat_factors, \
     origin_long_lat_from_location
@@ -259,6 +259,27 @@ class FifthGenThermalLoop(object):
         horizontal_pipe_parameters: Optional HorizontalPipeParameter object to specify
             the properties of the horizontal pipes contained within ThermalConnectors.
             If None, default values will be used. (Default: None).
+        heat_rejection_type: Text for the equipment used to cool a fifth generation
+            loop when it overheats. Note that choosing None will usually cause a
+            simulation failure unless there is a very large ground heat exchanger
+            on the loop. Choose from the options below. (Default: CoolingTower).
+
+            * CoolingTower
+            * FluidCooler
+            * EvaporativeFluidCooler
+            * DistrictCooling
+            * None
+
+        supplemental_heat_type: Text for the equipment used to heat the loop
+            when it requires supplemental heating. Note that choosing None will
+            usually cause a simulation failure unless there is a very large
+            ground heat exchanger on the loop. Choose from the options below.
+            Choose from the options below. (Default: Electricity).
+
+            * Electricity
+            * NaturalGas
+            * DistrictHeating
+            * None
 
     Properties:
         * identifier
@@ -267,15 +288,26 @@ class FifthGenThermalLoop(object):
         * clockwise_flow
         * soil_parameters
         * horizontal_pipe_parameters
+        * heat_rejection_type
+        * supplemental_heat_type
     """
     __slots__ = (
         '_identifier', '_display_name', '_connectors', '_clockwise_flow',
-        '_soil_parameters', '_horizontal_pipe_parameters'
+        '_soil_parameters', '_horizontal_pipe_parameters',
+        '_heat_rejection_type', '_supplemental_heat_type'
+    )
+    HEAT_REJECTION_TYPES = (
+        'CoolingTower', 'FluidCooler', 'EvaporativeFluidCooler',
+        'DistrictCooling', 'None'
+    )
+    SUPPLEMENTAL_HEAT_TYPES = (
+        'Electricity', 'NaturalGas', 'DistrictHeating', 'None'
     )
 
     def __init__(
         self, identifier, connectors, clockwise_flow=False,
-        soil_parameters=None, horizontal_pipe_parameters=None
+        soil_parameters=None, horizontal_pipe_parameters=None,
+        heat_rejection_type='CoolingTower', supplemental_heat_type='Electricity'
     ):
         """Initialize FifthGenThermalLoop."""
         self.identifier = identifier
@@ -284,6 +316,8 @@ class FifthGenThermalLoop(object):
         self.clockwise_flow = clockwise_flow
         self.soil_parameters = soil_parameters
         self.horizontal_pipe_parameters = horizontal_pipe_parameters
+        self.heat_rejection_type = heat_rejection_type
+        self.supplemental_heat_type = supplemental_heat_type
 
     @classmethod
     def from_dict(cls, data):
@@ -302,7 +336,11 @@ class FifthGenThermalLoop(object):
             if 'soil_parameters' in data else None
         hp = HorizontalPipeParameter.from_dict(data['horizontal_pipe_parameters']) \
             if 'horizontal_pipe_parameters' in data else None
-        loop = cls(data['identifier'], conns, clock, soil, hp)
+        hrt = data['heat_rejection_type'] \
+            if 'heat_rejection_type' in data else 'CoolingTower'
+        sht = data['supplemental_heat_type'] \
+            if 'supplemental_heat_type' in data else 'Electricity'
+        loop = cls(data['identifier'], conns, clock, soil, hp, hrt, sht)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -388,6 +426,12 @@ class FifthGenThermalLoop(object):
         loop = cls(loop_id, connectors, clockwise_flow)
         if units != 'Meters':
             loop.convert_to_units(units)
+
+        # grab the heat rejection and supplemental heating if they exist
+        if 'project' in data and 'heat_rejection_type' in geojson_dict['project']:
+            loop.heat_rejection_type = geojson_dict['project']['heat_rejection_type']
+        if 'project' in data and 'supplemental_heat_type' in geojson_dict['project']:
+            loop.supplemental_heat_type = geojson_dict['project']['supplemental_heat_type']
         return loop
 
     @classmethod
@@ -534,6 +578,42 @@ class FifthGenThermalLoop(object):
             'Expected HorizontalPipeParameter object' \
             ' for FifthGenThermalLoop. Got {}.'.format(type(value))
         self._horizontal_pipe_parameters = value
+
+    @property
+    def heat_rejection_type(self):
+        """Get or set text to indicate the type of heat rejection equipment."""
+        return self._heat_rejection_type
+
+    @heat_rejection_type.setter
+    def heat_rejection_type(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.HEAT_REJECTION_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'heat_rejection_type {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.HEAT_REJECTION_TYPES))
+        self._heat_rejection_type = value
+
+    @property
+    def supplemental_heat_type(self):
+        """Get or set text to indicate the type of supplemental heating."""
+        return self._supplemental_heat_type
+
+    @supplemental_heat_type.setter
+    def supplemental_heat_type(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.SUPPLEMENTAL_HEAT_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'supplemental_heat_type {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.SUPPLEMENTAL_HEAT_TYPES))
+        self._supplemental_heat_type = value
 
     def junctions(self, tolerance=0.01):
         """Get a list of ThermalJunction objects for the unique thermal loop junctions.
@@ -741,6 +821,8 @@ class FifthGenThermalLoop(object):
         base['clockwise_flow'] = self.clockwise_flow
         base['soil_parameters'] = self.soil_parameters.to_dict()
         base['horizontal_pipe_parameters'] = self.horizontal_pipe_parameters.to_dict()
+        base['heat_rejection_type'] = self.heat_rejection_type
+        base['supplemental_heat_type'] = self.supplemental_heat_type
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -981,7 +1063,8 @@ class FifthGenThermalLoop(object):
         new_loop = FifthGenThermalLoop(
             self.identifier,
             tuple(conn.duplicate() for conn in self.connectors), self.clockwise_flow,
-            self.soil_parameters.duplicate(), self.horizontal_pipe_parameters.duplicate()
+            self.soil_parameters.duplicate(), self.horizontal_pipe_parameters.duplicate(),
+            self.heat_rejection_type, self.supplemental_heat_type
         )
         new_loop._display_name = self._display_name
         return new_loop
@@ -1033,6 +1116,27 @@ class GHEThermalLoop(FifthGenThermalLoop):
         horizontal_pipe_parameters: Optional HorizontalPipeParameter object to specify
             the properties of the horizontal pipes contained within ThermalConnectors.
             If None, default values will be used. (Default: None).
+        heat_rejection_type: Text for the equipment used to cool a fifth generation
+            loop when it overheats. Note that choosing None will usually cause a
+            simulation failure unless there is a very large ground heat exchanger
+            on the loop. Choose from the options below. (Default: CoolingTower).
+
+            * CoolingTower
+            * FluidCooler
+            * EvaporativeFluidCooler
+            * DistrictCooling
+            * None
+
+        supplemental_heat_type: Text for the equipment used to heat the loop
+            when it requires supplemental heating. Note that choosing None will
+            usually cause a simulation failure unless there is a very large
+            ground heat exchanger on the loop. Choose from the options below.
+            Choose from the options below. (Default: Electricity).
+
+            * Electricity
+            * NaturalGas
+            * DistrictHeating
+            * None
 
     Properties:
         * identifier
@@ -1046,14 +1150,19 @@ class GHEThermalLoop(FifthGenThermalLoop):
         * borehole_parameters
         * design_parameters
         * horizontal_pipe_parameters
+        * heat_rejection_type
+        * supplemental_heat_type
     """
     __slots__ = ('_ground_heat_exchangers', '_fluid_parameters', '_pipe_parameters',
                  '_borehole_parameters', '_design_parameters')
 
-    def __init__(self, identifier, ground_heat_exchangers, connectors,
-                 clockwise_flow=False, soil_parameters=None, fluid_parameters=None,
-                 pipe_parameters=None, borehole_parameters=None, design_parameters=None,
-                 horizontal_pipe_parameters=None):
+    def __init__(
+        self, identifier, ground_heat_exchangers, connectors,
+        clockwise_flow=False, soil_parameters=None, fluid_parameters=None,
+        pipe_parameters=None, borehole_parameters=None, design_parameters=None,
+        horizontal_pipe_parameters=None,
+        heat_rejection_type='CoolingTower', supplemental_heat_type='Electricity'
+    ):
         """Initialize GHEThermalLoop."""
         self.identifier = identifier
         self._display_name = None
@@ -1066,6 +1175,8 @@ class GHEThermalLoop(FifthGenThermalLoop):
         self.borehole_parameters = borehole_parameters
         self.design_parameters = design_parameters
         self.horizontal_pipe_parameters = horizontal_pipe_parameters
+        self.heat_rejection_type = heat_rejection_type
+        self.supplemental_heat_type = supplemental_heat_type
 
     @classmethod
     def from_dict(cls, data):
@@ -1093,8 +1204,12 @@ class GHEThermalLoop(FifthGenThermalLoop):
             if 'design_parameters' in data else None
         hp = HorizontalPipeParameter.from_dict(data['horizontal_pipe_parameters']) \
             if 'horizontal_pipe_parameters' in data else None
+        hrt = data['heat_rejection_type'] \
+            if 'heat_rejection_type' in data else 'CoolingTower'
+        sht = data['supplemental_heat_type'] \
+            if 'supplemental_heat_type' in data else 'Electricity'
         loop = cls(data['identifier'], ghe, conns, clock, soil, fluid,
-                   pipe, bore, des, hp)
+                   pipe, bore, des, hp, hrt, sht)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -1190,6 +1305,12 @@ class GHEThermalLoop(FifthGenThermalLoop):
         loop = cls(loop_id, ghe_fields, connectors, clockwise_flow)
         if units != 'Meters':
             loop.convert_to_units(units)
+
+        # grab the heat rejection and supplemental heating if they exist
+        if 'project' in data and 'heat_rejection_type' in geojson_dict['project']:
+            loop.heat_rejection_type = geojson_dict['project']['heat_rejection_type']
+        if 'project' in data and 'supplemental_heat_type' in geojson_dict['project']:
+            loop.supplemental_heat_type = geojson_dict['project']['supplemental_heat_type']
         return loop
 
     @classmethod
@@ -1918,7 +2039,8 @@ class GHEThermalLoop(FifthGenThermalLoop):
             self.soil_parameters.duplicate(), self.fluid_parameters.duplicate(),
             self.pipe_parameters.duplicate(), self.borehole_parameters.duplicate(),
             self.design_parameters.duplicate(),
-            self.horizontal_pipe_parameters.duplicate())
+            self.horizontal_pipe_parameters.duplicate(),
+            self.heat_rejection_type, self.supplemental_heat_type)
         new_loop._display_name = self._display_name
         return new_loop
 

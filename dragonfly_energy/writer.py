@@ -174,6 +174,11 @@ def model_to_urbanopt(
         with open(sys_p_json, 'w') as fp:
             des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)
             json.dump(des_dict, fp, indent=2)
+        if hasattr(des_loop, 'heat_rejection_type'):
+            geojson_dict['project']['heat_rejection_type'] = des_loop.heat_rejection_type
+        if hasattr(des_loop, 'supplemental_heat_type'):
+            geojson_dict['project']['supplemental_heat_type'] = \
+                des_loop.supplemental_heat_type
         if conversion_factor is not None:
             des_loop.scale(1 / conversion_factor)
 
