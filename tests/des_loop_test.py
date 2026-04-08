@@ -1,9 +1,11 @@
 # coding=utf-8
 import json
 
-from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
-from ladybug_geometry.geometry3d.plane import Plane
+from ladybug_geometry.geometry2d import Point2D
+from ladybug_geometry.geometry3d import Point3D, Vector3D, Plane
+from ladybug.location import Location
 from honeybee.altnumber import autocalculate
+from dragonfly.model import Model
 
 from dragonfly_energy.des.loop import GHEThermalLoop
 from dragonfly_energy.des.ghe import GroundHeatExchanger
@@ -90,3 +92,31 @@ def test_loop_dict_methods():
     loop_dict = loop.to_dict()
     new_loop = GHEThermalLoop.from_dict(loop_dict)
     assert loop_dict == new_loop.to_dict()
+
+
+def test_loop_geojson_dict_methods():
+    """Test the GHEThermalLoop to/from dict methods."""
+    loop_json = './tests/json/buffalo_ghe_des.json'
+    with open(loop_json) as json_file:
+        data = json.load(json_file)
+    loop = GHEThermalLoop.from_dict(data)
+
+    buildings_json = './tests/json/buffalo_test_district.dfjson'
+    df_model = Model.from_dfjson(buildings_json)
+    bldgs = df_model.buildings
+    location = Location('Buffalo', 'NY', 'USA', 42.813153, -78.852466)
+    point = Point2D(0, 0)
+    geojson_dict = df_model.to_geojson_dict(location, point)
+
+    loop_geo_objs = loop.to_geojson_dict(bldgs, location, point)
+    geojson_dict['features'].extend(loop_geo_objs)
+    new_loop = GHEThermalLoop.from_geojson_dict(geojson_dict)
+    conn_objs = []
+    ghe_objs = []
+    for obj in loop_geo_objs:
+        if obj['properties']['type'] == 'ThermalConnector':
+            conn_objs.append(obj)
+        elif obj['properties']['type'] == 'District System':
+            ghe_objs.append(ghe_objs)
+    assert len(conn_objs) == len(new_loop.connectors)
+    assert len(ghe_objs) == len(new_loop.ground_heat_exchangers)
