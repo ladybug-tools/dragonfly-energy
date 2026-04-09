@@ -32,6 +32,25 @@ class FourthGenThermalLoop(object):
         heating_plant: Optional HeatingPlant object to specify the properties
             of the heating plant in the loop. If None, default values will
             be used. (Default: None).
+        economizer_type: Text for the type of waterside economizer to be used within
+            the cooling plant. Integrated will pre-cool the inlet supply water
+            to the chiller using the cooling tower whenever outdoor wetbulb
+            temperatures are cold enough. NonIntegrated will bypass the chiller
+            completely to create chilled water via the cooling tower whenever
+            outdoor wetbulb temperatures are cold enough. Choose from the
+            options below. (Default: None).
+
+            * None
+            * Integrated
+            * NonIntegrated
+
+        heating_type: Text for the source of heat within the heating plant.
+            Choose from the options below. (Default: NaturalGas).
+
+            * NaturalGas
+            * Electricity
+            * AirSourceHeatPump
+            * DistrictHeating
 
     Properties:
         * identifier
@@ -39,14 +58,22 @@ class FourthGenThermalLoop(object):
         * cooling_plant
         * heating_plant
     """
-    __slots__ = ('_identifier', '_display_name', '_cooling_plant', '_heating_plant')
+    __slots__ = ('_identifier', '_display_name', '_cooling_plant', '_heating_plant',
+                 '_economizer_type', '_heating_type')
+    ECONOMIZER_TYPES = ('None', 'Integrated', 'NonIntegrated')
+    HEATING_TYPES = (
+        'NaturalGas', 'Electricity', 'AirSourceHeatPump', 'DistrictHeating'
+    )
 
-    def __init__(self, identifier, cooling_plant=None, heating_plant=None):
-        """Initialize GHEThermalLoop."""
+    def __init__(self, identifier, cooling_plant=None, heating_plant=None,
+                 economizer_type='None', heating_type='NaturalGas'):
+        """Initialize FourthGenThermalLoop."""
         self.identifier = identifier
         self._display_name = None
         self.cooling_plant = cooling_plant
         self.heating_plant = heating_plant
+        self.economizer_type = economizer_type
+        self.heating_type = heating_type
 
     @classmethod
     def from_dict(cls, data):
@@ -62,7 +89,9 @@ class FourthGenThermalLoop(object):
             if 'cooling_plant' in data and data['cooling_plant'] is not None else None
         hwp = HeatingPlant.from_dict(data['heating_plant']) \
             if 'heating_plant' in data and data['heating_plant'] is not None else None
-        loop = cls(data['identifier'], cwp, hwp)
+        et = data['economizer_type'] if 'economizer_type' in data else 'None'
+        ht = data['heating_type'] if 'heating_type' in data else 'NaturalGas'
+        loop = cls(data['identifier'], cwp, hwp, et, ht)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -121,12 +150,50 @@ class FourthGenThermalLoop(object):
             ' for FourthGenThermalLoop. Got {}.'.format(type(value))
         self._heating_plant = value
 
+    @property
+    def economizer_type(self):
+        """Get or set text to indicate the type of waterside economizer."""
+        return self._economizer_type
+
+    @economizer_type.setter
+    def economizer_type(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.ECONOMIZER_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'economizer_type {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.ECONOMIZER_TYPES))
+        self._economizer_type = value
+
+    @property
+    def heating_type(self):
+        """Get or set text to indicate the type of heating."""
+        return self._heating_type
+
+    @heating_type.setter
+    def heating_type(self, value):
+        clean_input = valid_string(value).lower()
+        for key in self.HEATING_TYPES:
+            if key.lower() == clean_input:
+                value = key
+                break
+        else:
+            raise ValueError(
+                'heating_type {} is not recognized.\nChoose from the '
+                'following:\n{}'.format(value, self.HEATING_TYPES))
+        self._heating_type = value
+
     def to_dict(self):
         """FourthGenThermalLoop dictionary representation."""
         base = {'type': 'FourthGenThermalLoop'}
         base['identifier'] = self.identifier
         base['cooling_plant'] = self.cooling_plant.to_dict()
         base['heating_plant'] = self.heating_plant.to_dict()
+        base['economizer_type'] = self.economizer_type
+        base['heating_type'] = self.heating_type
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -223,7 +290,7 @@ class FourthGenThermalLoop(object):
     def __copy__(self):
         new_loop = FourthGenThermalLoop(
             self.identifier, self.cooling_plant.duplicate(),
-            self.heating_plant.duplicate()
+            self.heating_plant.duplicate(), self.economizer_type, self.heating_type
         )
         new_loop._display_name = self._display_name
         return new_loop

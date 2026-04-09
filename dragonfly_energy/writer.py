@@ -179,6 +179,10 @@ def model_to_urbanopt(
         if hasattr(des_loop, 'supplemental_heat_type'):
             geojson_dict['project']['supplemental_heat_type'] = \
                 des_loop.supplemental_heat_type
+        if hasattr(des_loop, 'economizer_type'):
+            geojson_dict['project']['economizer_type'] = des_loop.economizer_type
+        if hasattr(des_loop, 'heating_type'):
+            geojson_dict['project']['heating_type'] = des_loop.heating_type
         if conversion_factor is not None:
             des_loop.scale(1 / conversion_factor)
 
