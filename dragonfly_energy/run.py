@@ -9,14 +9,25 @@ import shutil
 import subprocess
 
 from ladybug.futil import preparedir, write_to_file
+from ladybug.dt import Date
+from ladybug.analysisperiod import AnalysisPeriod
+from ladybug.datatype.power import Power
+from ladybug.header import Header
+from ladybug.datacollection import HourlyContinuousCollection
 from ladybug.epw import EPW
+from ladybug.sql import SQLiteResult
 from ladybug.config import folders as lb_folders
 from honeybee.config import folders as hb_folders
+from honeybee_energy.config import folders as hbe_folders
+from honeybee_energy.writer import generate_idf_string
+from honeybee_energy.measure import Measure
+from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.result.emissions import emissions_region
 
 from .config import folders
 from .measure import MapperMeasure
 from .reopt import REoptParameter
+from .properties.building import BuildingEnergyProperties
 
 # Custom environment used to run Python packages without conflicts
 PYTHON_ENV = os.environ.copy()
@@ -79,9 +90,38 @@ def base_honeybee_osw(
         with open(base_osw, 'r') as base_file:
             osw_dict = json.load(base_file)
 
+    # set up the mapper measure directory
+    mappers_dir = os.path.join(project_directory, 'mappers')
+    if not os.path.isdir(mappers_dir):
+        preparedir(mappers_dir)
+
     # assign the measure_paths to the osw_dict
     if 'measure_paths' not in osw_dict:
         osw_dict['measure_paths'] = []
+
+    # request district thermal outputs if there is a system parameter
+    sys_param_file = os.path.join(project_directory, 'system_params.json')
+    if os.path.isfile(sys_param_file) and hbe_folders.inject_idf_measure_path is not None:
+        district_out = (
+            'District Cooling Water Rate',
+            'District Heating Water Rate',
+            'Water Heater DistrictHeatingWater Rate'
+        )
+        strings_to_inject = []
+        for output_name in district_out:
+            values = ('*', output_name, 'Timestep')
+            comments = ('key value', 'name', 'frequency')
+            strings_to_inject.append(generate_idf_string(
+                'Output:Variable', values, comments))
+        strings_to_inject = '\n\n'.join(strings_to_inject)
+        idf_measure = Measure(hbe_folders.inject_idf_measure_path)
+        inject_idf = os.path.join(mappers_dir, 'inject.idf')
+        with open(inject_idf, "w") as idf_file:
+            idf_file.write(strings_to_inject)
+        input_arg = idf_measure.arguments[0]
+        input_arg.value = inject_idf
+        osw_dict['measure_paths'].append(os.path.dirname(idf_measure.folder))
+        osw_dict['steps'].append(idf_measure.to_osw_dict())  # add measure to workflow
 
     # add the emissions reporting if a year has been selected
     if emissions_year is not None and epw_file is not None:
@@ -147,7 +187,6 @@ def base_honeybee_osw(
     # if there is a system parameter JSON, make sure the EPW is copied and referenced
     if epw_file is not None:
         osw_dict['weather_file'] = epw_file
-        sys_param_file = os.path.join(project_directory, 'system_params.json')
         if os.path.isfile(sys_param_file):
             # make sure the Modelica measure runs as part of the simulation
             modelica_measures = [
@@ -236,9 +275,6 @@ def base_honeybee_osw(
                                 json.dump(sys_dict, fp, indent=4)
 
     # write the dictionary to a honeybee_workflow.osw
-    mappers_dir = os.path.join(project_directory, 'mappers')
-    if not os.path.isdir(mappers_dir):
-        preparedir(mappers_dir)
     osw_json = os.path.join(mappers_dir, 'honeybee_workflow.osw')
     if (sys.version_info < (3, 0)):  # we need to manually encode it as UTF-8
         with open(osw_json, 'w') as fp:
@@ -559,15 +595,15 @@ def run_rnm(feature_geojson, scenario_csv, underground_ratio=0.9, lv_only=True,
         return rnm_path
 
 
-def run_des_sys_param(feature_geojson, scenario_csv):
-    """Run the GMT command to add the time series building loads to the sys param JSON.
+def check_des_compatibility(feature_geojson):
+    """Check whether a given URBANopt project folder is compatible with DES simulation.
 
     Args:
         feature_geojson: The full path to a .geojson file containing the
-            footprints of buildings to be simulated.
+            footprints of buildings.
         scenario_csv: The full path to a .csv file for the URBANopt scenario.
     """
-    # get the directory and parse the system parameter file
+    # get the directory and check the system parameter file
     directory = os.path.dirname(feature_geojson)
     sys_param_file = os.path.join(directory, 'system_params.json')
     assert os.path.isfile(sys_param_file), \
@@ -575,7 +611,149 @@ def run_des_sys_param(feature_geojson, scenario_csv):
         'Make sure that the des_loop_ was assigned in the GeoJSON export\n' \
         'before running the URBANopt simulation.'
 
-    # parse the system parameter file to understand the type of system
+    # check to be sure that the simulation was run annually
+    sim_par_json = os.path.join(directory, 'simulation_parameter.json')
+    if os.path.isfile(sim_par_json):
+        with open(sim_par_json) as json_file:
+            data = json.load(json_file)
+        sim_par = SimulationParameter.from_dict(data)
+        run_per = sim_par.run_period
+        if run_per.start_date != Date(1, 1) or run_per.end_date != Date(12, 31):
+            msg = 'Building load simulation must be annual to use District Energy ' \
+                'System workflows.\nGot a simulation from ' \
+                '{} to {}.'.format(run_per.start_date, run_per.end_date)
+            raise ValueError(msg)
+
+
+def set_building_district_loads(feature_geojson, scenario_csv):
+    """Set the building loads to be used for DES simulation to district chilled/hot water.
+
+    If no district chilled/hot water loads are found in the SQL result file for
+    a given building, the zone sensible cooling/heating load will be used instead
+    and a warning will be returned from this function.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+
+    Returns:
+        A list of text strings for warnings about buildings where no district
+        chilled/hot water was found.
+    """
+    # check to be sure that the simulation was run annually
+    directory = os.path.dirname(feature_geojson)
+    sim_par_json = os.path.join(directory, 'simulation_parameter.json')
+    if os.path.isfile(sim_par_json):
+        with open(sim_par_json) as json_file:
+            data = json.load(json_file)
+        sim_par = SimulationParameter.from_dict(data)
+    else:  # assume the simulation ran with default parameters
+        sim_par = SimulationParameter()
+    run_per = sim_par.run_period
+    a_per = AnalysisPeriod(
+        st_month=run_per.start_date.month, st_day=run_per.start_date.day,
+        end_month=run_per.end_date.month, end_day=run_per.end_date.day,
+        timestep=sim_par.timestep)
+
+    # for each building in the simulation, replace sensible loads with district loads
+    scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+    scn_dir = os.path.join(directory, 'run', scn_name)
+    warnings = []
+    for bldg_name in os.listdir(scn_dir):
+        # gather all of the files that are for results to parse and replace
+        bldg_dir = os.path.join(scn_dir, bldg_name)
+        sql_file = os.path.join(bldg_dir, 'eplusout.sql')
+        if not os.path.isfile(sql_file):
+            continue  # not a directory with building loads
+        modelica_load_dir = None
+        for f_name in os.listdir(bldg_dir):
+            if f_name.endswith('_export_modelica_loads'):
+                modelica_load_dir = os.path.join(bldg_dir, f_name)
+                break
+        if not modelica_load_dir:
+            continue
+        bldg_csv = os.path.join(modelica_load_dir, 'building_loads.csv')
+
+        # create base data collections from the CSV data
+        cooling_vals, heating_vals, shw_vals = [], [], []
+        with open(bldg_csv, 'r') as f:
+            next(f)  # skip the first line
+            for line in f:
+                row = line.strip().split(',')
+                shw_vals.append(float(row[-1]))
+                heating_vals.append(float(row[-2]))
+                cooling_vals.append(float(row[-3]))
+        header = Header(Power(), 'W', a_per)
+        try:
+            cooling = HourlyContinuousCollection(header, cooling_vals)
+            heating = HourlyContinuousCollection(header, heating_vals)
+            shw = HourlyContinuousCollection(header, shw_vals)
+        except AssertionError:  # the loads have already been processed
+            continue
+
+        # see if there are district heating/cooling values to use instead
+        sql_obj = SQLiteResult(sql_file)
+        cooling_output = 'District Cooling Water Rate'
+        heating_output = 'District Heating Water Rate'
+        shw_output = 'Water Heater DistrictHeatingWater Rate'
+        d_cooling = sql_obj.data_collections_by_output_name(cooling_output)
+        d_heating = sql_obj.data_collections_by_output_name(heating_output)
+        d_shw = sql_obj.data_collections_by_output_name(shw_output)
+
+        # give warnings for all cases where no district loads were found
+        msg_template = 'No District {} Water was found for building "{}".\nZone ' \
+            'sensible {} loads will be used instead but this excludes the loads ' \
+            'of outdoor ventilation air.\nFor best DES simulation results, ' \
+            'assign a building HVAC that uses district {} water.'
+        if len(d_cooling) == 0:
+            warnings.append(msg_template.format('Cooling', bldg_name, 'cooling', 'chilled'))
+        else:
+            cooling = -d_cooling[0] if len(d_cooling) == 1 else -sum(d_cooling)
+        if len(d_heating) == 0:
+            warnings.append(msg_template.format('Heating', bldg_name, 'heating', 'hot'))
+        else:
+            heating = d_heating[0] if len(d_heating) == 1 else sum(d_heating)
+        if len(d_shw) != 0:
+            shw = d_shw[0] if len(d_shw) == 1 else sum(d_shw)
+
+        # write the final loads into the modelica and JSON files
+        json_data = BuildingEnergyProperties.building_load_json(cooling, heating, shw)
+        mos_data = BuildingEnergyProperties.building_load_mos(cooling, heating, shw)
+        json_path = os.path.join(bldg_dir, 'results.json')
+        mos_path = os.path.join(modelica_load_dir, 'modelica.mos')
+        with open(json_path, 'w') as fp:
+            fp.write(json_data)
+        with open(mos_path, 'w') as fp:
+            fp.write(mos_data)
+
+        # if the simulation timestep was not 1, convert it to 1 for CSV data
+        # this enables the ThermalNetwork package to use the data
+        if a_per.timestep != 1:
+            cooling = cooling.cull_to_timestep(1)
+            heating = heating.cull_to_timestep(1)
+            shw = shw.cull_to_timestep(1)
+        csv_data = BuildingEnergyProperties.building_load_csv(cooling, heating, shw)
+        with open(bldg_csv, 'w') as fp:
+            fp.write(csv_data)
+
+    return warnings  # return warnings to report about sensible load use
+
+
+def run_des_sys_param(feature_geojson, scenario_csv):
+    """Run the GMT command to add the time series building loads to the sys param JSON.
+
+    For GHE DEST, this function will also run the ThermalNetwork commands to
+    properly size the borehole fields.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings.
+        scenario_csv: The full path to a .csv file for the URBANopt scenario.
+    """
+    # get the directory and parse the system parameter file
+    directory = os.path.dirname(feature_geojson)
+    sys_param_file = os.path.join(directory, 'system_params.json')
     with open(sys_param_file, 'r') as spf:
         sp_dict = json.load(spf)
     des_dict = sp_dict['district_system']
@@ -657,11 +835,11 @@ def run_des_sys_param(feature_geojson, scenario_csv):
 
     # if the DES system has a ground heat exchanger, run the thermal network package
     if ghe_sys:
+        scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+        scn_dir = os.path.join(directory, 'run', scn_name)
         # run the GHE Designer to size the system
         tn_exe = os.path.join(
             hb_folders.python_scripts_path, 'thermalnetwork{}'.format(ext))
-        scn_name = os.path.basename(scenario_csv).replace('.csv', '')
-        scn_dir = os.path.join(directory, 'run', scn_name)
         ghe_dir = os.path.join(scn_dir, 'ghe_dir')
         build_cmd = \
             '"{tn_exe}" -y "{sp_file}" -s "{scenario}" -f "{feature}" -o {out_p}'.format(
