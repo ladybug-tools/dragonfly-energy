@@ -630,57 +630,18 @@ class BuildingEnergyProperties(object):
 
     def to_building_load_csv(self):
         """Get a CSV file string of building loads for DES simulation."""
-        time_col, cool, heat, water = self._building_loads()
-        total = cool + heat
-        header = (
-            'SecondsFromStart',
-            'TotalSensibleLoad',
-            'TotalCoolingSensibleLoad',
-            'TotalHeatingSensibleLoad',
-            'TotalWaterHeating'
-        )
-        file_lines = [','.join(header)]
-        for s, t, c, h, hw in zip(time_col, total, cool, heat, water):
-            text_vals = [str(v) for v in (s, t, c, h, hw)]
-            file_lines.append(','.join(text_vals))
-        return '\n'.join(file_lines)
+        cool, heat, water, time_col = self._building_loads()
+        return self.building_load_csv(cool, heat, water, time_col)
 
     def to_building_load_json(self):
-        """Get a JSON file string of peak loads for DES simulation."""
-        _, cool, heat, water = self._building_loads()
-        peak_dict = {
-            'ExportModelicaLoads': 
-            {
-                'applicable': True,
-                'energyplus_runtime': 1,
-                'peak_cooling_load': cool.min,
-                'peak_heating_load': heat.max,
-                'peak_water_heating': water.max
-            }
-        }
-        return json.dumps(peak_dict, indent=4)
+        """Get a JSON file string of this building's peak loads for DES simulation."""
+        cool, heat, water, _ = self._building_loads()
+        return self.building_load_json(cool, heat, water)
 
     def to_building_load_mos(self):
-        """Get a MOS file string of building loads for DES simulation."""
-        time_col, cool, heat, water = self._building_loads()
-        file_lines = [
-            '#1',
-            '#Exported loads from Dragonfly',
-            '\n',
-            '#First column: Seconds in the year (loads are hourly)',
-            '#Second column: cooling loads in Watts (as negative numbers).',
-            '#Third column: space heating loads in Watts',
-            '#Fourth column: water heating loads in Watts',
-            '\n'
-        ]
-        file_lines.append('#Peak space cooling load = {} Watts'.format(cool.min))
-        file_lines.append('#Peak space heating load = {} Watts'.format(heat.max))
-        file_lines.append('#Peak water heating load = {} Watts'.format(water.max))
-        file_lines.append('double tab1({},4)'.format(len(time_col)))
-        for s, c, h, hw in zip(time_col, cool, heat, water):
-            text_vals = [str(v) for v in (s, c, h, hw)]
-            file_lines.append(';'.join(text_vals))
-        return '\n'.join(file_lines)
+        """Get a MOS file string of this building's loads for DES simulation."""
+        cool, heat, water, time_col = self._building_loads()
+        return self.building_load_mos(cool, heat, water, time_col)
 
     def duplicate(self, new_host=None):
         """Get a copy of this object.
@@ -698,6 +659,89 @@ class BuildingEnergyProperties(object):
         new_prop._des_heating_load = self._des_heating_load
         new_prop._des_hot_water_load = self._des_hot_water_load
         return new_prop
+
+    @staticmethod
+    def building_load_csv(cooling, heating, shw, time=None):
+        """Get a CSV file string of building loads for DES simulation."""
+        if time is None:  # make a collection for time in seconds
+            a_per = cooling.header.analysis_period
+            sec_step = int(3600.0 / a_per.timestep)
+            time_vals = list(range(sec_step, sec_step * (len(cooling) + 1), sec_step))
+            time = HourlyContinuousCollection(Header(Time(), 'sec', a_per), time_vals)
+        # create the file header
+        total = cooling + heating
+        header = (
+            'SecondsFromStart',
+            'TotalSensibleLoad',
+            'TotalCoolingSensibleLoad',
+            'TotalHeatingSensibleLoad',
+            'TotalWaterHeating'
+        )
+        file_lines = [','.join(header)]
+        #  write the data into the CSV
+        for s, t, c, h, hw in zip(time, total, cooling, heating, shw):
+            text_vals = [str(v) for v in (s, t, c, h, hw)]
+            file_lines.append(','.join(text_vals))
+        return '\n'.join(file_lines)
+
+    @staticmethod
+    def building_load_json(cooling, heating, shw):
+        """Get a JSON file string of peak loads for DES simulation.
+
+        Args:
+            cooling: An HourlyContinuousCollection for cooling in negative Watts.
+            heating: An HourlyContinuousCollection for heating in Watts.
+            shw: An HourlyContinuousCollection for service hot water in Watts.
+        """
+        peak_dict = {
+            'ExportModelicaLoads':
+            {
+                'applicable': True,
+                'energyplus_runtime': 1,
+                'peak_cooling_load': cooling.min,
+                'peak_heating_load': heating.max,
+                'peak_water_heating': shw.max
+            }
+        }
+        return json.dumps(peak_dict, indent=4)
+
+    @staticmethod
+    def building_load_mos(cooling, heating, shw, time=None):
+        """Get a MOS file string of building loads for DES simulation.
+
+        Args:
+            cooling: An HourlyContinuousCollection for cooling in negative Watts.
+            heating: An HourlyContinuousCollection for heating in Watts.
+            shw: An HourlyContinuousCollection for service hot water in Watts.
+            time: An optional HourlyContinuousCollection for the timesteps in
+                seconds. If unspecified, the time will be inferred from the other
+                data collection's analysis periods. (Default: None).
+        """
+        if time is None:  # make a collection for time in seconds
+            a_per = cooling.header.analysis_period
+            sec_step = int(3600.0 / a_per.timestep)
+            time_vals = list(range(sec_step, sec_step * (len(cooling) + 1), sec_step))
+            time = HourlyContinuousCollection(Header(Time(), 'sec', a_per), time_vals)
+        # create the file header
+        file_lines = [
+            '#1',
+            '#Exported loads from Dragonfly',
+            '\n',
+            '#First column: Seconds in the year (loads are hourly)',
+            '#Second column: cooling loads in Watts (as negative numbers).',
+            '#Third column: space heating loads in Watts',
+            '#Fourth column: water heating loads in Watts',
+            '\n'
+        ]
+        file_lines.append('#Peak space cooling load = {} Watts'.format(cooling.min))
+        file_lines.append('#Peak space heating load = {} Watts'.format(heating.max))
+        file_lines.append('#Peak water heating load = {} Watts'.format(shw.max))
+        file_lines.append('double tab1({},4)'.format(len(time)))
+        # write the data into the .mos
+        for s, c, h, hw in zip(time, cooling, heating, shw):
+            text_vals = [str(v) for v in (s, c, h, hw)]
+            file_lines.append(';'.join(text_vals))
+        return '\n'.join(file_lines)
 
     def _hvac_from_long_name(self, hvac_long_name, vintage='ASHRAE_2013'):
         """Get an HVAC class instance from it's long name (as found in a geoJSON)."""
@@ -747,7 +791,7 @@ class BuildingEnergyProperties(object):
         sec_step = int(3600.0 / a_per.timestep)
         time_vals = list(range(sec_step, sec_step * (len(base_col) + 1), sec_step))
         time_col = HourlyContinuousCollection(Header(Time(), 'sec', a_per), time_vals)
-        return time_col, cool, heat, water
+        return cool, heat, water, time_col
 
     def _base_load_collection(self):
         """Get a data collection to serve as the basis for writing DES loads."""

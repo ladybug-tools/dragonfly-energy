@@ -18,6 +18,7 @@ from honeybee_energy.run import HB_OS_MSG
 from honeybee_energy.writer import energyplus_idf_version, _preprocess_model_for_trace
 from honeybee_energy.config import folders
 from dragonfly.model import Model
+from dragonfly_energy.run import set_building_district_loads
 
 
 _logger = logging.getLogger(__name__)
@@ -1260,3 +1261,53 @@ def _hbjson_to_osm(hbjson_path, sim_par_json, epw_file, output_folder):
         return True, hbjson_path, osm_path, process.stdout
     except subprocess.CalledProcessError as e:
         return False, hbjson_path, None, e.stderr
+
+
+@translate.command('building-district-loads')
+@click.argument(
+    'feature-file',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
+)
+@click.argument(
+    'scenario-file',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
+)
+@click.option(
+    '--log-file', '-log', help='Optional log file to output the paths to the '
+    'generated simulation files if they were successfully created. '
+    'By default this will be printed out to stdout',
+    type=click.File('w'), default='-', show_default=True)
+def building_district_loads_cli(feature_file, scenario_file, log_file):
+    """Set the building loads to be used for DES simulation to district chilled/hot water.
+
+    \b
+    Args:
+        feature_geojson: The full path to a .geojson file containing the footprints.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+    """
+    try:
+        building_district_loads(feature_file, scenario_file, log_file)
+    except Exception as e:
+        _logger.exception('Building district loads translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def building_district_loads(feature_file, scenario_file, log_file=None):
+    """Set the building loads to be used for DES simulation to district chilled/hot water.
+
+    If no district chilled/hot water loads are found in the SQL result file for
+    a given building, the zone sensible cooling/heating load will be used instead
+    and a warning will be returned from this function.
+
+    Args:
+        feature_geojson: The full path to a .geojson file containing the
+            footprints of buildings to be simulated.
+        scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        log_file: Optional log file to output the paths to the generated
+            simulation files if they were successfully created. By default this
+            string will be returned from this method.
+    """
+    warnings = set_building_district_loads(feature_file, scenario_file)
+    return process_content_to_output(json.dumps(warnings, indent=4), log_file)
