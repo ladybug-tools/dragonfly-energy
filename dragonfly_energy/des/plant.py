@@ -337,7 +337,7 @@ class CoolingPlant(object):
     @property
     def cw_pump_head(self):
         """Get or set a number for the system condenser water pump head in Pa."""
-        return self._chw_pump_head
+        return self._cw_pump_head
 
     @cw_pump_head.setter
     def cw_pump_head(self, value):
