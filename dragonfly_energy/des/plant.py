@@ -139,8 +139,8 @@ class CoolingPlant(object):
             in kg/s. (Default: 10.0).
         cw_mass_flow: A number for the nominal condenser water mass flow rate
             in kg/s. (Default: 1.0).
-        chw_pump_head: A number for the chilled water pump head in Pa. (Default: 300000).
-        cw_pump_head: A number for the condenser water pump head in Pa. (Default: 200000).
+        chw_pump_head: A number for the chilled water pump head in Pa. (Default: 250000).
+        cw_pump_head: A number for the condenser water pump head in Pa. (Default: 175000).
         chw_pressure_drop: A number for the nominal chilled water (evaporator)
             side pressure drop in Pa. (Default: 55000).
         cw_pressure_drop: A number for the nominal cooling water (condenser)
@@ -193,7 +193,7 @@ class CoolingPlant(object):
     def __init__(
         self, chw_setpoint=6, cooling_limit=8000,
         chw_mass_flow=10, min_chw_mass_flow=10, cw_mass_flow=10,
-        chw_pump_head=300000, cw_pump_head=200000,
+        chw_pump_head=250000, cw_pump_head=175000,
         chw_pressure_drop=55000, cw_pressure_drop=80000, pressure_drop_setpoint=50000,
         chw_valve_pressure_drop=6000, cw_valve_pressure_drop=6000,
         cooling_tower_fan_power=5000, cooling_tower_delta_temperature=7,
@@ -235,8 +235,8 @@ class CoolingPlant(object):
             'chw_mass_flow': 10.0,  # float for system mass flow rate [kg/s]
             'min_chw_mass_flow': 10.0  # float for minimum mass flow rate [kg/s]
             'cw_mass_flow': 10.0  # float for condenser mass flow rate [kg/s]
-            'chw_pump_head': 300000,  # float for chilled water pump head [Pa]
-            'cw_pump_head': 200000,  # float for condenser water pump head [Pa]
+            'chw_pump_head': 250000,  # float for chilled water pump head [Pa]
+            'cw_pump_head': 175000,  # float for condenser water pump head [Pa]
             'chw_pressure_drop': 55000,  # float for evaporator pressure drop [Pa]
             'cw_pressure_drop': 80000,  # float for condenser pressure drop [Pa]
             'pressure_drop_setpoint': 50000,  # float for pressure drop setpoint [Pa]
@@ -254,8 +254,8 @@ class CoolingPlant(object):
         chw_f = data['chw_mass_flow'] if 'chw_mass_flow' in data else 10
         min_chw_f = data['min_chw_mass_flow'] if 'min_chw_mass_flow' in data else 10
         cw_f = data['cw_mass_flow'] if 'cw_mass_flow' in data else 10
-        chw_p = data['chw_pump_head'] if 'chw_pump_head' in data else 300000
-        cw_p = data['cw_pump_head'] if 'cw_pump_head' in data else 200000
+        chw_p = data['chw_pump_head'] if 'chw_pump_head' in data else 250000
+        cw_p = data['cw_pump_head'] if 'cw_pump_head' in data else 175000
         chw_pd = data['chw_pressure_drop'] if 'chw_pressure_drop' in data else 55000
         cw_pd = data['cw_pressure_drop'] if 'cw_pressure_drop' in data else 80000
         pds = data['pressure_drop_setpoint'] if 'pressure_drop_setpoint' in data else 50000
