@@ -64,9 +64,8 @@ def simulate():
     'distinct 3D Rooms in the translation.', default=True, show_default=True
 )
 @click.option(
-    '--no-ceil-adjacency/--ceil-adjacency', ' /-a', help='Flag to indicate '
-    'whether adjacencies should be solved between interior stories when '
-    'Room2Ds perfectly match one another in their floor plate. This ensures '
+    '--ceil-adjacency/--no-ceil-adjacency', '-a/-na', help='Flag to indicate '
+    'whether adjacencies should be solved between stories. This ensures '
     'that Surface boundary conditions are used instead of Adiabatic ones. '
     'Note that this input has no effect when the object-per-model is Story.',
     default=True, show_default=True
@@ -80,7 +79,7 @@ def simulate():
     'Stories, PlenumStories.', type=str, default='None', show_default=True
 )
 @click.option(
-    '--measures', '-m', help='Full path to a folder containing an OSW JSON '
+    '--measures', '-ms', help='Full path to a folder containing an OSW JSON '
     'be used as the base for the execution of the OpenStudio CLI. While this '
     'OSW can contain paths to measures that exist anywhere on the machine, '
     'the best practice is to copy the measures into this measures '
@@ -89,6 +88,26 @@ def simulate():
     'machine to another.', default=None, show_default=True,
     type=click.Path(file_okay=False, dir_okay=True, resolve_path=True)
 )
+@click.option(
+    '--additional-idf', '-ai', help='An IDF file with text to be appended to '
+    'all EnergyPlus models generated from the Dragonfly Model before '
+    'simulation. This input can be used to include EnergyPlus objects that are not '
+    'natively supported.', default=None, show_default=True,
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option(
+    '--report-units', '-r', help='A text value to set the units of the '
+    'OpenStudio Results report that this command can output. Choose from the '
+    'following:\nnone - no results report will be produced\nsi - all units '
+    'will be in SI\nip - all units will be in IP.',
+    type=str, default='none', show_default=True)
+@click.option(
+    '--viz-variable', '-v', help='Text for an EnergyPlus output variable to '
+    'be visualized on the geometry in an output view_data HTML report. '
+    'If unspecified, no view_data report is produced. Multiple variables '
+    'can be requested by using multiple -v options. For example\n'
+    ' -v "Zone Air System Sensible Heating Rate" -v "Zone Air System '
+    'Sensible Cooling Rate"',
+    type=str, default=None, show_default=True, multiple=True)
 @click.option(
     '--cpu-count', '-c', help='Optional integer to specify the number of'
     'processors to be used in simulating each model derived from the input model.'
@@ -104,8 +123,8 @@ def simulate():
 )
 def simulate_model_cli(
     model_file, epw_file, sim_par_json, obj_per_model, shade_dist,
-    multiplier, plenum, no_ceil_adjacency, merge_method,
-    measures, cpu_count, folder
+    multiplier, plenum, ceil_adjacency, merge_method, measures, additional_idf,
+    report_units, viz_variable, cpu_count, folder
 ):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
 
@@ -118,11 +137,11 @@ def simulate_model_cli(
     try:
         full_geometry = not multiplier
         no_plenum = not plenum
-        ceil_adjacency = not no_ceil_adjacency
+        no_ceil_adjacency = not ceil_adjacency
         simulate_model(
             model_file, epw_file, sim_par_json, obj_per_model, shade_dist,
-            full_geometry, no_plenum, ceil_adjacency, merge_method,
-            measures, cpu_count, folder
+            full_geometry, no_plenum, no_ceil_adjacency, merge_method,
+            measures, additional_idf, report_units, viz_variable, cpu_count, folder
         )
     except Exception as e:
         _logger.exception('Model simulation failed.\n{}'.format(e))
@@ -133,9 +152,9 @@ def simulate_model_cli(
 
 def simulate_model(
     model_file, epw_file, sim_par_json=None, obj_per_model='Building', shade_dist=None,
-    full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
-    measures=None, cpu_count=None, folder=None,
-    multiplier=True, plenum=True, no_ceil_adjacency=True
+    full_geometry=False, no_plenum=False, no_ceil_adjacency=False, merge_method='None',
+    measures=None, additional_idf=None, report_units=None, viz_variable=None,
+    cpu_count=None, folder=None, multiplier=True, plenum=True, ceil_adjacency=True
 ):
     """Simulate a Dragonfly Model JSON file in EnergyPlus.
 
@@ -176,9 +195,8 @@ def simulate_model(
         no_plenum: Boolean to indicate whether ceiling/floor plenum depths
             assigned to Room2Ds should generate distinct 3D Rooms in the
             translation. (Default: False).
-        ceil_adjacency: Boolean to indicate whether adjacencies should be solved
-            between interior stories when Room2Ds perfectly match one another
-            in their floor plate. This ensures that Surface boundary conditions
+        no_ceil_adjacency: Boolean to indicate whether adjacencies should be solved
+            between interior stories. This ensures that Surface boundary conditions
             are used instead of Adiabatic ones. Note that this input has no
             effect when the object-per-model is Story. (Default: False).
         merge_method: An optional text string to describe how the Room2Ds should
@@ -202,6 +220,22 @@ def simulate_model(
             is to copy the measures into this measures folder and use relative
             paths within the OSW. This makes it easier to move the inputs for
             this command from one machine to another.
+        additional_idf: An IDF file with text to be appended to all EnergyPlus
+            models generated from the Dragonfly Model before simulation. This
+            input can be used to include EnergyPlus objects that are not
+            natively supported.
+        report_units: Text to set the units of the OpenStudio Results report
+            that this command can output for each EnergyPlus model. Choose from
+            the following:
+
+            * none - no results report will be produced
+            * si - all units will be in SI
+            * ip - all units will be in IP
+
+        viz_variable: An optional list of text values for EnergyPlus output
+            variables to be visualized on the geometry in an output HTML report.
+            For example, ["Zone Air System Sensible Heating Rate", "Zone Air System
+            Sensible Cooling Rate"]. If None, no view_data report is produced
         cpu_count: Optional integer to specify the number of processors to be
             used in simulating each model derived from the input model.
         folder: Folder on this computer, into which the IDF and result files will
@@ -237,6 +271,8 @@ def simulate_model(
         sim_par.output.add_hvac_energy_use()
         sim_par.output.add_electricity_generation()
         sim_par.output.reporting_frequency = 'Monthly'
+        sim_par.timestep = 1  # use hourly timestep for fast default simulation
+        sim_par.shadow_calculation.solar_distribution = 'FullExterior'  # for speed!
     else:
         with open(sim_par_json) as json_file:
             data = json.load(json_file)
@@ -285,7 +321,16 @@ def simulate_model(
     with ProcessPoolExecutor(max_workers=cpu_count) as executor:
         # submit all tasks to the executor
         futures = {
-            executor.submit(_simulate_hbjson, path, epw_file, sim_par_json, measures): path
+            executor.submit(
+                    _simulate_hbjson,
+                    path,
+                    epw_file,
+                    sim_par_json,
+                    measures,
+                    additional_idf,
+                    report_units,
+                    viz_variable
+                ): path
             for path in hbjson_files
         }
         # yield results as soon as each process completes
@@ -300,7 +345,10 @@ def simulate_model(
                 print('   Error details: {}'.format(msg.strip()))
 
 
-def _simulate_hbjson(hbjson_path, epw_file, sim_par_json, measures):
+def _simulate_hbjson(
+    hbjson_path, epw_file, sim_par_json, measures, additional_idf,
+    report_units, viz_variable
+):
     """Translate a HBJSON file in EnergyPlus."""
     # honeybee-energy CLI command for translation
     sim_folder = os.path.dirname(hbjson_path)
@@ -315,6 +363,16 @@ def _simulate_hbjson(hbjson_path, epw_file, sim_par_json, measures):
     if measures is not None:
         cmd.append('--measures')
         cmd.append(measures)
+    if additional_idf is not None:
+        cmd.append('--additional-idf')
+        cmd.append(additional_idf)
+    if str(report_units).lower() in ('si', 'ip'):
+        cmd.append('--report-units')
+        cmd.append(report_units)
+    if viz_variable is not None and len(viz_variable) != 0:
+        for var in viz_variable:
+            cmd.append('--viz-variable')
+            cmd.append(var)
     try:
         # execute the CLI command
         process = subprocess.run(
