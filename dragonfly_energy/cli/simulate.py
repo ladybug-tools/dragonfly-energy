@@ -13,6 +13,7 @@ from ladybug.futil import preparedir
 from ladybug.commandutil import process_content_to_output
 from honeybee.config import folders
 from honeybee_energy.simulation.parameter import SimulationParameter
+from honeybee_energy.cli.simulate import simulate_model as simulate_model_hb
 from dragonfly.model import Model
 from dragonfly_energy.run import run_urbanopt, _recommended_processor_count
 
@@ -235,7 +236,7 @@ def simulate_model(
         viz_variable: An optional list of text values for EnergyPlus output
             variables to be visualized on the geometry in an output HTML report.
             For example, ["Zone Air System Sensible Heating Rate", "Zone Air System
-            Sensible Cooling Rate"]. If None, no view_data report is produced
+            Sensible Cooling Rate"]. If None, no view_data report is produced.
         cpu_count: Optional integer to specify the number of processors to be
             used in simulating each model derived from the input model.
         folder: Folder on this computer, into which the IDF and result files will
@@ -314,6 +315,16 @@ def simulate_model(
         if not os.path.isdir(directory):
             os.makedirs(directory)
         hbjson_files.append(hb_model.to_hbjson(folder=directory))
+
+    # if there is only one file, run the simulation so we can see the progress
+    if len(hbjson_files) == 1:
+        sim_folder = os.path.dirname(hbjson_files[0])
+        simulate_model_hb(
+            hbjson_files[0], epw_file, sim_par_json,
+            measures=measures, additional_idf=additional_idf,
+            report_units=report_units, viz_variable=viz_variable, folder=sim_folder
+        )
+        return
 
     # execute simulations in parallel
     cpu_count = cpu_count if cpu_count is not None else _recommended_processor_count()
