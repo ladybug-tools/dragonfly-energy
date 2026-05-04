@@ -1,7 +1,10 @@
 # coding=utf-8
-import pytest
+import os
+import json
 
-from dragonfly_energy.run import base_honeybee_osw
+from ladybug_geometry.geometry3d import Point3D, Plane, Face3D
+from ladybug.location import Location
+from ladybug.futil import nukedir
 
 from dragonfly.model import Model
 from dragonfly.building import Building
@@ -9,20 +12,11 @@ from dragonfly.story import Story
 from dragonfly.room2d import Room2D
 from dragonfly.context import ContextShade
 from dragonfly.windowparameter import SimpleWindowRatio
-
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.measure import Measure
 from honeybee_energy.lib.programtypes import office_program
 
-from ladybug.location import Location
-from ladybug.futil import nukedir
-
-from ladybug_geometry.geometry3d.pointvector import Point3D, Vector3D
-from ladybug_geometry.geometry3d.plane import Plane
-from ladybug_geometry.geometry3d.face import Face3D
-
-import os
-import json
+from dragonfly_energy.run import base_honeybee_osw
 
 
 def test_base_honeybee_osw():

@@ -122,7 +122,7 @@ def simulate():
     default=None, show_default=True,
     type=click.Path(file_okay=False, dir_okay=True, resolve_path=True)
 )
-def simulate_model_cli(
+def model_cli(
     model_file, epw_file, sim_par_json, obj_per_model, shade_dist,
     multiplier, plenum, ceil_adjacency, merge_method, measures, additional_idf,
     report_units, viz_variable, cpu_count, folder
@@ -139,7 +139,7 @@ def simulate_model_cli(
         full_geometry = not multiplier
         no_plenum = not plenum
         no_ceil_adjacency = not ceil_adjacency
-        simulate_model(
+        model(
             model_file, epw_file, sim_par_json, obj_per_model, shade_dist,
             full_geometry, no_plenum, no_ceil_adjacency, merge_method,
             measures, additional_idf, report_units, viz_variable, cpu_count, folder
@@ -151,7 +151,7 @@ def simulate_model_cli(
         sys.exit(0)
 
 
-def simulate_model(
+def model(
     model_file, epw_file, sim_par_json=None, obj_per_model='Building', shade_dist=None,
     full_geometry=False, no_plenum=False, no_ceil_adjacency=False, merge_method='None',
     measures=None, additional_idf=None, report_units=None, viz_variable=None,
@@ -294,16 +294,16 @@ def simulate_model(
     with open(model_file) as json_file:
         data = json.load(json_file)
     if 'type' in data and data['type'] == 'Model':
-        model = Model.from_dict(data)
-        model.convert_to_units('Meters')
+        df_model = Model.from_dict(data)
+        df_model.convert_to_units('Meters')
     else:  # assume that it is a GeoJSON
-        model, _ = Model.from_geojson(model_file)
-        model.separate_top_bottom_floors()
+        df_model, _ = Model.from_geojson(model_file)
+        df_model.separate_top_bottom_floors()
 
     # convert Dragonfly Model to Honeybee
     no_plenum = not plenum
     ceil_adjacency = not no_ceil_adjacency
-    hb_models = model.to_honeybee(
+    hb_models = df_model.to_honeybee(
         obj_per_model, shade_dist, use_multiplier=multiplier, exclude_plenums=no_plenum,
         solve_ceiling_adjacencies=ceil_adjacency, merge_method=merge_method
     )
