@@ -52,21 +52,36 @@ class FourthGenThermalLoop(object):
             * AirSourceHeatPump
             * DistrictHeating
 
+        heat_recovery_chiller: A boolean to note whether a heat recovery chiller
+            that simultaneously produces both hot and chilled water should be included
+            within the central plant. If True, a heat recovery chiller that is sized
+            to meet the peak overlap in heating and cooling loads will be added
+            between the central chilled and hot water loops. The chiller will reject
+            heat to a dedicated heat recovery loop that connects to the central
+            hot water loop. (Default: False).
+
     Properties:
         * identifier
         * display_name
         * cooling_plant
         * heating_plant
+        * economizer_type
+        * heating_type
+        * heat_recovery_chiller
     """
-    __slots__ = ('_identifier', '_display_name', '_cooling_plant', '_heating_plant',
-                 '_economizer_type', '_heating_type')
+    __slots__ = (
+        '_identifier', '_display_name', '_cooling_plant', '_heating_plant',
+        '_economizer_type', '_heating_type', '_heat_recovery_chiller'
+    )
     ECONOMIZER_TYPES = ('None', 'Integrated', 'NonIntegrated')
     HEATING_TYPES = (
         'NaturalGas', 'Electricity', 'AirSourceHeatPump', 'DistrictHeating'
     )
 
-    def __init__(self, identifier, cooling_plant=None, heating_plant=None,
-                 economizer_type='None', heating_type='NaturalGas'):
+    def __init__(
+        self, identifier, cooling_plant=None, heating_plant=None,
+        economizer_type='None', heating_type='NaturalGas', heat_recovery_chiller=False
+    ):
         """Initialize FourthGenThermalLoop."""
         self.identifier = identifier
         self._display_name = None
@@ -74,6 +89,7 @@ class FourthGenThermalLoop(object):
         self.heating_plant = heating_plant
         self.economizer_type = economizer_type
         self.heating_type = heating_type
+        self.heat_recovery_chiller = heat_recovery_chiller
 
     @classmethod
     def from_dict(cls, data):
@@ -91,7 +107,8 @@ class FourthGenThermalLoop(object):
             if 'heating_plant' in data and data['heating_plant'] is not None else None
         et = data['economizer_type'] if 'economizer_type' in data else 'None'
         ht = data['heating_type'] if 'heating_type' in data else 'NaturalGas'
-        loop = cls(data['identifier'], cwp, hwp, et, ht)
+        hrc = data['heat_recovery_chiller'] if 'heat_recovery_chiller' in data else False
+        loop = cls(data['identifier'], cwp, hwp, et, ht, hrc)
         if 'display_name' in data and data['display_name'] is not None:
             loop.display_name = data['display_name']
         return loop
@@ -186,6 +203,15 @@ class FourthGenThermalLoop(object):
                 'following:\n{}'.format(value, self.HEATING_TYPES))
         self._heating_type = value
 
+    @property
+    def heat_recovery_chiller(self):
+        """Get or set a boolean for whether the DES contains a heat recovery chiller."""
+        return self._heat_recovery_chiller
+
+    @heat_recovery_chiller.setter
+    def heat_recovery_chiller(self, value):
+        self._heat_recovery_chiller = bool(value)
+
     def to_dict(self):
         """FourthGenThermalLoop dictionary representation."""
         base = {'type': 'FourthGenThermalLoop'}
@@ -194,6 +220,7 @@ class FourthGenThermalLoop(object):
         base['heating_plant'] = self.heating_plant.to_dict()
         base['economizer_type'] = self.economizer_type
         base['heating_type'] = self.heating_type
+        base['heat_recovery_chiller'] = self.heat_recovery_chiller
         if self._display_name is not None:
             base['display_name'] = self.display_name
         return base
@@ -289,8 +316,8 @@ class FourthGenThermalLoop(object):
 
     def __copy__(self):
         new_loop = FourthGenThermalLoop(
-            self.identifier, self.cooling_plant.duplicate(),
-            self.heating_plant.duplicate(), self.economizer_type, self.heating_type
+            self.identifier, self.cooling_plant.duplicate(), self.heating_plant.duplicate(),
+            self.economizer_type, self.heating_type, self.heat_recovery_chiller
         )
         new_loop._display_name = self._display_name
         return new_loop
@@ -344,6 +371,7 @@ class FifthGenThermalLoop(object):
             Choose from the options below. (Default: Electricity).
 
             * Electricity
+            * AirSourceHeatPump
             * NaturalGas
             * DistrictHeating
             * None
@@ -368,7 +396,7 @@ class FifthGenThermalLoop(object):
         'DistrictCooling', 'None'
     )
     SUPPLEMENTAL_HEAT_TYPES = (
-        'Electricity', 'NaturalGas', 'DistrictHeating', 'None'
+        'Electricity', 'AirSourceHeatPump', 'NaturalGas', 'DistrictHeating', 'None'
     )
 
     def __init__(
@@ -1201,6 +1229,7 @@ class GHEThermalLoop(FifthGenThermalLoop):
             Choose from the options below. (Default: Electricity).
 
             * Electricity
+            * AirSourceHeatPump
             * NaturalGas
             * DistrictHeating
             * None
