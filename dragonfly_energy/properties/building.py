@@ -236,6 +236,24 @@ class BuildingEnergyProperties(object):
         return self._des_cooling_load is not None or self._des_heating_load is not None \
             or self._des_hot_water_load is not None
 
+    @property
+    def peak_des_cooling_load(self):
+        """Get the peak cooling load of the Building if des_cooling_load is assigned.
+        """
+        return max(self._des_cooling_load) if self._des_cooling_load is not None else 0
+
+    @property
+    def peak_des_heating_load(self):
+        """Get the peak heating load of the Building if des_heating_load is assigned.
+        """
+        return max(self._des_heating_load) if self._des_heating_load is not None else 0
+
+    @property
+    def peak_des_hot_water_load(self):
+        """Get the peak SHW load of the Building if des_hot_water_load is assigned.
+        """
+        return max(self._des_hot_water_load) if self._des_hot_water_load is not None else 0
+
     def averaged_program_type(self, identifier=None, timestep_resolution=1):
         """Get a ProgramType that is averaged across all of the children Room2Ds.
 
@@ -631,6 +649,13 @@ class BuildingEnergyProperties(object):
     def to_building_load_csv(self):
         """Get a CSV file string of building loads for DES simulation."""
         cool, heat, water, time_col = self._building_loads()
+        # if the simulation timestep was not 1, convert it to 1 for CSV data
+        # this enables the ThermalNetwork package to use the data
+        if cool.header.analysis_period.timestep != 1:
+            cool = cool.cull_to_timestep(1)
+            heat = heat.cull_to_timestep(1)
+            water = water.cull_to_timestep(1)
+            time_col = time_col.cull_to_timestep(1)
         return self.building_load_csv(cool, heat, water, time_col)
 
     def to_building_load_json(self):

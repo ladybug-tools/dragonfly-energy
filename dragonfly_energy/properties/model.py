@@ -1,13 +1,23 @@
 # coding=utf-8
 """Model Energy Properties."""
+import os
+import json
 try:
     from itertools import izip as zip  # python 2
 except ImportError:
     pass   # python 3
 
+from ladybug.analysisperiod import AnalysisPeriod
+from ladybug.datatype.power import Power
+from ladybug.header import Header
+from ladybug.datacollection import HourlyContinuousCollection
+from ladybug.sql import SQLiteResult
 from honeybee.extensionutil import room_extension_dicts
 from honeybee.units import conversion_factor_to_meters
+from honeybee.checkdup import check_duplicate_identifiers
 from honeybee.boundarycondition import Surface
+
+from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.construction.opaque import OpaqueConstruction
 from honeybee_energy.construction.windowshade import WindowConstructionShade
 from honeybee_energy.construction.dynamic import WindowConstructionDynamic
@@ -15,8 +25,6 @@ from honeybee_energy.construction.air import AirBoundaryConstruction
 import honeybee_energy.properties.model as hb_model_properties
 from honeybee_energy.lib.constructions import generic_context
 from honeybee_energy.lib.constructionsets import generic_construction_set
-from honeybee.checkdup import check_duplicate_identifiers
-
 from dragonfly.extensionutil import model_extension_dicts
 
 
@@ -784,6 +792,141 @@ class ModelEnergyProperties(object):
                 raise ValueError(msg)
             return msg
         return ''
+
+    def bind_des_loads_to_buildings(self, scenario_csv):
+        """Assign the des loads to the Buildings of this model from a scenario_csv.
+
+        This is useful in workflows where embedding building loads within the
+        dragonfly Model avoids the need to re-run EnergyPlus simulations of
+        the Buildings as different simulations are run with them (eg. different
+        configurations of DES).
+
+        Args:
+            scenario_csv: The full path to a .csv file for the URBANopt scenario.
+
+        Returns:
+            A list of text strings for warnings about buildings where no district
+                chilled/hot water was found.
+        """
+        building_loads, warnings = self.des_building_loads(scenario_csv)
+        for building in self.buildings:
+            try:
+                bldg_dict = building_loads[building.identifier]
+                building.properties.energy.des_cooling_load = -bldg_dict['cooling']
+                building.properties.energy.des_heating_load = bldg_dict['heating']
+                building.properties.energy.des_hot_water_load = bldg_dict['shw']
+            except KeyError:
+                pass  # not a building where loads were found
+        return warnings
+
+    @staticmethod
+    def des_building_loads(scenario_csv, exclude_pre_assigned=False):
+        """Get HourlyContinuousDataCollections of building loads from a scenario_csv.
+
+        Args:
+            scenario_csv: The full path to a .csv file for the URBANopt scenario.
+            exclude_pre_assigned: Boolean for whether building loads that originated
+                from pre-assigned loads attached to the dragonfly Building should
+                be excluded from the result. (Default: False).
+
+        Returns:
+            A tuple with two items.
+
+            building_loads -- A dictionary with building names as keys and dictionaries
+                as values. Each sub-dictionary contains 3 keys - cooling, heating,
+                and shw. And each value of the sub-dictionary contains an
+                HourlyContinuousCollection for the Building load in Watts.
+
+            warnings -- A list of text strings for warnings about buildings where
+                no district chilled/hot water was found.
+        """
+        # get an analysis period for the simulation run period
+        directory = os.path.dirname(scenario_csv)
+        sim_par_json = os.path.join(directory, 'simulation_parameter.json')
+        if os.path.isfile(sim_par_json):
+            with open(sim_par_json) as json_file:
+                data = json.load(json_file)
+            sim_par = SimulationParameter.from_dict(data)
+        else:  # assume the simulation ran with default parameters
+            sim_par = SimulationParameter()
+        run_per = sim_par.run_period
+        a_per = AnalysisPeriod(
+            st_month=run_per.start_date.month, st_day=run_per.start_date.day,
+            end_month=run_per.end_date.month, end_day=run_per.end_date.day,
+            timestep=sim_par.timestep)
+
+        # for each building in the simulation, replace sensible loads with district loads
+        scn_name = os.path.basename(scenario_csv).replace('.csv', '')
+        scn_dir = os.path.join(directory, 'run', scn_name)
+        building_loads, warnings = {}, []
+        for bldg_name in os.listdir(scn_dir):
+            # gather all of the files that are for results to parse and replace
+            bldg_dir = os.path.join(scn_dir, bldg_name)
+            sql_file = os.path.join(bldg_dir, 'eplusout.sql')
+            if not os.path.isfile(sql_file):
+                continue  # not a directory with building loads
+            modelica_load_dir = None
+            for f_name in os.listdir(bldg_dir):
+                if f_name.endswith('_export_modelica_loads'):
+                    if exclude_pre_assigned and f_name == '100_export_modelica_loads':
+                        continue  # hard-specified loads that do not need to be rewritten
+                    modelica_load_dir = os.path.join(bldg_dir, f_name)
+                    break
+            if not modelica_load_dir:
+                continue
+            bldg_csv = os.path.join(modelica_load_dir, 'building_loads.csv')
+
+            # create base data collections from the CSV data
+            cooling_vals, heating_vals, shw_vals = [], [], []
+            with open(bldg_csv, 'r') as f:
+                next(f)  # skip the first line
+                for line in f:
+                    row = line.strip().split(',')
+                    shw_vals.append(float(row[-1]))
+                    heating_vals.append(float(row[-2]))
+                    cooling_vals.append(float(row[-3]))
+            header = Header(Power(), 'W', a_per)
+            try:
+                cooling = HourlyContinuousCollection(header, cooling_vals)
+                heating = HourlyContinuousCollection(header, heating_vals)
+                shw = HourlyContinuousCollection(header, shw_vals)
+            except AssertionError:  # the loads have already been processed
+                continue
+
+            # see if there are district heating/cooling values to use instead
+            sql_obj = SQLiteResult(sql_file)
+            cooling_output = 'District Cooling Water Rate'
+            heating_output = 'District Heating Water Rate'
+            shw_output = 'Water Heater DistrictHeatingWater Rate'
+            d_cooling = sql_obj.data_collections_by_output_name(cooling_output)
+            d_heating = sql_obj.data_collections_by_output_name(heating_output)
+            d_shw = sql_obj.data_collections_by_output_name(shw_output)
+
+            # give warnings for all cases where no district loads were found
+            msg_template = 'No District {} Water was found for building "{}".\nZone ' \
+                'sensible {} loads will be used instead but this excludes the loads ' \
+                'of outdoor ventilation air.\nFor best DES simulation results, ' \
+                'assign a building HVAC that uses district {} water.'
+            if len(d_cooling) == 0:
+                warnings.append(msg_template.format('Cooling', bldg_name, 'cooling', 'chilled'))
+            else:
+                cooling = -d_cooling[0] if len(d_cooling) == 1 else -sum(d_cooling)
+            if len(d_heating) == 0:
+                warnings.append(msg_template.format('Heating', bldg_name, 'heating', 'hot'))
+            else:
+                heating = d_heating[0] if len(d_heating) == 1 else sum(d_heating)
+            if len(d_shw) != 0:
+                shw = d_shw[0] if len(d_shw) == 1 else sum(d_shw)
+
+            # put everything into the building load dictionary
+            bldg_dict = {
+                'cooling': cooling,
+                'heating': heating,
+                'shw': shw
+            }
+            building_loads[bldg_name] = bldg_dict
+
+        return building_loads, warnings
 
     def apply_properties_from_dict(self, data):
         """Apply the energy properties of a dictionary to the host Model of this object.
