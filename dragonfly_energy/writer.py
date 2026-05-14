@@ -174,17 +174,7 @@ def model_to_urbanopt(
         with open(sys_p_json, 'w') as fp:
             des_dict = des_loop.to_des_param_dict(model.buildings, tolerance=tolerance)
             json.dump(des_dict, fp, indent=2)
-        if hasattr(des_loop, 'heat_rejection_type'):
-            geojson_dict['project']['heat_rejection_type'] = des_loop.heat_rejection_type
-        if hasattr(des_loop, 'supplemental_heat_type'):
-            geojson_dict['project']['supplemental_heat_type'] = \
-                des_loop.supplemental_heat_type
-        if hasattr(des_loop, 'economizer_type'):
-            geojson_dict['project']['economizer_type'] = des_loop.economizer_type
-        if hasattr(des_loop, 'heating_type'):
-            geojson_dict['project']['heating_type'] = des_loop.heating_type
-        if hasattr(des_loop, 'heat_recovery_chiller'):
-            geojson_dict['project']['heat_recovery_chiller'] = des_loop.heat_recovery_chiller
+        des_loop.add_geojson_attributes(geojson_dict)
         if conversion_factor is not None:
             des_loop.scale(1 / conversion_factor)
 
@@ -338,11 +328,12 @@ def model_to_des(
     else:
         preparedir(folder)  # create the directory if it's not there
 
-    # create GeoJSON dictionary
+    # create GeoJSON dictionary and add DES attributes
     epw_obj = EPW(epw_file)
     if location is None:
         location = epw_obj.location
     geojson_dict = model.to_geojson_dict(location, point, tolerance=tolerance)
+    des_loop.add_geojson_attributes(geojson_dict)
 
     # create the scenario CSV file
     scenario_matrix = [['Feature Id', 'Feature Name', 'Mapper Class']]
