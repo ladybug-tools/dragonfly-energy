@@ -310,6 +310,13 @@ class FourthGenThermalLoop(object):
         des_dict['district_system'] = des_param
         return des_dict
 
+    def add_geojson_attributes(self, geojson_dict):
+        """Add attributes of this thermal loop not in the sys_param.json to the GeoJSON.
+        """
+        geojson_dict['project']['economizer_type'] = self.economizer_type
+        geojson_dict['project']['heating_type'] = self.heating_type
+        geojson_dict['project']['heat_recovery_chiller'] = self.heat_recovery_chiller
+
     def duplicate(self):
         """Get a copy of this object."""
         return self.__copy__()
@@ -1088,6 +1095,12 @@ class FifthGenThermalLoop(object):
         }
         des_dict['district_system'] = des_param
         return des_dict
+
+    def add_geojson_attributes(self, geojson_dict):
+        """Add attributes of this thermal loop not in the sys_param.json to the GeoJSON.
+        """
+        geojson_dict['project']['heat_rejection_type'] = self.heat_rejection_type
+        geojson_dict['project']['supplemental_heat_type'] = self.supplemental_heat_type
 
     @staticmethod
     def assign_junction_buildings(junctions, buildings, tolerance=0.01):
