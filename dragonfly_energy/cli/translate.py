@@ -1265,10 +1265,6 @@ def _hbjson_to_osm(hbjson_path, sim_par_json, epw_file, output_folder):
 
 @translate.command('building-district-loads')
 @click.argument(
-    'feature-file',
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
-)
-@click.argument(
     'scenario-file',
     type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
 )
@@ -1282,11 +1278,10 @@ def building_district_loads_cli(feature_file, scenario_file, log_file):
 
     \b
     Args:
-        feature_geojson: The full path to a .geojson file containing the footprints.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
     """
     try:
-        building_district_loads(feature_file, scenario_file, log_file)
+        building_district_loads(scenario_file, log_file)
     except Exception as e:
         _logger.exception('Building district loads translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -1294,7 +1289,7 @@ def building_district_loads_cli(feature_file, scenario_file, log_file):
         sys.exit(0)
 
 
-def building_district_loads(feature_file, scenario_file, log_file=None):
+def building_district_loads(scenario_file, log_file=None):
     """Set the building loads to be used for DES simulation to district chilled/hot water.
 
     If no district chilled/hot water loads are found in the SQL result file for
@@ -1302,12 +1297,10 @@ def building_district_loads(feature_file, scenario_file, log_file=None):
     and a warning will be returned from this function.
 
     Args:
-        feature_geojson: The full path to a .geojson file containing the
-            footprints of buildings to be simulated.
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
         log_file: Optional log file to output the paths to the generated
             simulation files if they were successfully created. By default this
             string will be returned from this method.
     """
-    warnings = set_building_district_loads(feature_file, scenario_file)
+    warnings = set_building_district_loads(scenario_file)
     return process_content_to_output(json.dumps(warnings, indent=4), log_file)

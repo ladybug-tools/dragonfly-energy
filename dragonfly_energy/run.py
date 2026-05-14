@@ -10,12 +10,7 @@ import subprocess
 
 from ladybug.futil import preparedir, write_to_file
 from ladybug.dt import Date
-from ladybug.analysisperiod import AnalysisPeriod
-from ladybug.datatype.power import Power
-from ladybug.header import Header
-from ladybug.datacollection import HourlyContinuousCollection
 from ladybug.epw import EPW
-from ladybug.sql import SQLiteResult
 from ladybug.config import folders as lb_folders
 from honeybee.config import folders as hb_folders
 from honeybee_energy.config import folders as hbe_folders
@@ -28,6 +23,7 @@ from .config import folders
 from .measure import MapperMeasure
 from .reopt import REoptParameter
 from .properties.building import BuildingEnergyProperties
+from .properties.model import ModelEnergyProperties
 
 # Custom environment used to run Python packages without conflicts
 PYTHON_ENV = os.environ.copy()
@@ -625,7 +621,7 @@ def check_des_compatibility(feature_geojson):
             raise ValueError(msg)
 
 
-def set_building_district_loads(feature_geojson, scenario_csv):
+def set_building_district_loads(scenario_csv):
     """Set the building loads to be used for DES simulation to district chilled/hot water.
 
     If no district chilled/hot water loads are found in the SQL result file for
@@ -633,89 +629,40 @@ def set_building_district_loads(feature_geojson, scenario_csv):
     and a warning will be returned from this function.
 
     Args:
-        feature_geojson: The full path to a .geojson file containing the
-            footprints of buildings.
         scenario_csv: The full path to a .csv file for the URBANopt scenario.
 
     Returns:
         A list of text strings for warnings about buildings where no district
         chilled/hot water was found.
     """
-    # check to be sure that the simulation was run annually
-    directory = os.path.dirname(feature_geojson)
-    sim_par_json = os.path.join(directory, 'simulation_parameter.json')
-    if os.path.isfile(sim_par_json):
-        with open(sim_par_json) as json_file:
-            data = json.load(json_file)
-        sim_par = SimulationParameter.from_dict(data)
-    else:  # assume the simulation ran with default parameters
-        sim_par = SimulationParameter()
-    run_per = sim_par.run_period
-    a_per = AnalysisPeriod(
-        st_month=run_per.start_date.month, st_day=run_per.start_date.day,
-        end_month=run_per.end_date.month, end_day=run_per.end_date.day,
-        timestep=sim_par.timestep)
+    # extract the building loads from the scenario
+    building_loads, warnings = ModelEnergyProperties.des_building_loads(scenario_csv, True)
 
     # for each building in the simulation, replace sensible loads with district loads
+    directory = os.path.dirname(scenario_csv)
     scn_name = os.path.basename(scenario_csv).replace('.csv', '')
     scn_dir = os.path.join(directory, 'run', scn_name)
-    warnings = []
     for bldg_name in os.listdir(scn_dir):
+        try:
+            bldg_dict = building_loads[bldg_name]
+            cooling = bldg_dict['cooling']
+            heating = bldg_dict['heating']
+            shw = bldg_dict['shw']
+        except KeyError:
+            continue  # not a building where loads were found
+
         # gather all of the files that are for results to parse and replace
         bldg_dir = os.path.join(scn_dir, bldg_name)
-        sql_file = os.path.join(bldg_dir, 'eplusout.sql')
-        if not os.path.isfile(sql_file):
-            continue  # not a directory with building loads
         modelica_load_dir = None
         for f_name in os.listdir(bldg_dir):
             if f_name.endswith('_export_modelica_loads'):
+                if f_name == '100_export_modelica_loads':
+                    continue  # hard-specified loads that do not need to be rewritten
                 modelica_load_dir = os.path.join(bldg_dir, f_name)
                 break
         if not modelica_load_dir:
             continue
         bldg_csv = os.path.join(modelica_load_dir, 'building_loads.csv')
-
-        # create base data collections from the CSV data
-        cooling_vals, heating_vals, shw_vals = [], [], []
-        with open(bldg_csv, 'r') as f:
-            next(f)  # skip the first line
-            for line in f:
-                row = line.strip().split(',')
-                shw_vals.append(float(row[-1]))
-                heating_vals.append(float(row[-2]))
-                cooling_vals.append(float(row[-3]))
-        header = Header(Power(), 'W', a_per)
-        try:
-            cooling = HourlyContinuousCollection(header, cooling_vals)
-            heating = HourlyContinuousCollection(header, heating_vals)
-            shw = HourlyContinuousCollection(header, shw_vals)
-        except AssertionError:  # the loads have already been processed
-            continue
-
-        # see if there are district heating/cooling values to use instead
-        sql_obj = SQLiteResult(sql_file)
-        cooling_output = 'District Cooling Water Rate'
-        heating_output = 'District Heating Water Rate'
-        shw_output = 'Water Heater DistrictHeatingWater Rate'
-        d_cooling = sql_obj.data_collections_by_output_name(cooling_output)
-        d_heating = sql_obj.data_collections_by_output_name(heating_output)
-        d_shw = sql_obj.data_collections_by_output_name(shw_output)
-
-        # give warnings for all cases where no district loads were found
-        msg_template = 'No District {} Water was found for building "{}".\nZone ' \
-            'sensible {} loads will be used instead but this excludes the loads ' \
-            'of outdoor ventilation air.\nFor best DES simulation results, ' \
-            'assign a building HVAC that uses district {} water.'
-        if len(d_cooling) == 0:
-            warnings.append(msg_template.format('Cooling', bldg_name, 'cooling', 'chilled'))
-        else:
-            cooling = -d_cooling[0] if len(d_cooling) == 1 else -sum(d_cooling)
-        if len(d_heating) == 0:
-            warnings.append(msg_template.format('Heating', bldg_name, 'heating', 'hot'))
-        else:
-            heating = d_heating[0] if len(d_heating) == 1 else sum(d_heating)
-        if len(d_shw) != 0:
-            shw = d_shw[0] if len(d_shw) == 1 else sum(d_shw)
 
         # write the final loads into the modelica and JSON files
         json_data = BuildingEnergyProperties.building_load_json(cooling, heating, shw)
@@ -729,7 +676,7 @@ def set_building_district_loads(feature_geojson, scenario_csv):
 
         # if the simulation timestep was not 1, convert it to 1 for CSV data
         # this enables the ThermalNetwork package to use the data
-        if a_per.timestep != 1:
+        if cooling.header.analysis_period.timestep != 1:
             cooling = cooling.cull_to_timestep(1)
             heating = heating.cull_to_timestep(1)
             shw = shw.cull_to_timestep(1)

@@ -307,8 +307,36 @@ def model_to_des(
             folders.default_simulation_folder,
             re.sub(r'[^.A-Za-z0-9_-]', '_', model.display_name)
         )
-    nukedir(folder, True)  # get rid of anything that exists in the folder already
-    preparedir(folder)  # create the directory if it's not there
+
+    # get rid of all DES simulation files that exist in the folder already
+    run_dir_to_delete = ('ghe_dir', 'des_modelica', 'des_energyplus')
+    ext_to_delete = ('.bat', '.geojson', '.epw', '.mos')
+    file_to_delete = ('honeybee_scenario.csv', 'system_params.json')
+    if os.path.isdir(folder):
+        files = os.listdir(folder)
+        for f in files:
+            path = os.path.join(folder, f)
+            if os.path.isfile(path):
+                if f in file_to_delete:
+                    os.remove(path)
+                elif f.endswith(ext_to_delete):
+                    os.remove(path)
+            elif f == 'run':
+                sim_dir = path = os.path.join(path, 'honeybee_scenario')
+                if os.path.isdir(sim_dir):
+                    sim_dirs = os.listdir(sim_dir)
+                    for d in sim_dirs:
+                        s_path = os.path.join(sim_dir, d)
+                        if d in run_dir_to_delete:
+                            nukedir(s_path, True)
+                        elif os.path.isdir(s_path):
+                            for m in os.listdir(s_path):
+                                if m.endswith('export_modelica_loads'):
+                                    nukedir(os.path.join(s_path, m), True)
+                                elif m == 'results.json':
+                                    os.remove(os.path.join(s_path, m))
+    else:
+        preparedir(folder)  # create the directory if it's not there
 
     # create GeoJSON dictionary
     epw_obj = EPW(epw_file)
@@ -339,7 +367,7 @@ def model_to_des(
         json_data = bldg.properties.energy.to_building_load_json()
         mos_data = bldg.properties.energy.to_building_load_mos()
         bldg_dir = os.path.join(scn_dir, bldg.identifier)
-        measure_dir = os.path.join(bldg_dir, '004_export_modelica_loads')
+        measure_dir = os.path.join(bldg_dir, '100_export_modelica_loads')
         preparedir(measure_dir)
         csv_path = os.path.join(measure_dir, 'building_loads.csv')
         json_path = os.path.join(bldg_dir, 'results.json')
