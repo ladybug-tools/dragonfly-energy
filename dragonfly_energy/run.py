@@ -97,7 +97,7 @@ def base_honeybee_osw(
 
     # request district thermal outputs if there is a system parameter
     sys_param_file = os.path.join(project_directory, 'system_params.json')
-    if os.path.isfile(sys_param_file) and hbe_folders.inject_idf_measure_path is not None:
+    if hbe_folders.inject_idf_measure_path is not None:
         district_out = (
             'District Cooling Water Rate',
             'District Heating Water Rate',
@@ -180,23 +180,28 @@ def base_honeybee_osw(
             report_measure_dict['arguments']['__SKIP__'] = True
         osw_dict['steps'].append(report_measure_dict)
 
+    # make sure the Modelica measure runs as part of the simulation
+    if 'export_modelica_loads' not in all_measures:
+        modelica_measures = [
+            {
+                'measure_dir_name': 'export_time_series_modelica',
+                'arguments': {'__SKIP__': False}
+            },
+            {
+                'measure_dir_name': 'export_modelica_loads',
+                'arguments': {'__SKIP__': False}
+            },
+        ]
+        if skip_report:
+            for mo_measure in modelica_measures:
+                mo_measure['arguments']['__SKIP__'] = True
+        osw_dict['steps'].extend(modelica_measures)
+
     # if there is a system parameter JSON, make sure the EPW is copied and referenced
     if epw_file is not None:
         osw_dict['weather_file'] = epw_file
+        # perform extra processing for models to be simulated with a DES
         if os.path.isfile(sys_param_file):
-            # make sure the Modelica measure runs as part of the simulation
-            modelica_measures = [
-                {
-                    'measure_dir_name': 'export_time_series_modelica',
-                    'arguments': {'__SKIP__': False}
-                },
-                {
-                    'measure_dir_name': 'export_modelica_loads',
-                    'arguments': {'__SKIP__': False}
-                },
-            ]
-            osw_dict['steps'].extend(modelica_measures)
-
             # copy the EPW to the project directory
             epw_f_name = os.path.split(epw_file)[-1]
             target_epw = os.path.join(project_directory, epw_f_name)

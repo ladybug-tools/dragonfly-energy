@@ -809,7 +809,7 @@ class ModelEnergyProperties(object):
                 chilled/hot water was found.
         """
         building_loads, warnings = self.des_building_loads(scenario_csv)
-        for building in self.buildings:
+        for building in self.host.buildings:
             try:
                 bldg_dict = building_loads[building.identifier]
                 building.properties.energy.des_cooling_load = -bldg_dict['cooling']
