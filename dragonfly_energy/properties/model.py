@@ -11,7 +11,6 @@ from ladybug.analysisperiod import AnalysisPeriod
 from ladybug.datatype.power import Power
 from ladybug.header import Header
 from ladybug.datacollection import HourlyContinuousCollection
-from ladybug.sql import SQLiteResult
 from honeybee.extensionutil import room_extension_dicts
 from honeybee.units import conversion_factor_to_meters
 from honeybee.checkdup import check_duplicate_identifiers
@@ -840,6 +839,13 @@ class ModelEnergyProperties(object):
             warnings -- A list of text strings for warnings about buildings where
                 no district chilled/hot water was found.
         """
+        try:  # import the SQLite module
+            from ladybug.sql import SQLiteResult
+        except ImportError as e:
+            msg = 'Failed to import Ladybug SQLite module. This is required for ' \
+                'loading energy simulation results.\n{}'.format(e)
+            raise ImportError(msg)
+
         # get an analysis period for the simulation run period
         directory = os.path.dirname(scenario_csv)
         sim_par_json = os.path.join(directory, 'simulation_parameter.json')
