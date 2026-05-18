@@ -18,6 +18,8 @@ from honeybee_energy.run import HB_OS_MSG
 from honeybee_energy.writer import energyplus_idf_version, _preprocess_model_for_trace
 from honeybee_energy.config import folders
 from dragonfly.model import Model
+
+from dragonfly_energy.properties.model import ModelEnergyProperties
 from dragonfly_energy.run import set_building_district_loads
 
 
@@ -1269,11 +1271,17 @@ def _hbjson_to_osm(hbjson_path, sim_par_json, epw_file, output_folder):
     type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True)
 )
 @click.option(
+    '--loads-to-folder/--loads-to-log', ' /-l', help='Flag to note whether the loads '
+    'should be updated within the URBANopt project folder or they should instead be '
+    'included within the log file output from this command. The latter is useful '
+    'when binding building loads to a dragonfly Model.',
+    default=True, show_default=True)
+@click.option(
     '--log-file', '-log', help='Optional log file to output the paths to the '
     'generated simulation files if they were successfully created. '
     'By default this will be printed out to stdout',
     type=click.File('w'), default='-', show_default=True)
-def building_district_loads_cli(feature_file, scenario_file, log_file):
+def building_district_loads_cli(scenario_file, loads_to_folder, log_file):
     """Set the building loads to be used for DES simulation to district chilled/hot water.
 
     \b
@@ -1281,7 +1289,8 @@ def building_district_loads_cli(feature_file, scenario_file, log_file):
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
     """
     try:
-        building_district_loads(scenario_file, log_file)
+        loads_to_log = not loads_to_folder
+        building_district_loads(scenario_file, loads_to_log, log_file)
     except Exception as e:
         _logger.exception('Building district loads translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -1289,7 +1298,9 @@ def building_district_loads_cli(feature_file, scenario_file, log_file):
         sys.exit(0)
 
 
-def building_district_loads(scenario_file, log_file=None):
+def building_district_loads(
+    scenario_file, loads_to_log=False, log_file=None, loads_to_folder=True
+):
     """Set the building loads to be used for DES simulation to district chilled/hot water.
 
     If no district chilled/hot water loads are found in the SQL result file for
@@ -1298,9 +1309,24 @@ def building_district_loads(scenario_file, log_file=None):
 
     Args:
         scenario_csv: The full path to  a .csv file for the URBANopt scenario.
+        loads_to_log: Boolean to note whether the loads should be updated within
+            the URBANopt project folder (FAlse) or they should instead be included
+            within the log file output from this command (True). The latter is
+            useful when binding building loads to a dragonfly Model.
         log_file: Optional log file to output the paths to the generated
             simulation files if they were successfully created. By default this
             string will be returned from this method.
     """
-    warnings = set_building_district_loads(scenario_file)
-    return process_content_to_output(json.dumps(warnings, indent=4), log_file)
+    if loads_to_log:
+        building_loads, warnings = ModelEnergyProperties.des_building_loads(scenario_file)
+        content = {'warnings': warnings, 'building_loads': {}}
+        for bld_id, loads in building_loads.items():
+            bldg_dict = {
+                'cooling': loads['cooling'].to_dict(),
+                'heating': loads['heating'].to_dict(),
+                'shw': loads['shw'].to_dict()
+            }
+            content['building_loads'][bld_id] = bldg_dict
+    else:
+        content = set_building_district_loads(scenario_file)
+    return process_content_to_output(json.dumps(content, indent=4), log_file)
