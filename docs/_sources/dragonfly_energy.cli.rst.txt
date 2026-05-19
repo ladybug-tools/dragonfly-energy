@@ -1,0 +1,20 @@
+dragonfly\_energy.cli package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dragonfly_energy.cli.install
+   dragonfly_energy.cli.simulate
+   dragonfly_energy.cli.translate
+
+Module contents
+---------------
+
+.. automodule:: dragonfly_energy.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
