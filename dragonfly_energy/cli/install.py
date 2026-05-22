@@ -47,9 +47,6 @@ def all_des():
     """
     # set global values
     ext = '.exe' if os.name == 'nt' else ''
-    executor_path = os.path.join(
-        lb_folders.ladybug_tools_folder, 'grasshopper',
-        'ladybug_grasshopper_dotnet', 'Ladybug.Executor.exe')
 
     # install the geojson-modelica-translator
     print('Checking for the installation of the geojson-modelica-translator.')
@@ -58,14 +55,8 @@ def all_des():
         folders.python_package_path, UO_GMT_VERSION_STR)
     if not os.path.isfile(uo_gmt) or not os.path.isdir(uo_gmt_pack):
         install_cmd = 'pip install geojson-modelica-translator=={}'.format(UO_GMT_VERSION_STR)
-        if os.name == 'nt' and os.path.isfile(executor_path) and \
-                'Program Files' in executor_path:
-            pip_cmd = [
-                executor_path, folders.python_exe_path, '-m {}'.format(install_cmd)
-            ]
-        else:
-            pip_cmd = '"{py_exe}" -m {uo_cmd}'.format(
-                py_exe=folders.python_exe_path, uo_cmd=install_cmd)
+        pip_cmd = '"{py_exe}" -m {uo_cmd}'.format(
+            py_exe=folders.python_exe_path, uo_cmd=install_cmd)
         shell = True if os.name == 'nt' else False
         process = subprocess.Popen(
             pip_cmd, stderr=subprocess.PIPE, shell=shell
@@ -87,14 +78,8 @@ def all_des():
         folders.python_package_path, UO_TN_VERSION_STR)
     if not os.path.isfile(uo_tn) or not os.path.isdir(uo_tn_pack):
         install_cmd = 'pip install thermalnetwork=={}'.format(UO_TN_VERSION_STR)
-        if os.name == 'nt' and os.path.isfile(executor_path) and \
-                'Program Files' in executor_path:
-            pip_cmd = [
-                executor_path, folders.python_exe_path, '-m {}'.format(install_cmd)
-            ]
-        else:
-            pip_cmd = '"{py_exe}" -m {uo_cmd}'.format(
-                py_exe=folders.python_exe_path, uo_cmd=install_cmd)
+        pip_cmd = '"{py_exe}" -m {uo_cmd}'.format(
+            py_exe=folders.python_exe_path, uo_cmd=install_cmd)
         shell = True if os.name == 'nt' else False
         process = subprocess.Popen(
             pip_cmd, stderr=subprocess.PIPE, shell=shell)
