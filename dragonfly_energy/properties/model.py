@@ -262,9 +262,13 @@ class ModelEnergyProperties(object):
             for story in bldg:
                 for room in story:
                     window_vent = room.properties.energy._window_vent_control
+                    fans = room.properties.energy._fans
                     processes = room.properties.energy._process_loads
                     if window_vent is not None:
                         self._check_and_add_schedule(window_vent.schedule, scheds)
+                    if len(fans) != 0:
+                        for fan in fans:
+                            self._check_and_add_schedule(fan.control.schedule, scheds)
                     if len(processes) != 0:
                         for process in processes:
                             self._check_and_add_schedule(process.schedule, scheds)
