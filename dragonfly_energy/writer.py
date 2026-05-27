@@ -280,6 +280,16 @@ def model_to_des(
         system_parameters -- The path to the DES system parameter JSON that has
             been written by this method.
     """
+    # ensure that all Buildings in the model have loads assigned to them
+    no_load_buildings = []
+    for bldg in model.buildings:
+        if not bldg.properties.energy.has_des_loads:
+            no_load_buildings.append(bldg.display_name)
+    if len(no_load_buildings) != 0:
+        msg = 'The following Buildings have no loads assigned ' \
+            'to them for DES simulation:\n{}'.format('\n'.join(no_load_buildings))
+        raise ValueError(msg)
+
     # make sure the model is in meters and, if it's not, duplicate and scale it
     conversion_factor = None
     tolerance = model.tolerance if tolerance is None else tolerance
