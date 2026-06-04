@@ -321,7 +321,8 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
         'This file must exist to run URBANopt.'
     folders.check_urbanopt_version()
     uo_folder = os.path.dirname(feature_geojson)
-    shutil.copy(folders.urbanopt_gemfile_path, os.path.join(uo_folder, 'Gemfile'))
+    project_gemfile_path = os.path.join(uo_folder, 'Gemfile')
+    shutil.copy(folders.urbanopt_gemfile_path, project_gemfile_path)
 
     # auto-assign the number of processors if None
     cpu_count = _recommended_processor_count() if cpu_count is None else cpu_count
@@ -332,7 +333,9 @@ def prepare_urbanopt_folder(feature_geojson, cpu_count=None, verbose=False):
         'max_datapoints': 1000000000,
         'num_parallel': cpu_count,
         'run_simulations': True,
-        'verbose': verbose
+        'verbose': verbose,
+        'gemfile_path': project_gemfile_path,
+        'bundle_install_path': folders.urbanopt_gems_path
     }
     runner_conf = os.path.join(uo_folder, 'runner.conf')
     with open(runner_conf, 'w') as fp:

@@ -33,6 +33,7 @@ class Folders(object):
         * mapper_path
         * urbanopt_gemfile_path
         * urbanopt_cli_path
+        * urbanopt_gems_path
         * urbanopt_env_path
         * urbanopt_version
         * urbanopt_version_str
@@ -104,11 +105,17 @@ class Folders(object):
 
     @urbanopt_cli_path.setter
     def urbanopt_cli_path(self, path):
+        self._urbanopt_gems_path = None
         if not path:  # check the default installation location
             path = self._find_urbanopt_cli_path()
         if path:  # check that the installation exists at the path
             assert os.path.isdir(path), \
                 '{} is not a valid path to an URBANopt installation.'.format(path)
+            gem_sub_dir = os.path.join(path, 'gems', 'ruby')
+            if os.path.isdir(gem_sub_dir):
+                s_paths = list(os.listdir(gem_sub_dir))
+                if len(s_paths) == 1:
+                    self._urbanopt_gems_path = os.path.join(gem_sub_dir, s_paths[0])
         self._urbanopt_cli_path = path  # set the urbanopt_cli_path
         self._urbanopt_env_path = None
         self._urbanopt_version = None
@@ -117,6 +124,11 @@ class Folders(object):
         self._docker_version_str = None
         if path and not self.mute:
             print("Path to URBANopt CLI is set to: %s" % path)
+
+    @property
+    def urbanopt_gems_path(self):
+        """Get or set the path to gems installed within the URBANopt CLI folder."""
+        return self._urbanopt_gems_path
 
     @property
     def urbanopt_env_path(self):
@@ -403,7 +415,7 @@ class Folders(object):
     def _find_urbanopt_cli_path():
         """Find the most recent URBANopt CLI in its default location."""
         def getversion(urbanopt_path):
-            """Get digits for the version of OpenStudio."""
+            """Get digits for the version of URBANopt CLI."""
             try:
                 ver = ''.join(s for s in urbanopt_path if (s.isdigit() or s == '.'))
                 return sum(int(d) * (10 ** i)
@@ -430,7 +442,7 @@ class Folders(object):
         if not uo_folders:  # No Openstudio installations were found
             return None
 
-        # get the most recent version of OpenStudio that was found
+        # get the most recent version of URBANopt CLI that was found
         uo_path = sorted(uo_folders, key=getversion, reverse=True)[0]
         return uo_path
 
