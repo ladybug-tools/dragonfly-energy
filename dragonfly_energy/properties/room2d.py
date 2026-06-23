@@ -2,6 +2,11 @@
 """Room2D Energy Properties."""
 from ladybug_geometry.geometry3d import Point3D
 from honeybee.boundarycondition import Outdoors
+from honeybee.altnumber import unassigned
+from honeybee.typing import float_positive
+from honeybee.units import conversion_factor_to_meters
+from honeybee_energy.units import convert_gas_equipment_watts, \
+    convert_service_hot_water_flow
 from honeybee_energy.properties.room import RoomEnergyProperties
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
@@ -9,6 +14,11 @@ from honeybee_energy.hvac import HVAC_TYPES_DICT
 from honeybee_energy.hvac._base import _HVACSystem
 from honeybee_energy.hvac.idealair import IdealAirSystem
 from honeybee_energy.shw import SHWSystem
+from honeybee_energy.load.people import People
+from honeybee_energy.load.lighting import Lighting
+from honeybee_energy.load.equipment import ElectricEquipment, GasEquipment
+from honeybee_energy.load.hotwater import ServiceHotWater
+from honeybee_energy.load.infiltration import Infiltration
 from honeybee_energy.load.daylight import DaylightingControl
 from honeybee_energy.ventcool.control import VentilationControl
 from honeybee_energy.ventcool.opening import VentilationOpening
@@ -42,6 +52,14 @@ class Room2DEnergyProperties(object):
         * construction_set
         * hvac
         * shw
+        * floor_area_in_meters
+        * exterior_area_in_meters
+        * person_count
+        * lighting_watts
+        * electric_equipment_watts
+        * gas_equipment_watts
+        * hot_water_flow
+        * infiltration_ach
         * people
         * lighting
         * electric_equipment
@@ -62,8 +80,11 @@ class Room2DEnergyProperties(object):
 
     __slots__ = (
         '_host', '_program_type', '_construction_set', '_hvac', '_shw',
+        '_person_count', '_lighting_watts', '_electric_equipment_watts',
+        '_gas_equipment_watts', '_hot_water_flow', '_infiltration_ach',
         '_window_vent_control', '_window_vent_opening', '_fans',
-        '_daylighting_control', '_process_loads'
+        '_daylighting_control', '_process_loads',
+        '_floor_area_in_meters', '_exterior_area_in_meters', '_volume_in_meters'
     )
 
     def __init__(
@@ -75,6 +96,17 @@ class Room2DEnergyProperties(object):
         self.construction_set = construction_set
         self.hvac = hvac
         self.shw = shw
+
+        self._floor_area_in_meters = None  # should be set before accessing abs props
+        self._exterior_area_in_meters = None  # should be set before accessing abs props
+        self._volume_in_meters = None  # should be set before accessing abs props
+        self._person_count = None  # set to None by default
+        self._lighting_watts = None  # set to None by default
+        self._electric_equipment_watts = None  # set to None by default
+        self._gas_equipment_watts = None  # set to None by default
+        self._hot_water_flow = None  # set to None by default
+        self._infiltration_ach = None  # set to None by default
+
         self._daylighting_control = None  # set to None by default
         self._window_vent_control = None  # set to None by default
         self._window_vent_opening = None  # set to None by default
@@ -161,34 +193,308 @@ class Room2DEnergyProperties(object):
         self._shw = value
 
     @property
+    def floor_area_in_meters(self):
+        """Get or set a number for the floor area of the host room in square meters.
+
+        Setting this value is helpful before getting values for properties like
+        person_count when the people are assigned via a people density (from the
+        program_type) and so the floor area is needed to compute the total number
+        of people. When this property is not set, the result of getting person_count
+        will be None unless it was explicitly set on this room.
+
+        The set_areas_by_unit_system() method can also be used to assign this
+        value given the unit system that the Room2D exists in.
+        """
+        return self._floor_area_in_meters
+
+    @floor_area_in_meters.setter
+    def floor_area_in_meters(self, value):
+        if value is not None:
+            value = float_positive(value, 'room floor area in meters')
+        self._floor_area_in_meters = value
+
+    @property
+    def exterior_area_in_meters(self):
+        """Get or set a number for the exterior area of the host room in square meters.
+
+        Setting this is helpful before getting properties like infiltration_ach
+        when the infiltration is assigned via an intensity (from the program_type)
+        and the exterior area is needed to compute the total flow. When this
+        property is not set, the result of getting infiltration_ach will be None
+        unless it was explicitly set on this room.
+
+        The set_areas_by_unit_system() method can also be used to assign this
+        value given the unit system that the Room2D exists in.
+        """
+        return self._exterior_area_in_meters
+
+    @exterior_area_in_meters.setter
+    def exterior_area_in_meters(self, value):
+        if value is not None:
+            value = float_positive(value, 'room exterior area in meters')
+        self._exterior_area_in_meters = value
+
+    @property
+    def volume_in_meters(self):
+        """Get or set a number for the volume of the host room in cubic meters.
+
+        Setting this is helpful before getting properties like infiltration_ach
+        when the infiltration is assigned via an intensity (from the program_type)
+        and the volume is needed to compute the total flow. When this
+        property is not set, the result of getting infiltration_ach will be None
+        unless it was explicitly set on this room.
+
+        The set_areas_by_unit_system() method can also be used to assign this
+        value given the unit system that the Room2D exists in.
+        """
+        return self._volume_in_meters
+
+    @volume_in_meters.setter
+    def volume_in_meters(self, value):
+        if value is not None:
+            value = float_positive(value, 'room volume in meters')
+        self._volume_in_meters = value
+
+    @property
+    def person_count(self):
+        """Get or set a number for the total number of people in the room.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._person_count is not None:
+            return self._person_count
+        elif self._program_type is not None and self._program_type.people is not None:
+            floor_area = self.floor_area_in_meters
+            return floor_area * self.program_type.people.people_per_area \
+                if floor_area is not None else None
+        return 0
+
+    @person_count.setter
+    def person_count(self, value):
+        if value is None or value == unassigned:
+            self._person_count = None
+        else:
+            self._person_count = float_positive(value, 'room person count')
+
+    @property
+    def lighting_watts(self):
+        """Get or set a number for the total wattage of lighting in the room.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._lighting_watts is not None:
+            return self._lighting_watts
+        elif self._program_type is not None and self._program_type.lighting is not None:
+            floor_area = self.floor_area_in_meters
+            return floor_area * self.program_type.lighting.watts_per_area \
+                if floor_area is not None else None
+        return 0
+
+    @lighting_watts.setter
+    def lighting_watts(self, value):
+        if value is None or value == unassigned:
+            self._lighting_watts = None
+        else:
+            self._lighting_watts = float_positive(value, 'room lighting watts')
+
+    @property
+    def electric_equipment_watts(self):
+        """Get or set a number for the total wattage of electric equipment in the room.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._electric_equipment_watts is not None:
+            return self._electric_equipment_watts
+        elif self._program_type is not None and \
+                self._program_type.electric_equipment is not None:
+            floor_area = self.floor_area_in_meters
+            return floor_area * self.program_type.electric_equipment.watts_per_area \
+                if floor_area is not None else None
+        return 0
+
+    @electric_equipment_watts.setter
+    def electric_equipment_watts(self, value):
+        if value is None or value == unassigned:
+            self._electric_equipment_watts = None
+        else:
+            self._electric_equipment_watts = \
+                float_positive(value, 'room electric equipment watts')
+
+    @property
+    def gas_equipment_watts(self):
+        """Get or set a number for the total wattage of gas equipment in the room.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._gas_equipment_watts is not None:
+            return self._gas_equipment_watts
+        elif self._program_type is not None and \
+                self._program_type.gas_equipment is not None:
+            floor_area = self.floor_area_in_meters
+            return floor_area * self.program_type.gas_equipment.watts_per_area \
+                if floor_area is not None else None
+        return 0
+
+    @gas_equipment_watts.setter
+    def gas_equipment_watts(self, value):
+        if value is None or value == unassigned:
+            self._gas_equipment_watts = None
+        else:
+            self._gas_equipment_watts = float_positive(value, 'room gas equipment watts')
+
+    @property
+    def hot_water_flow(self):
+        """Get or set a number for the total flow of hot water in the room.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._hot_water_flow is not None:
+            return self._hot_water_flow
+        elif self._program_type is not None and \
+                self._program_type.service_hot_water is not None:
+            floor_area = self.floor_area_in_meters
+            return floor_area * self.program_type.service_hot_water.flow_per_area \
+                if floor_area is not None else None
+        return 0
+
+    @hot_water_flow.setter
+    def hot_water_flow(self, value):
+        if value is None or value == unassigned:
+            self._hot_water_flow = None
+        else:
+            self._hot_water_flow = float_positive(value, 'room hot water flow')
+
+    @property
+    def infiltration_ach(self):
+        """Get or set a number for the infiltration of the room in air changes per hour.
+
+        Note that setting a number here will override whatever is assigned by
+        the room program_type.
+        """
+        if self._infiltration_ach is not None:
+            return self._infiltration_ach
+        elif self._program_type is not None and \
+                self._program_type.infiltration is not None:
+            ext_area = self.exterior_area_in_meters
+            room_vol = self.volume_in_meters
+            if ext_area is not None and room_vol is not None:
+                total = ext_area * self.program_type.infiltration.flow_per_exterior_area
+                return (total / room_vol) * 3600.
+            else:
+                return None
+        return 0
+
+    @infiltration_ach.setter
+    def infiltration_ach(self, value):
+        if value is None or value == unassigned:
+            self._infiltration_ach = None
+        else:
+            self._infiltration_ach = float_positive(value, 'room infiltration flow')
+
+    @property
+    def gas_equipment_watts_si(self):
+        """Get the gas_equipment_watts in the standard SI unit of kW."""
+        return convert_gas_equipment_watts(self.gas_equipment_watts, 'si') \
+            if self.gas_equipment_watts is not None else None
+
+    @property
+    def gas_equipment_watts_ip(self):
+        """Get the gas_equipment_watts in the standard IP unit of Btu/h."""
+        return convert_gas_equipment_watts(self.gas_equipment_watts, 'ip') \
+            if self.gas_equipment_watts is not None else None
+
+    @property
+    def hot_water_flow_si(self):
+        """Get the hot_water_flow in the standard SI unit of L/h."""
+        return convert_service_hot_water_flow(self.hot_water_flow, 'si') \
+            if self.hot_water_flow is not None else None
+
+    @property
+    def hot_water_flow_ip(self):
+        """Get the hot_water_flow in the standard IP unit of gph."""
+        return convert_service_hot_water_flow(self.hot_water_flow, 'ip') \
+            if self.hot_water_flow is not None else None
+
+    @property
     def people(self):
         """Get the People object to describe the occupancy of the Room."""
-        return self.program_type.people
+        load = self.program_type.people
+        if self._person_count is not None:
+            load = self._dup_load(load, 'people', People)
+            try:
+                load.people_per_area = self.person_count / self.floor_area_in_meters
+            except (TypeError, ZeroDivisionError):
+                load.people_per_area = 0
+        return load
 
     @property
     def lighting(self):
         """Get the Lighting object to describe the lighting usage of the Room."""
-        return self.program_type.lighting
+        load = self.program_type.lighting
+        if self._lighting_watts is not None:
+            load = self._dup_load(load, 'lighting', Lighting)
+            try:
+                load.watts_per_area = self.lighting_watts / self.floor_area_in_meters
+            except (TypeError, ZeroDivisionError):
+                load.watts_per_area = 0
+        return load
 
     @property
     def electric_equipment(self):
         """Get the ElectricEquipment object to describe the equipment usage."""
-        return self.program_type.electric_equipment
+        load = self.program_type.electric_equipment
+        if self._electric_equipment_watts is not None:
+            load = self._dup_load(load, 'electric_equipment', ElectricEquipment)
+            try:
+                load.watts_per_area = \
+                    self.electric_equipment_watts / self.floor_area_in_meters
+            except (TypeError, ZeroDivisionError):
+                load.watts_per_area = 0
+        return load
 
     @property
     def gas_equipment(self):
         """Get the GasEquipment object to describe the equipment usage."""
-        return self.program_type.gas_equipment
+        load = self.program_type.gas_equipment
+        if self._gas_equipment_watts is not None:
+            load = self._dup_load(load, 'gas_equipment', GasEquipment)
+            try:
+                load.watts_per_area = self.gas_equipment_watts / self.floor_area_in_meters
+            except (TypeError, ZeroDivisionError):
+                load.watts_per_area = 0
+        return load
 
     @property
     def service_hot_water(self):
         """Get the ServiceHotWater object to describe the hot water usage."""
-        return self.program_type.service_hot_water
+        load = self.program_type.service_hot_water
+        if self._hot_water_flow is not None:
+            load = self._dup_load(load, 'service_hot_water', ServiceHotWater)
+            try:
+                load.flow_per_area = self.hot_water_flow / self.floor_area_in_meters
+            except (TypeError, ZeroDivisionError):
+                load.flow_per_area = 0
+        return load
 
     @property
     def infiltration(self):
         """Get the Infiltration object to to describe the outdoor air leakage."""
-        return self.program_type.infiltration
+        load = self.program_type.infiltration
+        if self._infiltration_ach is not None:
+            load = self._dup_load(load, 'infiltration', Infiltration)
+            try:
+                ext_area = self.exterior_area_in_meters
+                room_vol = self.volume_in_meters
+                total_flow = (self.infiltration_ach * room_vol) / 3600.
+                load.flow_per_exterior_area = total_flow / ext_area
+            except (TypeError, ZeroDivisionError):
+                load.flow_per_exterior_area = 0
+        return load
 
     @property
     def ventilation(self):
@@ -305,6 +611,28 @@ class Room2DEnergyProperties(object):
     def has_window_opening(self):
         """Boolean to note whether the Room has operable windows with controls."""
         return self._window_vent_opening is not None
+
+    def set_areas_by_unit_system(self, units):
+        """Set the in_meters properties on this room using the model units.
+
+        This is a pre-step before properties related to absolute loads can
+        be adequately computed on this object.
+
+        Args:
+            units: Text for the units. Choose from the following:
+
+                * Meters
+                * Millimeters
+                * Feet
+                * Inches
+                * Centimeters
+        """
+        scale_fac = conversion_factor_to_meters(units)
+        scale_fac_area = scale_fac ** 2
+        scale_fac_volume = scale_fac ** 3
+        self._floor_area_in_meters = self.host.floor_area * scale_fac_area
+        self._exterior_area_in_meters = self.host.exterior_area * scale_fac_area
+        self._volume_in_meters = self.host.volume * scale_fac_volume
 
     def add_default_ideal_air(self):
         """Add a default IdealAirSystem to this Room2D.
@@ -467,6 +795,12 @@ class Room2DEnergyProperties(object):
         self._construction_set = None
         self._hvac = None
         self._shw = None
+        self._person_count = None
+        self._lighting_watts = None
+        self._electric_equipment_watts = None
+        self._gas_equipment_watts = None
+        self._hot_water_flow = None
+        self._infiltration_ach = None
         self._daylighting_control = None
         self._window_vent_control = None
         self._process_loads = []
@@ -492,9 +826,15 @@ class Room2DEnergyProperties(object):
             "program_type": {},  # A ProgramType dictionary
             "hvac": {}, # A HVACSystem dictionary
             "shw": {}, # A SHWSystem dictionary
+            "person_count": 3,  # Number of people in the room
+            "lighting_watts": 100,  # Number of lighting watts in the room
+            "electric_equipment_watts": 250,  # Number of equipment watts in the room
+            "gas_equipment_watts": 0,  # Number of gas watts in the room
+            "hot_water_flow": 0.1,  # Number of L/s of fixture flow in the room
+            "infiltration_ach": 1.0,  # infiltration ACH in the room
             "daylighting_control": {},  # A DaylightingControl dictionary
-            "window_vent_control": {}  # A VentilationControl dictionary
-            "window_vent_opening": {}  # A VentilationOpening dictionary
+            "window_vent_control": {},  # A VentilationControl dictionary
+            "window_vent_opening": {},  # A VentilationOpening dictionary
             "fans": [],  # An array of VentilationFan dictionaries
             "process_loads": []  # An array of Process dictionaries
             }
@@ -513,6 +853,7 @@ class Room2DEnergyProperties(object):
             new_prop.hvac = hvac_class.from_dict(data['hvac'])
         if 'shw' in data and data['shw'] is not None:
             new_prop.shw = SHWSystem.from_dict(data['shw'])
+        cls._apply_abs_loads_from_dict(new_prop, data)
         if 'daylighting_control' in data and data['daylighting_control'] is not None:
             new_prop.daylighting_control = \
                 DaylightingControl.from_dict(data['daylighting_control'])
@@ -551,6 +892,7 @@ class Room2DEnergyProperties(object):
             self.hvac = hvacs[abridged_data['hvac']]
         if 'shw' in abridged_data and abridged_data['shw'] is not None:
             self.shw = shws[abridged_data['shw']]
+        self._apply_abs_loads_from_dict(self, abridged_data)
         if 'daylighting_control' in abridged_data and \
                 abridged_data['daylighting_control'] is not None:
             self.daylighting_control = DaylightingControl.from_dict(
@@ -588,18 +930,15 @@ class Room2DEnergyProperties(object):
         if self._program_type is not None:
             base['energy']['program_type'] = self._program_type.identifier if abridged \
                 else self._program_type.to_dict()
-
         # write the ConstructionSet into the dictionary
         if self._construction_set is not None:
             base['energy']['construction_set'] = \
                 self._construction_set.identifier if abridged else \
                 self._construction_set.to_dict()
-
         # write the hvac into the dictionary
         if self._hvac is not None:
             base['energy']['hvac'] = \
                 self._hvac.identifier if abridged else self._hvac.to_dict()
-
         # write the shw into the dictionary
         if self._shw is not None:
             base['energy']['shw'] = \
@@ -608,22 +947,33 @@ class Room2DEnergyProperties(object):
         # write the daylight control into the dictionary
         if self._daylighting_control is not None:
             base['energy']['daylighting_control'] = self._daylighting_control.to_dict()
-
         # write the window_vent_control and window_vent_opening into the dictionary
         if self._window_vent_control is not None:
             base['energy']['window_vent_control'] = \
                 self.window_vent_control.to_dict(abridged)
         if self._window_vent_opening is not None:
             base['energy']['window_vent_opening'] = self.window_vent_opening.to_dict()
-
         # write any ventilation fans into the dictionary
         if len(self._fans) != 0:
             base['energy']['fans'] = [f.to_dict(abridged) for f in self._fans]
-
         # write the process_loads into the dictionary
         if len(self._process_loads) != 0:
             base['energy']['process_loads'] = \
                 [p.to_dict(abridged) for p in self._process_loads]
+
+        # write the absolute loads into the dictionary
+        if self._person_count is not None:
+            base['energy']['person_count'] = self.person_count
+        if self._lighting_watts is not None:
+            base['energy']['lighting_watts'] = self.lighting_watts
+        if self._electric_equipment_watts is not None:
+            base['energy']['electric_equipment_watts'] = self.electric_equipment_watts
+        if self._gas_equipment_watts is not None:
+            base['energy']['gas_equipment_watts'] = self.gas_equipment_watts
+        if self._hot_water_flow is not None:
+            base['energy']['hot_water_flow'] = self.hot_water_flow
+        if self._infiltration_ach is not None:
+            base['energy']['infiltration_ach'] = self.infiltration_ach
 
         return base
 
@@ -652,6 +1002,26 @@ class Room2DEnergyProperties(object):
         if len(self._process_loads) != 0:
             hb_prop.process_loads = self.process_loads
         return hb_prop
+
+    def absolute_loads_to_honeybee(self, new_host):
+        """Apply the absolute loads on this object to the honeybee properties.
+
+        Args:
+            new_host: A honeybee-core Room object that will host these properties.
+        """
+        hb_prop = new_host.properties.energy
+        if self._person_count is not None:
+            hb_prop.people = self.people
+        if self._lighting_watts is not None:
+            hb_prop.lighting = self.lighting
+        if self._electric_equipment_watts is not None:
+            hb_prop.electric_equipment = self.electric_equipment
+        if self._gas_equipment_watts is not None:
+            hb_prop.gas_equipment = self.gas_equipment
+        if self._hot_water_flow is not None:
+            hb_prop.service_hot_water = self.service_hot_water
+        if self._infiltration_ach is not None:
+            hb_prop.infiltration = self.infiltration
 
     def from_honeybee(self, hb_properties):
         """Transfer energy attributes from a Honeybee Room to Dragonfly Room2D.
@@ -692,7 +1062,56 @@ class Room2DEnergyProperties(object):
         new_prop._window_vent_opening = self._window_vent_opening
         new_prop._fans = self._fans[:]  # copy fans list
         new_prop._process_loads = self._process_loads[:]  # copy process load list
+        # copy the absolute loads
+        new_prop._person_count = self._person_count
+        new_prop._lighting_watts = self._lighting_watts
+        new_prop._electric_equipment_watts = self._electric_equipment_watts
+        new_prop._gas_equipment_watts = self._gas_equipment_watts
+        new_prop._hot_water_flow = self._hot_water_flow
+        new_prop._infiltration_ach = self._infiltration_ach
         return new_prop
+
+    def _dup_load(self, load_obj, load_name, load_class):
+        """Duplicate a load object assigned to this Room or get a new one if none exists.
+
+        Args:
+            load_obj: The load object assigned to this room's program type. This can
+                be None and a new object will be created from the load_class.
+            load_name: Text for the name of the property as it appears on this object.
+                This is used both to retrieve the load and to man an identifier
+                for it. (eg. "people", "lighting").
+            load_class: The class of the load object (eg. People).
+        """
+        load_id = '{}_{}'.format(self.host.identifier, load_name)
+        try:  # duplicate the Room's current load object and give it a unique ID
+            dup_load = load_obj.duplicate()
+            dup_load.identifier = load_id
+        except AttributeError:  # currently no load object; create a new one
+            dup_load = load_class(load_id, 0)
+        dup_load.display_name = '{} {}'.format(self.host.display_name, load_name.title())
+        return dup_load
+
+    @staticmethod
+    def _apply_abs_loads_from_dict(new_prop, data):
+        """Re-serialize absolute loads from a dict and apply to new_prop.
+
+        Args:
+            new_prop: A Room2DEnergyProperties to apply absolute properties to.
+            data: A dictionary representation of Room2DEnergyProperties.
+        """
+        if 'person_count' in data and data['person_count'] is not None:
+            new_prop.person_count = data['person_count']
+        if 'lighting_watts' in data and data['lighting_watts'] is not None:
+            new_prop.lighting_watts = data['lighting_watts']
+        if 'electric_equipment_watts' in data and \
+                data['electric_equipment_watts'] is not None:
+            new_prop.electric_equipment_watts = data['electric_equipment_watts']
+        if 'gas_equipment_watts' in data and data['gas_equipment_watts'] is not None:
+            new_prop.gas_equipment_watts = data['gas_equipment_watts']
+        if 'hot_water_flow' in data and data['hot_water_flow'] is not None:
+            new_prop.hot_water_flow = data['hot_water_flow']
+        if 'infiltration_ach' in data and data['infiltration_ach'] is not None:
+            new_prop.infiltration_ach = data['infiltration_ach']
 
     @staticmethod
     def _deserialize_window_vent(new_prop, data, schedules):
