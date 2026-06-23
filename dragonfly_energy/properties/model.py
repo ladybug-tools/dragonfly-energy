@@ -796,6 +796,16 @@ class ModelEnergyProperties(object):
             return msg
         return ''
 
+    def set_areas_by_unit_system(self):
+        """Set the in_meters properties on the rooms of this model using the model units.
+
+        This is a pre-step before properties related to absolute loads can be
+        properly computed.
+        """
+        units = self.host.units
+        for room in self.host.room_2ds:
+            room.properties.energy.set_areas_by_unit_system(units)
+
     def bind_des_loads_to_buildings(self, scenario_csv):
         """Assign the des loads to the Buildings of this model from a scenario_csv.
 
@@ -1077,6 +1087,25 @@ class ModelEnergyProperties(object):
                                     rev_con = OpaqueConstruction(
                                         rev_con_id, tuple(reversed(adj_c.materials)))
                             base_f.properties.energy.construction = rev_con
+
+        # add all of the absolute load properties to the rooms
+        units = self.host.units
+        scale_fac = conversion_factor_to_meters(units)
+        scale_fac_area = scale_fac ** 2
+        scale_fac_volume = scale_fac ** 3
+        room_dict = {r.identifier: r for r in self.host.room_2ds}
+        for room in new_host.rooms:
+            try:
+                room_2d = room_dict[room.identifier]
+                room_2d.properties.energy.floor_area_in_meters = \
+                    room.floor_area * scale_fac_area
+                room_2d.properties.energy.exterior_area_in_meters = \
+                    room.exposed_area * scale_fac_area
+                room_2d.properties.energy.volume_in_meters = \
+                    room.volume * scale_fac_volume
+                room_2d.properties.energy.absolute_loads_to_honeybee(room)
+            except KeyError:
+                pass  # something very weird happened in translation
 
         # create the honeybee ModelEnergyProperties
         return hb_model_properties.ModelEnergyProperties(new_host)
