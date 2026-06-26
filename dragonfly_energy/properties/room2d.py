@@ -1099,19 +1099,26 @@ class Room2DEnergyProperties(object):
             new_prop: A Room2DEnergyProperties to apply absolute properties to.
             data: A dictionary representation of Room2DEnergyProperties.
         """
+        un_dict = unassigned.to_dict()
         if 'person_count' in data and data['person_count'] is not None:
-            new_prop.person_count = data['person_count']
+            new_prop.person_count = data['person_count'] \
+                if data['person_count'] != un_dict else None
         if 'lighting_watts' in data and data['lighting_watts'] is not None:
-            new_prop.lighting_watts = data['lighting_watts']
+            new_prop.lighting_watts = data['lighting_watts'] \
+                if data['lighting_watts'] != un_dict else None
         if 'electric_equipment_watts' in data and \
                 data['electric_equipment_watts'] is not None:
-            new_prop.electric_equipment_watts = data['electric_equipment_watts']
+            new_prop.electric_equipment_watts = data['electric_equipment_watts'] \
+                if data['electric_equipment_watts'] != un_dict else None
         if 'gas_equipment_watts' in data and data['gas_equipment_watts'] is not None:
-            new_prop.gas_equipment_watts = data['gas_equipment_watts']
+            new_prop.gas_equipment_watts = data['gas_equipment_watts'] \
+                if data['gas_equipment_watts'] != un_dict else None
         if 'hot_water_flow' in data and data['hot_water_flow'] is not None:
-            new_prop.hot_water_flow = data['hot_water_flow']
+            new_prop.hot_water_flow = data['hot_water_flow'] \
+                if data['hot_water_flow'] != un_dict else None
         if 'infiltration_ach' in data and data['infiltration_ach'] is not None:
-            new_prop.infiltration_ach = data['infiltration_ach']
+            new_prop.infiltration_ach = data['infiltration_ach'] \
+                if data['infiltration_ach'] != un_dict else None
 
     @staticmethod
     def _deserialize_window_vent(new_prop, data, schedules):
