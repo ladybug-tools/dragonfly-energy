@@ -626,7 +626,7 @@ class Room2DEnergyProperties(object):
             return self._infiltration_ach
         elif self._program_type is not None and \
                 self._program_type.infiltration is not None:
-            return 'Per Area'
+            return 'By Ext Area'
         return 'N/A'
 
     @property
@@ -640,7 +640,7 @@ class Room2DEnergyProperties(object):
         at all will bet text that reads "N/A."
         """
         if self._infiltration_ach is not None:
-            return 'ACH'
+            return 'By ACH'
         elif self._program_type is not None and \
                 self._program_type.infiltration is not None:
             return self._program_type.infiltration.flow_per_exterior_area
