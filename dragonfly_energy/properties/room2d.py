@@ -6,7 +6,7 @@ from honeybee.altnumber import unassigned
 from honeybee.typing import float_positive
 from honeybee.units import conversion_factor_to_meters
 from honeybee_energy.units import convert_gas_equipment_watts, \
-    convert_service_hot_water_flow
+    convert_service_hot_water_flow, convert_infiltration_flow_per_exterior_area
 from honeybee_energy.properties.room import RoomEnergyProperties
 from honeybee_energy.programtype import ProgramType
 from honeybee_energy.constructionset import ConstructionSet
@@ -611,6 +611,54 @@ class Room2DEnergyProperties(object):
     def has_window_opening(self):
         """Boolean to note whether the Room has operable windows with controls."""
         return self._window_vent_opening is not None
+
+    @property
+    def infiltration_ach_only(self):
+        """Get a number (or text) for the infiltration of the room in air changes per hour.
+
+        The value returned from this property will highlight the difference in
+        assigned ACH values vs. the infiltration per area that comes from the
+        program. Rooms with infiltration assigned from the program will get text
+        returned from this property that reads "Per Area". Rooms with no infiltration
+        at all will bet text that reads "N/A."
+        """
+        if self._infiltration_ach is not None:
+            return self._infiltration_ach
+        elif self._program_type is not None and \
+                self._program_type.infiltration is not None:
+            return 'Per Area'
+        return 'N/A'
+
+    @property
+    def infiltration_per_area_only(self):
+        """Get a number (or text) for the infiltration in m3/s per m2 of exterior area.
+
+        The value returned from this property will highlight the difference in
+        assigned ACH values vs. the infiltration per area that comes from the
+        program. Rooms with infiltration assigned as an absolute ACH will get text
+        returned from this property that reads "ACH". Rooms with no infiltration
+        at all will bet text that reads "N/A."
+        """
+        if self._infiltration_ach is not None:
+            return 'ACH'
+        elif self._program_type is not None and \
+                self._program_type.infiltration is not None:
+            return self._program_type.infiltration.flow_per_exterior_area
+        return 'N/A'
+
+    @property
+    def infiltration_per_area_only_si(self):
+        """Get the infiltration_per_area_only in the standard SI unit of L/s/m2."""
+        fpa = self.infiltration_per_area_only
+        return convert_infiltration_flow_per_exterior_area(fpa, 'si') \
+            if not isinstance(fpa, str) else fpa
+
+    @property
+    def infiltration_per_area_only_ip(self):
+        """Get the infiltration_per_area_only in the standard IP unit of cfm/ft2."""
+        fpa = self.infiltration_per_area_only
+        return convert_infiltration_flow_per_exterior_area(fpa, 'ip') \
+            if not isinstance(fpa, str) else fpa
 
     def set_areas_by_unit_system(self, units):
         """Set the in_meters properties on this room using the model units.
