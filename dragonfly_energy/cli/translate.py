@@ -15,7 +15,8 @@ from ladybug.stat import STAT
 from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import HB_OS_MSG
-from honeybee_energy.writer import energyplus_idf_version, _preprocess_model_for_trace
+from honeybee_energy.writer import energyplus_idf_version, \
+    _preprocess_model_for_trace_3dplus
 from honeybee_energy.config import folders
 from dragonfly.model import Model
 
@@ -837,16 +838,13 @@ def model_to_gbxml(
               'of OpenStudio will appear. Otherwise, this will default to "0.0.0" '
               'given that the version field is required.',
               type=str, default=None, show_default=True)
-@click.option('--osw-folder', '-osw', help='Deprecated input that is no longer used.',
-              default=None,
-              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
 @click.option('--output-file', '-f', help='Optional gbXML file to output the string '
               'of the translation. By default it printed out to stdout.', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_trace_gbxml_cli(
     model_file, multiplier, plenum, no_ceil_adjacency, merge_method,
     single_window, rect_sub_distance, frame_merge_distance,
-    program_name, program_version, osw_folder, output_file
+    program_name, program_version, output_file
 ):
     """Translate a Dragonfly Model to a TRACE-compatible gbXML file.
 
@@ -862,7 +860,7 @@ def model_to_trace_gbxml_cli(
         detailed_windows = not single_window
         model_to_trace_gbxml(
             model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
-            detailed_windows, rect_sub_distance, frame_merge_distance, osw_folder,
+            detailed_windows, rect_sub_distance, frame_merge_distance,
             program_name, program_version, output_file)
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -875,7 +873,7 @@ def model_to_trace_gbxml(
     model_file, full_geometry=False,
     no_plenum=False, ceil_adjacency=False, merge_method='None',
     detailed_windows=False, rect_sub_distance='0.15m', frame_merge_distance='0.2m',
-    program_name=None, program_version=None, osw_folder=None, output_file=None,
+    program_name=None, program_version=None, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True, single_window=True
 ):
     """Translate a Dragonfly Model to a gbXML file that is compatible with TRACE.
@@ -936,18 +934,9 @@ def model_to_trace_gbxml(
             program_name is also unspecified, only the version of OpenStudio will
             appear. Otherwise, this will default to "0.0.0" given that the version
             field is required. (Default: None).
-        osw_folder: Deprecated input that is no longer used.
         output_file: Optional gbXML file to output the string of the translation.
             By default it will be returned from this method.
     """
-    # check that honeybee-openstudio is installed
-    try:
-        from honeybee_openstudio.writer import model_to_gbxml
-    except ImportError as e:  # honeybee-openstudio is not installed
-        raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
-    if osw_folder is not None:
-        print('--osw-folder is deprecated and no longer used.')
-
     # re-serialize the Dragonfly Model
     model = Model.from_dfjson(model_file)
     model.convert_to_units('Meters')
@@ -962,11 +951,11 @@ def model_to_trace_gbxml(
 
     # translate the honeybee model to a TRACE-compatible gbXML string
     single_window = not detailed_windows
-    hb_model = _preprocess_model_for_trace(
+    hb_model = _preprocess_model_for_trace_3dplus(
         hb_model, single_window=single_window, rect_sub_distance=rect_sub_distance,
         frame_merge_distance=frame_merge_distance)
-    gbxml_str = model_to_gbxml(
-        hb_model, program_name=program_name, program_version=program_version
+    gbxml_str = hb_model.to_gbxml(
+        ip_units=True, program_name=program_name, program_version=program_version
     )
 
     # write out the gbXML file
