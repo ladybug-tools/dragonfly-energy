@@ -5,12 +5,148 @@ import os
 import re
 import json
 import shutil
+import xml.etree.ElementTree as ET
 
 from ladybug_geometry.geometry2d import Point2D
 from ladybug.futil import nukedir, preparedir
 from ladybug.epw import EPW
 from honeybee.config import folders
+from honeybee.units import parse_distance_string
 from honeybee.model import Model as hb_model
+from honeybee_energy.writer import model_to_gbxml_element as hb_model_to_gbxml_element
+from dragonfly.windowparameter import DetailedWindows, SimpleWindowArea
+from dragonfly.skylightparameter import DetailedSkylights
+
+
+def model_to_gbxml_element(model, gbxml_parameters=None):
+    """Translate a Dragonfly Model to a gbXML ElementTree.
+
+    Args:
+        model: A dragonfly Model for which a gbXML ElementTree will be returned.
+        gbxml_parameters: Optional GBXMLParameters object from the gbxml subpackage
+            to customize the translation of the dragonfly Model to gbXML. If None,
+            default GBXMLParameters will be used
+    """
+    # generate default parameters if None were input
+    if gbxml_parameters is None:
+        from dragonfly_energy.gbxml.parameters import GBXMLParameters
+        gbxml_parameters = GBXMLParameters()
+    geo_par = gbxml_parameters.geometry_format
+    name_par = gbxml_parameters.name_format
+    ver_par = gbxml_parameters.version_format
+
+    # perform initial exclusions/simplifications on the dragonfly model
+    model = model.duplicate()  # duplicate to avoid editing the input
+    if geo_par.exclude_roofs:
+        for story in model.stories:
+            story.roof = None
+    if geo_par.exclude_shades:
+        model.context_shades = None
+
+    # perform the opening simplification
+    merged_win = ('MergeAdjWindows', 'MergeAdjWinToRect')
+    simple_win = ('SingleWindow', 'SingleRectWindow')
+    if geo_par.opening_simplification in merged_win:
+        merge_dist = parse_distance_string('0.5ft', model.units) \
+            if gbxml_parameters.ip_units else parse_distance_string('0.15m', model.units)
+        for room in model.room_2ds:
+            for wp in room.window_parameters:
+                if isinstance(wp, DetailedWindows):
+                    try:
+                        wp.merge_and_simplify(merge_dist, model.tolerance, True)
+                    except Exception:  # too much overlapping to be fixed
+                        pass
+            if isinstance(room.skylight_parameters, DetailedSkylights):
+                try:
+                    room.skylight_parameters.merge_and_simplify(
+                        merge_dist, model.tolerance, True
+                    )
+                except Exception:  # too much overlapping to be fixed
+                    pass
+    elif geo_par.opening_simplification in simple_win:
+        for room in model.room_2ds:
+            new_wps = []
+            for wp in room.window_parameters:
+                if isinstance(wp, DetailedWindows):
+                    w_areas = [p.area for p, d in zip(wp.polygons, wp.are_doors) if not d]
+                    new_wps.append(SimpleWindowArea(sum(w_areas)))
+                else:
+                    new_wps.append(wp)
+            room.window_parameters = new_wps
+    if geo_par.opening_simplification in merged_win + simple_win:
+        for room in model.room_2ds:
+            if isinstance(room.skylight_parameters, DetailedSkylights):
+                try:
+                    room.skylight_parameters.merge_and_simplify(
+                        merge_dist, model.tolerance, True
+                    )
+                except Exception:  # too much overlapping to be fixed
+                    pass
+
+    # translate the dragonfly model to honeybee
+    use_multiplier = not geo_par.ignore_multipliers
+    solve_ceiling_adjacencies = not geo_par.ignore_ceiling_adjacencies
+    hb_models = model.to_honeybee(
+        object_per_model='District',
+        use_multiplier=use_multiplier,
+        exclude_plenums=geo_par.exclude_plenums,
+        solve_ceiling_adjacencies=solve_ceiling_adjacencies,
+        merge_method=geo_par.merge_method,
+        enforce_adj=False
+    )
+    hb_model = hb_models[0]
+
+    # rectangularize the windows across the honeybee model if necessary
+    rect_win = ('Rectangularized', 'MergeAdjWinToRect', 'SingleRectWindow')
+    if geo_par.opening_simplification in rect_win:
+        sub_d_dist = parse_distance_string('1ft', model.units) \
+            if gbxml_parameters.ip_units else parse_distance_string('0.3m', model.units)
+        hb_model.rectangularize_apertures(
+            subdivision_distance=sub_d_dist, max_separation=0.0,
+            merge_all=True, resolve_adjacency=True
+        )
+
+    # translate the honeybee model to a gbXML element
+    total_vent = not gbxml_parameters.energy_attribute_format.ventilation_components
+    gbxml_root = hb_model_to_gbxml_element(
+        hb_model,
+        ip_units=gbxml_parameters.ip_units,
+        include_shell_geometry=geo_par.include_shell_geometry,
+        include_space_boundaries=geo_par.include_space_boundaries,
+        interior_face_type=name_par.interior_face_type,
+        ground_face_type=name_par.ground_face_type,
+        face_rename_format=name_par.face_rename_format,
+        subface_rename_format=name_par.subface_rename_format,
+        reset_geometry_ids=name_par.reset_geometry_ids,
+        reset_resource_ids=name_par.reset_resource_ids,
+        triangulate_subfaces=geo_par.triangulate_openings,
+        triangulate_non_planar=geo_par.triangulate_non_planar,
+        rect_geo_format=geo_par.rect_geo_format,
+        explicit_holes=geo_par.explicit_holes,
+        total_ventilation=total_vent,
+        program_name=ver_par.program_name,
+        program_version=ver_par.program_version,
+        gbxml_schema_version=ver_par.gbxml_schema_version
+    )
+    return gbxml_root
+
+
+def model_to_gbxml(model, gbxml_parameters=None):
+    """Get a gbXML string for a Model.
+
+    Args:
+        model: A dragonfly Model for which a gbXML text string will be returned.
+        gbxml_parameters: Optional GBXMLParameters object from the gbxml subpackage
+            to customize the translation of the dragonfly Model to gbXML. If None,
+            default GBXMLParameters will be used
+    """
+    # create the XML string
+    xml_root = model_to_gbxml_element(model, gbxml_parameters)
+    try:  # try to indent the XML to make it read-able
+        ET.indent(xml_root)
+        return ET.tostring(xml_root, encoding='unicode', xml_declaration=True)
+    except AttributeError:  # we are in Python 2 and no indent is available
+        return ET.tostring(xml_root, xml_declaration=True)
 
 
 def model_to_urbanopt(

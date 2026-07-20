@@ -1,6 +1,7 @@
 # coding=utf-8
 from dragonfly.properties import ModelProperties, BuildingProperties, StoryProperties, \
     Room2DProperties, ContextShadeProperties
+from dragonfly.model import Model
 import dragonfly.writer.model as model_writer
 
 from .properties.model import ModelEnergyProperties
@@ -8,7 +9,8 @@ from .properties.building import BuildingEnergyProperties
 from .properties.story import StoryEnergyProperties
 from .properties.room2d import Room2DEnergyProperties
 from .properties.context import ContextShadeEnergyProperties
-from .writer import model_to_urbanopt, model_to_des
+from .writer import model_to_gbxml_element, model_to_gbxml, \
+    model_to_urbanopt, model_to_des
 
 
 # set a hidden energy attribute on each core geometry Property class to None
@@ -61,3 +63,8 @@ ContextShadeProperties.energy = property(context_energy_properties)
 # add model writer to urbanopt
 model_writer.urbanopt = model_to_urbanopt
 model_writer.urbanopt_des = model_to_des
+model_writer.gbxml = model_to_gbxml
+model_writer.gbxml_element = model_to_gbxml_element
+
+Model.to_gbxml = model_to_gbxml
+Model.to_gbxml_element = model_to_gbxml_element
