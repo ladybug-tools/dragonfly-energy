@@ -1098,11 +1098,11 @@ class ModelEnergyProperties(object):
             try:
                 room_2d = room_dict[room.identifier]
                 room_2d.properties.energy.floor_area_in_meters = \
-                    room.floor_area * scale_fac_area
+                    abs(room.floor_area) * scale_fac_area
                 room_2d.properties.energy.exterior_area_in_meters = \
-                    room.exposed_area * scale_fac_area
+                    abs(room.exposed_area) * scale_fac_area
                 room_2d.properties.energy.volume_in_meters = \
-                    room.volume * scale_fac_volume
+                    abs(room.volume) * scale_fac_volume
                 room_2d.properties.energy.absolute_loads_to_honeybee(room)
             except KeyError:
                 pass  # something very weird happened in translation
