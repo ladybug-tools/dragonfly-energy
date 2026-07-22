@@ -1,0 +1,7 @@
+dragonfly\_energy.des.junction module
+=====================================
+
+.. automodule:: dragonfly_energy.des.junction
+   :members:
+   :undoc-members:
+   :show-inheritance:
