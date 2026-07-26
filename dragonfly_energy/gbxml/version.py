@@ -75,7 +75,7 @@ class GBXMLVersionFormat(object):
 
     @gbxml_schema_version.setter
     def gbxml_schema_version(self, value):
-        if value is not None:
+        if value:
             clean_input = valid_string(value).lower()
             for key in self.SCHEMA_VERSIONS:
                 if key.lower() == clean_input:
@@ -85,6 +85,8 @@ class GBXMLVersionFormat(object):
                 raise ValueError(
                     'gbxml_schema_version {} is not recognized.\nChoose from the '
                     'following:\n{}'.format(value, self.SCHEMA_VERSIONS))
+        else:
+            value = None
         self._gbxml_schema_version = value
 
     @classmethod

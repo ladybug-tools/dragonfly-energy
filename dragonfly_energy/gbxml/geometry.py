@@ -2,7 +2,7 @@
 """Parameters for customizing the geometry in gbXML files."""
 from __future__ import division
 
-from honeybee.typing import valid_string
+from honeybee.typing import clean_string
 
 
 class GBXMLGeometryFormat(object):
@@ -175,7 +175,9 @@ class GBXMLGeometryFormat(object):
     @merge_method.setter
     def merge_method(self, value):
         if value is not None:
-            clean_input = valid_string(value).lower()
+            clean_input = clean_string(value).lower()
+            if clean_input == 'do_not_merge':
+                clean_input = 'none'
             for key in self.MERGE_METHODS:
                 if key.lower() == clean_input:
                     value = key
@@ -249,7 +251,7 @@ class GBXMLGeometryFormat(object):
     @opening_simplification.setter
     def opening_simplification(self, value):
         if value is not None:
-            clean_input = valid_string(value).lower()
+            clean_input = clean_string(value).lower()
             for key in self.OPENING_SIMPLIFICATIONS:
                 if key.lower() == clean_input:
                     value = key
@@ -293,7 +295,7 @@ class GBXMLGeometryFormat(object):
     @rect_geo_format.setter
     def rect_geo_format(self, value):
         if value is not None:
-            clean_input = valid_string(value).lower()
+            clean_input = clean_string(value).lower()
             for key in self.RECTANGULAR_FORMATS:
                 if key.lower() == clean_input:
                     value = key

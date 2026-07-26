@@ -99,6 +99,8 @@ class GBXMLNameFormat(object):
     @interior_face_type.setter
     def interior_face_type(self, value):
         clean_input = valid_string(value).lower()
+        if clean_input == 'default':
+            clean_input = 'interiorfloor'
         for key in self.INTERIOR_TYPES:
             if key.lower() == clean_input:
                 value = key
@@ -125,6 +127,8 @@ class GBXMLNameFormat(object):
     @ground_face_type.setter
     def ground_face_type(self, value):
         clean_input = valid_string(value).lower()
+        if clean_input == 'default':
+            clean_input = 'autoassign'
         for key in self.GROUND_TYPES:
             if key.lower() == clean_input:
                 value = key
