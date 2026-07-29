@@ -129,7 +129,7 @@ class GBXMLGeometryFormat(object):
     MERGE_METHODS = ('None', 'Zones', 'PlenumZones', 'Stories', 'PlenumStories')
     OPENING_SIMPLIFICATIONS = (
         'None', 'Rectangularized',
-        'MergeAdjWindows', 'MergeAdjWinToRect'
+        'MergeAdjWindows', 'MergeAdjWinToRect',
         'SingleWindow', 'SingleRectWindow'
     )
     RECTANGULAR_FORMATS = (
