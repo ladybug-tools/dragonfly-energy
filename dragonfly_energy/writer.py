@@ -18,14 +18,22 @@ from dragonfly.windowparameter import DetailedWindows, SimpleWindowArea
 from dragonfly.skylightparameter import DetailedSkylights
 
 
-def model_to_gbxml_element(model, gbxml_parameters=None):
+def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
     """Translate a Dragonfly Model to a gbXML ElementTree.
 
     Args:
         model: A dragonfly Model for which a gbXML ElementTree will be returned.
         gbxml_parameters: Optional GBXMLParameters object from the gbxml subpackage
             to customize the translation of the dragonfly Model to gbXML. If None,
-            default GBXMLParameters will be used
+            default GBXMLParameters will be used. (Default: None).
+        room_order: An optional tuple of room identifiers to determine the order
+            of spaces in the gbXML. These room identifiers are for the Honeybee
+            Rooms that get translated to gbXML and so the IDs of rooms in this
+            list should be coordinated with the merge_method in the GBXMLParameters
+            as well as the reset_geometry_ids. Any rooms that are not matched
+            are not found in the list are added to the end. If None, the order
+            of rooms in the gbXML will simply follow the order of rooms in the
+            dragonfly model. (Default: None).
     """
     # generate default parameters if None were input
     if gbxml_parameters is None:
@@ -96,6 +104,17 @@ def model_to_gbxml_element(model, gbxml_parameters=None):
     )
     hb_model = hb_models[0]
 
+    # reorder the rooms if requested
+    if room_order:
+        ordered_rooms = []
+        hb_room_dict = {r.identifier: r for r in hb_model.rooms}
+        for r_id in room_order:
+            hb_room = hb_room_dict.pop(r_id, None)
+            if hb_room:
+                ordered_rooms.append(hb_room)
+        ordered_rooms.extend(hb_room_dict.values())
+        hb_model.rooms = ordered_rooms
+
     # rectangularize the windows across the honeybee model if necessary
     rect_win = ('Rectangularized', 'MergeAdjWinToRect', 'SingleRectWindow')
     if geo_par.opening_simplification in rect_win:
@@ -131,17 +150,25 @@ def model_to_gbxml_element(model, gbxml_parameters=None):
     return gbxml_root
 
 
-def model_to_gbxml(model, gbxml_parameters=None):
+def model_to_gbxml(model, gbxml_parameters=None, room_order=None):
     """Get a gbXML string for a Model.
 
     Args:
         model: A dragonfly Model for which a gbXML text string will be returned.
         gbxml_parameters: Optional GBXMLParameters object from the gbxml subpackage
             to customize the translation of the dragonfly Model to gbXML. If None,
-            default GBXMLParameters will be used
+            default GBXMLParameters will be used. (Default: None).
+        room_order: An optional tuple of room identifiers to determine the order
+            of spaces in the gbXML. These room identifiers are for the Honeybee
+            Rooms that get translated to gbXML and so the IDs of rooms in this
+            list should be coordinated with the merge_method in the GBXMLParameters
+            as well as the reset_geometry_ids. Any rooms that are not matched
+            are not found in the list are added to the end. If None, the order
+            of rooms in the gbXML will simply follow the order of rooms in the
+            dragonfly model. (Default: None).
     """
     # create the XML string
-    xml_root = model_to_gbxml_element(model, gbxml_parameters)
+    xml_root = model_to_gbxml_element(model, gbxml_parameters, room_order)
     try:  # try to indent the XML to make it read-able
         ET.indent(xml_root)
         return ET.tostring(xml_root, encoding='unicode', xml_declaration=True)

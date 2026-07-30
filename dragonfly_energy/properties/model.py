@@ -735,7 +735,7 @@ class ModelEnergyProperties(object):
         """Check that no Room2Ds of the model are above a certain elevation.
 
         EnergyPlus computes wind speeds, air pressures, and adjusts outdoor
-        temperatures to account for the height above the ground using the Z values 
+        temperatures to account for the height above the ground using the Z values
         of the geometry coordinates. This is an important consideration when modeling
         skyscrapers but it can be detrimental when a building has been modeled
         with its coordinates at the height above sea level and the location
