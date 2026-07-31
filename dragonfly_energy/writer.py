@@ -58,26 +58,25 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
         merge_dist = parse_distance_string('0.5ft', model.units) \
             if gbxml_parameters.ip_units else parse_distance_string('0.15m', model.units)
         for room in model.room_2ds:
-            for wp in room.window_parameters:
+            for i, wp in enumerate(room.window_parameters):
                 if isinstance(wp, DetailedWindows):
                     try:
                         wp.merge_and_simplify(merge_dist, model.tolerance, True)
+                        if len(wp.polygons) == 0:
+                            room.window_parameters._window_parameters[i] = None
                     except Exception:  # too much overlapping to be fixed
                         pass
-            if isinstance(room.skylight_parameters, DetailedSkylights):
-                try:
-                    room.skylight_parameters.merge_and_simplify(
-                        merge_dist, model.tolerance, True
-                    )
-                except Exception:  # too much overlapping to be fixed
-                    pass
     elif geo_par.opening_simplification in simple_win:
         for room in model.room_2ds:
             new_wps = []
             for wp in room.window_parameters:
                 if isinstance(wp, DetailedWindows):
                     w_areas = [p.area for p, d in zip(wp.polygons, wp.are_doors) if not d]
-                    new_wps.append(SimpleWindowArea(sum(w_areas)))
+                    w_area = sum(w_areas)
+                    if w_area > model.tolerance:
+                        new_wps.append(SimpleWindowArea(w_area))
+                    else:
+                        new_wps.append(None)
                 else:
                     new_wps.append(wp)
             room.window_parameters = new_wps
@@ -88,6 +87,8 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
                     room.skylight_parameters.merge_and_simplify(
                         merge_dist, model.tolerance, True
                     )
+                    if len(room.skylight_parameters.polygons) == 0:
+                        room.skylight_parameters = None
                 except Exception:  # too much overlapping to be fixed
                     pass
 
