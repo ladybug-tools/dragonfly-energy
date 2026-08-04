@@ -1,0 +1,6 @@
+install
+=======
+
+.. click:: dragonfly_energy.cli.install:install
+   :prog: dragonfly-energy install
+   :show-nested:
