@@ -126,6 +126,13 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
             merge_all=True, resolve_adjacency=True
         )
 
+    # rename faces and openings at the model level if requested
+    if name_par.face_rename_format:
+        hb_model.rename_faces_by_attribute(name_par.face_rename_format)
+    if name_par.subface_rename_format:
+        hb_model.rename_apertures_by_attribute(name_par.subface_rename_format)
+        hb_model.rename_doors_by_attribute(name_par.subface_rename_format)
+
     # translate the honeybee model to a gbXML element
     total_vent = not gbxml_parameters.energy_attribute_format.ventilation_components
     gbxml_root = hb_model_to_gbxml_element(
@@ -135,8 +142,6 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
         include_space_boundaries=geo_par.include_space_boundaries,
         interior_face_type=name_par.interior_face_type,
         ground_face_type=name_par.ground_face_type,
-        face_rename_format=name_par.face_rename_format,
-        subface_rename_format=name_par.subface_rename_format,
         reset_geometry_ids=name_par.reset_geometry_ids,
         reset_resource_ids=name_par.reset_resource_ids,
         triangulate_subfaces=geo_par.triangulate_openings,

@@ -91,12 +91,13 @@ class GBXMLParameters(object):
             ignore_multipliers=True
         )
         name_format = GBXMLNameFormat(
-            reset_geometry_ids=True, reset_resource_ids=True,
+            reset_geometry_ids=True,
             face_rename_format='{gbxml_type} - {cardinal_direction}',
             subface_rename_format='{gbxml_type} - {cardinal_direction}'
         )
         version_format = GBXMLVersionFormat(gbxml_schema_version='5.00')
         return cls(
+            ip_units=True,
             geometry_format=geometry_format, name_format=name_format,
             version_format=version_format
         )
