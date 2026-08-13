@@ -43,7 +43,7 @@ class Folders(object):
         * config_file
         * mute
     """
-    URBANOPT_VERSION = (1, 2, 0)
+    URBANOPT_VERSION = (1, 4, 0)
     UO_GMT_VERSION = (0, 13, 0)
     GHE_DESIGNER_VERSION = (2, 1, 0)
     UO_TN_VERSION = (0, 5, 0)
@@ -366,7 +366,13 @@ class Folders(object):
         base_str = base_str.strip()
         try:
             ver_nums = base_str.split('.')
-            self._urbanopt_version = tuple(int(i) for i in ver_nums)
+            ver_digits = []
+            for i in ver_nums:
+                try:
+                    ver_digits.append(int(i))
+                except ValueError:
+                    pass  # release candidate identifier
+            self._urbanopt_version = tuple(ver_digits)
             self._urbanopt_version_str = base_str
         except Exception:
             pass  # failed to parse the version into integers
