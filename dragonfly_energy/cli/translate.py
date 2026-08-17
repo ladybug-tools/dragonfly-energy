@@ -68,9 +68,10 @@ def translate():
               'volumes in the resulting Model and, ultimately, yield a faster simulation '
               'time with less results to manage. Choose from: None, Zones, PlenumZones, '
               'Stories, PlenumStories.', type=str, default='None', show_default=True)
-@click.option('--folder', '-f', help='Deprecated input that is no longer used.',
-              default=None, show_default=True,
-              type=click.Path(file_okay=False, dir_okay=True, resolve_path=True))
+@click.option('--wall-modifier-json', '-wm', help='Optional path to a JSON file with an '
+              'array of wall modifier lines and/pr polygons that customize the properties '
+              'of walls across the model.', default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--osm-file', '-osm', help='Optional path where the OSM will be written.',
               type=str, default=None, show_default=True)
 @click.option('--idf-file', '-idf', help='Optional path where the IDF will be written.',
@@ -96,14 +97,21 @@ def translate():
               'Cases of duplicate IDs resulting from non-unique names will be resolved '
               'by adding integers to the ends of the new IDs that are derived from '
               'the name.', default=True, show_default=True)
+@click.option('--openstudio-version', '-v', help='Optional text to specify the version '
+              'of OpenStudio with which the OSM will be written (eg. "3.9.0"). '
+              'Versions going back to 3.7 are supported. If unspecified, the OSM will '
+              'be for the latest version of OpenStudio. Note that this option '
+              'will only change the version of the output --osm-file and NOT the '
+              '--idf-file or --epjson-file', type=str, default=None, show_default=True)
 @click.option('--log-file', '-log', help='Optional log file to output the paths to the '
               'generated OSM and IDF files if they were successfully created. '
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_osm_cli(
     model_file, sim_par_json, epw_file,
-    multiplier, plenum, no_ceil_adjacency, merge_method,
-    folder, osm_file, idf_file, epjson_file, geometry_ids, resource_ids, log_file
+    multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
+    osm_file, idf_file, epjson_file, geometry_ids, resource_ids, openstudio_version,
+    log_file
 ):
     """Translate a Dragonfly Model to an OpenStudio Model.
 
@@ -120,8 +128,9 @@ def model_to_osm_cli(
         res_names = not resource_ids
         model_to_osm(
             model_file, sim_par_json, epw_file,
-            full_geometry, no_plenum, ceil_adjacency, merge_method,
-            folder, osm_file, idf_file, epjson_file, geo_names, res_names, log_file
+            full_geometry, no_plenum, ceil_adjacency, merge_method, wall_modifier_json,
+            osm_file, idf_file, epjson_file, geo_names, res_names, openstudio_version,
+            log_file
         )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -133,8 +142,8 @@ def model_to_osm_cli(
 def model_to_osm(
     model_file, sim_par_json=None, epw_file=None,
     full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
-    folder=None, osm_file=None, idf_file=None, epjson_file=None,
-    geometry_names=False, resource_names=False, log_file=None,
+    wall_modifier_json=None, osm_file=None, idf_file=None, epjson_file=None,
+    geometry_names=False, resource_names=False, openstudio_version=None, log_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
     geometry_ids=True, resource_ids=True
 ):
@@ -178,7 +187,9 @@ def model_to_osm(
             * Stories - Rooms in the same story will be merged
             * PlenumStories - Only plenums in the same story will be merged
 
-        folder: Deprecated input that is no longer used.
+        wall_modifier_json: Optional path to a JSON file with an array of wall
+            modifier lines and/pr polygons that customize the properties of
+            walls across the model.
         osm_file: Optional path where the OSM will be output.
         idf_file: Optional path where the IDF will be output.
         epjson_file: Optional path where the epJSON will be output.
@@ -199,6 +210,12 @@ def model_to_osm(
             in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new IDs
             that are derived from the name. (Default: False).
+        openstudio_version: Optional text to specify the version of OpenStudio
+            with which the OSM will be written (eg. "3.9.0"). Versions going
+            back to 3.7 are supported. If None, the OSM will be for the latest
+            version of OpenStudio used by this package. Note that this input
+            will only change the version of the output osm_file and NOT the
+            idf_file or epjson_file. (Default: None).
         log_file: Optional log file to output the paths to the generated OSM and]
             IDF files if they were successfully created. By default this string
             will be returned from this method.
@@ -211,8 +228,6 @@ def model_to_osm(
         from honeybee_openstudio.writer import model_to_openstudio
     except ImportError as e:  # honeybee-openstudio is not installed
         raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
-    if folder is not None:
-        print('--folder is deprecated and no longer used.')
 
     # initialize the OpenStudio model that will hold everything
     os_model = OSModel()
@@ -257,11 +272,16 @@ def model_to_osm(
     # translate the simulation parameter and model to an OpenStudio Model
     simulation_parameter_to_openstudio(sim_par, os_model)
 
-    # re-serialize the Dragonfly Model
+    # re-serialize the Dragonfly Model and apply wall modifiers if present
     model = Model.from_file(model_file)
-    model.convert_to_units('Meters')
+    if wall_modifier_json:
+        with open(wall_modifier_json, 'r') as wmf:
+            wall_modifier_data = json.load(wmf)
+        wall_modifiers = model.deserialize_wall_modifiers(wall_modifier_data)
+        model.resolve_wall_properties(wall_modifiers)
 
     # convert Dragonfly Model to Honeybee
+    model.convert_to_units('Meters')
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
@@ -279,7 +299,18 @@ def model_to_osm(
     # write the OpenStudio Model if specified
     if osm_file is not None:
         osm = os.path.abspath(osm_file)
-        os_model.save(osm, overwrite=True)
+        if openstudio_version:
+            try:
+                from openstudiobackporter import Backporter
+            except ImportError as e:
+                msg = 'Openstudio-backporter is not installed. Translation to older ' \
+                    'versions of openStudio cannot be performed.\n{}'.format(e)
+                raise ImportError(msg)
+            backporter = Backporter(to_version=openstudio_version, save_intermediate=False)
+            os_model_idf = backporter.backport(idf_file=os_model)
+            os_model_idf.save(osm, overwrite=True)
+        else:
+            os_model.save(osm, overwrite=True)
         gen_files.append(osm)
 
     # write the IDF if specified
@@ -1037,6 +1068,10 @@ def model_to_trace_gbxml(
               'volumes in the resulting Model and, ultimately, yield a faster simulation '
               'time with less results to manage. Choose from: None, Zones, PlenumZones, '
               'Stories, PlenumStories.', type=str, default='None', show_default=True)
+@click.option('--wall-modifier-json', '-wm', help='Optional path to a JSON file with an '
+              'array of wall modifier lines and/pr polygons that customize the properties '
+              'of walls across the model.', default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--geometry-ids/--geometry-names', ' /-gn', help='Flag to note whether a '
               'cleaned version of all geometry display names should be used instead '
               'of identifiers when translating the Model to SDD. Using this flag will '
@@ -1059,7 +1094,7 @@ def model_to_trace_gbxml(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_sdd_cli(
-    model_file, multiplier, plenum, no_ceil_adjacency, merge_method,
+    model_file, multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
     geometry_ids, resource_ids, output_file
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
@@ -1077,7 +1112,8 @@ def model_to_sdd_cli(
         res_names = not resource_ids
         model_to_sdd(
             model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
-            geo_names, res_names, output_file)
+            wall_modifier_json, geo_names, res_names, output_file
+        )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -1086,8 +1122,8 @@ def model_to_sdd_cli(
 
 
 def model_to_sdd(
-    model_file, full_geometry=False,
-    no_plenum=False, ceil_adjacency=False, merge_method='None',
+    model_file, full_geometry=False, no_plenum=False,
+    ceil_adjacency=False, merge_method='None', wall_modifier_json=None,
     geometry_names=False, resource_names=False, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
     geometry_ids=True, resource_ids=True
@@ -1124,6 +1160,9 @@ def model_to_sdd(
             * Stories - Rooms in the same story will be merged
             * PlenumStories - Only plenums in the same story will be merged
 
+        wall_modifier_json: Optional path to a JSON file with an array of wall
+            modifier lines and/pr polygons that customize the properties of
+            walls across the model.
         geometry_names: Boolean to note whether a cleaned version of all geometry
             display names should be used instead of identifiers when translating
             the Model to OSM and IDF. Using this flag will affect all Rooms, Faces,
@@ -1153,9 +1192,14 @@ def model_to_sdd(
 
     # re-serialize the Dragonfly Model
     model = Model.from_dfjson(model_file)
-    model.convert_to_units('Meters')
+    if wall_modifier_json:
+        with open(wall_modifier_json, 'r') as wmf:
+            wall_modifier_data = json.load(wmf)
+        wall_modifiers = model.deserialize_wall_modifiers(wall_modifier_data)
+        model.resolve_wall_properties(wall_modifiers)
 
     # convert Dragonfly Model to Honeybee
+    model.convert_to_units('Meters')
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
