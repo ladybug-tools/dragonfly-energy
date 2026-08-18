@@ -14,8 +14,10 @@ from honeybee.config import folders
 from honeybee.units import parse_distance_string
 from honeybee.model import Model as hb_model
 from honeybee_energy.writer import model_to_gbxml_element as hb_model_to_gbxml_element
+from honeybee_energy.writer import _et_indent
 from dragonfly.windowparameter import DetailedWindows, SimpleWindowArea
 from dragonfly.skylightparameter import DetailedSkylights
+from dragonfly.roof import RoofSpecification
 
 
 def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
@@ -47,7 +49,13 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
     model = model.duplicate()  # duplicate to avoid editing the input
     if geo_par.exclude_roofs:
         for story in model.stories:
-            story.roof = None
+            if story.roof:
+                flat_geo = [
+                    geo for geo in story.roof.geometry
+                    if geo.is_horizontal(model.tolerance)
+                ]
+                new_roof = None if len(flat_geo) == 0 else RoofSpecification(flat_geo)
+                story.roof = new_roof
     if geo_par.exclude_shades:
         model.context_shades = None
 
@@ -179,7 +187,8 @@ def model_to_gbxml(model, gbxml_parameters=None, room_order=None):
         ET.indent(xml_root)
         return ET.tostring(xml_root, encoding='unicode', xml_declaration=True)
     except AttributeError:  # we are in Python 2 and no indent is available
-        return ET.tostring(xml_root, xml_declaration=True)
+        _et_indent(xml_root)
+        return ET.tostring(xml_root)
 
 
 def model_to_urbanopt(
