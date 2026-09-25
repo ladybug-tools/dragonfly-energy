@@ -1,0 +1,22 @@
+dragonfly\_energy.properties package
+====================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dragonfly_energy.properties.building
+   dragonfly_energy.properties.context
+   dragonfly_energy.properties.model
+   dragonfly_energy.properties.room2d
+   dragonfly_energy.properties.story
+
+Module contents
+---------------
+
+.. automodule:: dragonfly_energy.properties
+   :members:
+   :undoc-members:
+   :show-inheritance:
