@@ -95,30 +95,6 @@ def base_honeybee_osw(
     if 'measure_paths' not in osw_dict:
         osw_dict['measure_paths'] = []
 
-    # request district thermal outputs if there is a system parameter
-    sys_param_file = os.path.join(project_directory, 'system_params.json')
-    if hbe_folders.inject_idf_measure_path is not None:
-        district_out = (
-            'District Cooling Water Rate',
-            'District Heating Water Rate',
-            'Water Heater DistrictHeatingWater Rate'
-        )
-        strings_to_inject = []
-        for output_name in district_out:
-            values = ('*', output_name, 'Timestep')
-            comments = ('key value', 'name', 'frequency')
-            strings_to_inject.append(generate_idf_string(
-                'Output:Variable', values, comments))
-        strings_to_inject = '\n\n'.join(strings_to_inject)
-        idf_measure = Measure(hbe_folders.inject_idf_measure_path)
-        inject_idf = os.path.join(mappers_dir, 'inject.idf')
-        with open(inject_idf, "w") as idf_file:
-            idf_file.write(strings_to_inject)
-        input_arg = idf_measure.arguments[0]
-        input_arg.value = inject_idf
-        osw_dict['measure_paths'].append(os.path.dirname(idf_measure.folder))
-        osw_dict['steps'].append(idf_measure.to_osw_dict())  # add measure to workflow
-
     # add the emissions reporting if a year has been selected
     if emissions_year is not None and epw_file is not None:
         epw_obj = EPW(epw_file)
@@ -142,6 +118,7 @@ def base_honeybee_osw(
             osw_dict['steps'].append(emissions_measure_dict)
 
     # add any additional measures to the osw_dict
+    report_count = 0
     if additional_measures or additional_mapper_measures:
         measures = []
         if additional_measures is not None:
@@ -153,6 +130,7 @@ def base_honeybee_osw(
         m_dict = {'ModelMeasure': [], 'EnergyPlusMeasure': [], 'ReportingMeasure': []}
         for measure in measures:
             m_dict[measure.type].append(measure)
+        report_count = len(m_dict['ReportingMeasure'])
         sorted_measures = m_dict['ModelMeasure'] + m_dict['EnergyPlusMeasure'] + \
             m_dict['ReportingMeasure']
         for measure in sorted_measures:
@@ -163,6 +141,33 @@ def base_honeybee_osw(
                 _add_mapper_measure(project_directory, measure)
         for m_path in measure_paths:  # add outside measure paths
             osw_dict['measure_paths'].append(m_path)
+
+    # request district thermal outputs if there is a system parameter
+    sys_param_file = os.path.join(project_directory, 'system_params.json')
+    if hbe_folders.inject_idf_measure_path is not None:
+        district_out = (
+            'District Cooling Water Rate',
+            'District Heating Water Rate',
+            'Water Heater DistrictHeatingWater Rate'
+        )
+        strings_to_inject = []
+        for output_name in district_out:
+            values = ('*', output_name, 'Timestep')
+            comments = ('key value', 'name', 'frequency')
+            strings_to_inject.append(generate_idf_string(
+                'Output:Variable', values, comments))
+        strings_to_inject = '\n\n'.join(strings_to_inject)
+        idf_measure = Measure(hbe_folders.inject_idf_measure_path)
+        inject_idf = os.path.join(mappers_dir, 'inject.idf')
+        with open(inject_idf, "w") as idf_file:
+            idf_file.write(strings_to_inject)
+        input_arg = idf_measure.arguments[0]
+        input_arg.value = inject_idf
+        osw_dict['measure_paths'].append(os.path.dirname(idf_measure.folder))
+        if report_count == 0:
+            osw_dict['steps'].append(idf_measure.to_osw_dict())  # add measure to workflow
+        else:
+            osw_dict['steps'].insert(-report_count, idf_measure.to_osw_dict())
 
     # add default feature reports if they aren't in the steps
     all_measures = [step['measure_dir_name'] for step in osw_dict['steps']]
