@@ -2,7 +2,7 @@
 """Parameters for customizing the names and IDs of objects in gbXML files."""
 from __future__ import division
 
-from honeybee.typing import valid_string
+from honeybee.typing import valid_string, int_positive
 
 
 class GBXMLNameFormat(object):
@@ -56,6 +56,13 @@ class GBXMLNameFormat(object):
             in the gbXML file. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new
             IDs that are derived from the name. (Default: False).
+        decimal_count: An integer to be used to round all properties in
+            face_rename_format and subface_rename_format to a number of decimal
+            places when they are numbers. If None, the number of decimal places
+            are determined by the model tolerance. (Default: None).
+        include_units: Boolean for whether the units should be included in all
+            length, area and volume attributes of face_rename_format and
+            subface_rename_format. (Default: True).
 
     Properties:
         * interior_face_type
@@ -64,10 +71,13 @@ class GBXMLNameFormat(object):
         * subface_rename_format
         * reset_geometry_ids
         * reset_resource_ids
+        * decimal_count
+        * include_units
     """
     __slots__ = (
         '_interior_face_type', '_ground_face_type', '_face_rename_format',
-        '_subface_rename_format', '_reset_geometry_ids', '_reset_resource_ids'
+        '_subface_rename_format', '_reset_geometry_ids', '_reset_resource_ids',
+        '_decimal_count', '_include_units'
     )
     INTERIOR_TYPES = ('InteriorFloor', 'Ceiling')
     GROUND_TYPES = ('AutoAssign', 'UndergroundSlab', 'SlabOnGrade', 'RaisedFloor')
@@ -75,7 +85,8 @@ class GBXMLNameFormat(object):
     def __init__(
         self, interior_face_type='InteriorFloor', ground_face_type='AutoAssign',
         face_rename_format=None, subface_rename_format=None,
-        reset_geometry_ids=False, reset_resource_ids=False
+        reset_geometry_ids=False, reset_resource_ids=False,
+        decimal_count=None, include_units=True
     ):
         """Initialize GBXMLGeometryFormat."""
         self.interior_face_type = interior_face_type
@@ -84,6 +95,8 @@ class GBXMLNameFormat(object):
         self.subface_rename_format = subface_rename_format
         self.reset_geometry_ids = reset_geometry_ids
         self.reset_resource_ids = reset_resource_ids
+        self.decimal_count = decimal_count
+        self.include_units = include_units
 
     @property
     def interior_face_type(self):
@@ -186,6 +199,28 @@ class GBXMLNameFormat(object):
     @reset_resource_ids.setter
     def reset_resource_ids(self, value):
         self._reset_resource_ids = bool(value)
+
+    @property
+    def decimal_count(self):
+        """Get or set an integer to round all numerical properties in names.
+
+        If None, the number of decimal places are determined by the model tolerance.
+        """
+        return self._decimal_count
+
+    @decimal_count.setter
+    def decimal_count(self, value):
+        self._decimal_count = int_positive(value, 'decimal count') \
+            if value is not None else None
+
+    @property
+    def include_units(self):
+        """Get or set a boolean for whether the units are included in attributes."""
+        return self._include_units
+
+    @include_units.setter
+    def include_units(self, value):
+        self._include_units = bool(value)
 
     @classmethod
     def from_dict(cls, data):
