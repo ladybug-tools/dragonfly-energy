@@ -1,0 +1,7 @@
+dragonfly\_energy.properties.context module
+===========================================
+
+.. automodule:: dragonfly_energy.properties.context
+   :members:
+   :undoc-members:
+   :show-inheritance:
