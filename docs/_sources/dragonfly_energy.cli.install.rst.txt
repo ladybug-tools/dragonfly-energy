@@ -1,0 +1,7 @@
+dragonfly\_energy.cli.install module
+====================================
+
+.. automodule:: dragonfly_energy.cli.install
+   :members:
+   :undoc-members:
+   :show-inheritance:
