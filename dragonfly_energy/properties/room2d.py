@@ -67,6 +67,7 @@ class Room2DEnergyProperties(object):
         * service_hot_water
         * infiltration
         * ventilation
+        * exhaust
         * setpoint
         * daylighting_control
         * window_vent_control
@@ -500,6 +501,11 @@ class Room2DEnergyProperties(object):
     def ventilation(self):
         """Get the Ventilation object for the minimum outdoor air requirement."""
         return self.program_type.ventilation
+
+    @property
+    def exhaust(self):
+        """Get the ExhaustAir object for the exhaust air requirement."""
+        return self.program_type.exhaust
 
     @property
     def setpoint(self):
