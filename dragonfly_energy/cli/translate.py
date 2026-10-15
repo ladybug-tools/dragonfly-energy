@@ -573,7 +573,7 @@ def model_to_idf(
 @click.option('--si-units/--ip-units', '-si/-ip', help='Flag to note whether '
               'the geometry, space loads, and construction properties are reported '
               'in IP or SI units.', default=True, show_default=True)
-@click.option('--full-geometry/--multiplier', '-fg/-m', help='Flag to note if the '
+@click.option('--full-geometry/--multiplier', '-fg/-mul', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
               'written for each story in the building.', default=True, show_default=True)
@@ -598,7 +598,7 @@ def model_to_idf(
               'they should be left as they are (False). This triangulation is '
               'necessary when exporting directly to EnergyPlus since it cannot accept '
               'sub-faces with more than 4 vertices.', default=True, show_default=True)
-@click.option('--triangulate-non-planar/--permit-non-planar', ' /-np',
+@click.option('--triangulate-non-planar/--permit-non-planar', ' /-pnp',
               help='Flag to note whether any non-planar orphaned geometry in the '
               'model should be triangulated upon export. This can be helpful because '
               'OpenStudio simply raises an error when it encounters non-planar '
@@ -649,7 +649,7 @@ def model_to_idf(
               'explicitly with their own PolyLoop or the hole and boundary '
               'should be collapsed into a single PolyLoop that winds inwards to '
               'cut out the holes.', default=True, show_default=True)
-@click.option('--program-name', '-p', help='Optional text to set the name of the '
+@click.option('--program-name', '-pn', help='Optional text to set the name of the '
               'software that will appear under the programId and ProductName tags '
               'of the DocumentHistory section. This can be set things like "Ladybug '
               'Tools" or "Pollination" or some other software in which this gbXML '
@@ -905,7 +905,7 @@ def model_to_gbxml(
               'if no units are provided, the value will be interpreted in the '
               'honeybee model units.',
               type=str, default='0.15m', show_default=True)
-@click.option('--frame-merge-distance', '-m', help='A number for the maximum distance '
+@click.option('--frame-merge-distance', '-fd', help='A number for the maximum distance '
               'between non-rectangular Apertures at which point the Apertures will be '
               'merged into a single rectangular geometry. This is often helpful when '
               'there are several triangular Apertures that together make a rectangle '
@@ -913,7 +913,7 @@ def model_to_gbxml(
               'of the distance (eg. 0.5ft) or, if no units are provided, the value '
               'will be interpreted in the honeybee model units',
               type=str, default='0.2m', show_default=True)
-@click.option('--program-name', '-p', help='Optional text to set the name of the '
+@click.option('--program-name', '-pn', help='Optional text to set the name of the '
               'software that will appear under the programId and ProductName tags '
               'of the DocumentHistory section. This can be set things like "Ladybug '
               'Tools" or "Pollination" or some other software in which this gbXML '
@@ -1248,6 +1248,183 @@ def model_to_sdd(
             return file_contents
         else:
             print(file_contents)
+
+
+@translate.command('model-from-osm')
+@click.argument('osm-file', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--conversion-method', '-c', help='Text to indicate how to convert '
+              'the 3D Rooms to Dragonfly Room2D. Choose from: AllRoom2D, '
+              'ExtrudedOnly, AllRoom3D.',
+              type=str, default="ExtrudedOnly", show_default=True)
+@click.option('--keep-properties/--reset-properties', ' /-r', help='Flag to note '
+              'whether all energy properties should be reset to defaults upon import, '
+              'meaning that only the geometry and boundary conditions are imported '
+              'from the file.', default=True, show_default=True)
+@click.option('--output-file', '-f', help='Optional DFJSON file to output the string '
+              'of the translation. By default it printed out to stdout.',
+              type=click.File('w'), default='-', show_default=True)
+def model_from_osm_cli(osm_file, conversion_method, keep_properties, output_file):
+    """Translate a OpenStudio Model (OSM) to a Dragonfly Model (DFJSON).
+
+    \b
+    Args:
+        osm_file: Path to a OpenStudio Model (OSM) file.
+    """
+    try:
+        reset_properties = not keep_properties
+        model_from_osm(osm_file, conversion_method, reset_properties, output_file)
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def model_from_osm(
+    osm_file, conversion_method='ExtrudedOnly', reset_properties=False, output_file=None,
+    keep_properties=True
+):
+    """Translate a OpenStudio Model (OSM) to a Dragonfly Model (DFJSON).
+
+    Args:
+        osm_file: Path to a OpenStudio Model (OSM) file.
+        conversion_method: Text to indicate how to convert the 3D Rooms to
+            Dragonfly Room2D. Choose from: AllRoom2D, ExtrudedOnly, AllRoom3D.
+        reset_properties: Boolean to note whether all energy properties should be
+            reset to defaults upon import, meaning that only the geometry and boundary
+            conditions are imported from the Openstudio Model. (Default: False).
+        output_file: Optional DFJSON file to output the string of the translation.
+            If None, it will be returned from this method. (Default: None).
+    """
+    # check that honeybee-openstudio is installed
+    try:
+        from honeybee_openstudio.reader import model_from_osm_file
+    except ImportError as e:  # honeybee-openstudio is not installed
+        raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
+    # translate everything to a dragonfly Model
+    hb_model = model_from_osm_file(osm_file, reset_properties)
+    df_model = Model.from_honeybee(hb_model, conversion_method)
+    # write out the file
+    return process_content_to_output(json.dumps(df_model.to_dict()), output_file)
+
+
+@translate.command('model-from-idf')
+@click.argument('idf-file', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--conversion-method', '-c', help='Text to indicate how to convert '
+              'the 3D Rooms to Dragonfly Room2D. Choose from: AllRoom2D, '
+              'ExtrudedOnly, AllRoom3D.',
+              type=str, default="ExtrudedOnly", show_default=True)
+@click.option('--keep-properties/--reset-properties', ' /-r', help='Flag to note '
+              'whether all energy properties should be reset to defaults upon import, '
+              'meaning that only the geometry and boundary conditions are imported '
+              'from the file.', default=True, show_default=True)
+@click.option('--output-file', '-f', help='Optional DFJSON file to output the string '
+              'of the translation. By default it printed out to stdout',
+              type=click.File('w'), default='-', show_default=True)
+def model_from_idf_cli(idf_file, conversion_method, keep_properties, output_file):
+    """Translate an EnergyPlus Model (IDF) to a Dragonfly Model (DFJSON).
+
+    \b
+    Args:
+        idf_file: Path to an EnergyPlus Model (IDF) file.
+    """
+    try:
+        reset_properties = not keep_properties
+        model_from_idf(idf_file, conversion_method, reset_properties, output_file)
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def model_from_idf(
+    idf_file, conversion_method='ExtrudedOnly', reset_properties=False, output_file=None,
+    keep_properties=True
+):
+    """Translate an EnergyPlus Model (IDF) to a Dragonfly Model (DFJSON).
+
+    Args:
+        idf_file: Path to an EnergyPlus Model (IDF) file.
+        conversion_method: Text to indicate how to convert the 3D Rooms to
+            Dragonfly Room2D. Choose from: AllRoom2D, ExtrudedOnly, AllRoom3D.
+        reset_properties: Boolean to note whether all energy properties should be
+            reset to defaults upon import, meaning that only the geometry and boundary
+            conditions are imported from the EnergyPlus Model. (Default: False).
+        output_file: Optional DFJSON file to output the string of the translation.
+            If None, it will be returned from this method. (Default: None).
+    """
+    # check that honeybee-openstudio is installed
+    try:
+        from honeybee_openstudio.reader import model_from_idf_file
+    except ImportError as e:  # honeybee-openstudio is not installed
+        raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
+    # translate everything to a honeybee Model
+    hb_model = model_from_idf_file(idf_file, reset_properties)
+    df_model = Model.from_honeybee(hb_model, conversion_method)
+    # write out the file
+    return process_content_to_output(json.dumps(df_model.to_dict()), output_file)
+
+
+@translate.command('model-from-gbxml')
+@click.argument('gbxml-file', type=click.Path(
+    exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--conversion-method', '-c', help='Text to indicate how to convert '
+              'the 3D Rooms to Dragonfly Room2D. Choose from: AllRoom2D, '
+              'ExtrudedOnly, AllRoom3D.',
+              type=str, default="ExtrudedOnly", show_default=True)
+@click.option('--keep-properties/--reset-properties', ' /-r', help='Flag to note '
+              'whether all energy properties should be reset to defaults upon import, '
+              'meaning that only the geometry and boundary conditions are imported '
+              'from the file.', default=True, show_default=True)
+@click.option('--output-file', '-f', help='Optional DFJSON file to output the string '
+              'of the translation. By default it printed out to stdout',
+              type=click.File('w'), default='-', show_default=True)
+def model_from_gbxml_cli(gbxml_file, conversion_method, keep_properties, output_file):
+    """Translate a gbXML to a Dragonfly Model (DFJSON).
+
+    \b
+    Args:
+        gbxml_file: Path to a gbXML file.
+    """
+    try:
+        reset_properties = not keep_properties
+        model_from_gbxml(gbxml_file, conversion_method, reset_properties, output_file)
+    except Exception as e:
+        _logger.exception('Model translation failed.\n{}'.format(e))
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
+def model_from_gbxml(
+    gbxml_file, conversion_method='ExtrudedOnly', reset_properties=False, output_file=None,
+    keep_properties=True
+):
+    """Translate a gbXML to a Dragonfly Model (DFJSON).
+
+    Args:
+        gbxml_file: Path to a gbXML file.
+        conversion_method: Text to indicate how to convert the 3D Rooms to
+            Dragonfly Room2D. Choose from: AllRoom2D, ExtrudedOnly, AllRoom3D.
+        reset_properties: Boolean to note whether all energy properties should be
+            reset to defaults upon import, meaning that only the geometry and boundary
+            conditions are imported from the gbXML Model. (Default: False).
+        output_file: Optional DFJSON file to output the string of the translation.
+            If None, it will be returned from this method. (Default: None).
+    """
+    # check that honeybee-openstudio is installed
+    try:
+        from honeybee_openstudio.reader import model_from_gbxml_file
+    except ImportError as e:  # honeybee-openstudio is not installed
+        raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
+    # translate everything to a honeybee Model
+    hb_model = model_from_gbxml_file(gbxml_file, reset_properties)
+    df_model = Model.from_honeybee(hb_model, conversion_method)
+    # write out the file
+    return process_content_to_output(json.dumps(df_model.to_dict()), output_file)
 
 
 @translate.command('hb-models-to-osm')

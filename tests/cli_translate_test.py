@@ -1,9 +1,10 @@
 """Test cli translate module."""
-from click.testing import CliRunner
-from dragonfly_energy.cli.translate import model_to_osm_cli, model_to_idf_cli, \
-    model_to_gbxml_cli, model_to_trace_gbxml_cli, model_to_sdd_cli
-
 import os
+from click.testing import CliRunner
+
+from dragonfly_energy.cli.translate import model_to_osm_cli, model_to_idf_cli, \
+    model_to_gbxml_cli, model_to_trace_gbxml_cli, model_to_sdd_cli, \
+    model_from_idf_cli, model_from_gbxml_cli
 
 
 def test_model_to_osm():
@@ -13,8 +14,8 @@ def test_model_to_osm():
     output_osm = './tests/json/in.osm'
     result = runner.invoke(model_to_osm_cli, [input_df_model, '--osm-file', output_osm])
     assert result.exit_code == 0
-
     assert os.path.isfile(output_osm)
+
     os.remove(output_osm)
 
 
@@ -25,9 +26,15 @@ def test_model_to_idf():
     output_idf = './tests/json/in.idf'
     result = runner.invoke(model_to_idf_cli, [input_df_model, '-f', output_idf])
     assert result.exit_code == 0
-
     assert os.path.isfile(output_idf)
+
+    output_dfjson = './tests/json/test_output.dfjson'
+    result = runner.invoke(model_from_idf_cli, [output_idf, '--output-file', output_dfjson])
+    assert result.exit_code == 0
+    assert os.path.isfile(output_dfjson)
+
     os.remove(output_idf)
+    os.remove(output_dfjson)
 
 
 def test_model_to_gbxml():
@@ -41,9 +48,15 @@ def test_model_to_gbxml():
                '--gbxml-schema-version', '5.00', '-f', output_gbxml]
     result = runner.invoke(model_to_gbxml_cli, in_args)
     assert result.exit_code == 0
-
     assert os.path.isfile(output_gbxml)
+
+    output_dfjson = './tests/json/test_output.dfjson'
+    result = runner.invoke(model_from_gbxml_cli, [output_gbxml, '--output-file', output_dfjson])
+    assert result.exit_code == 0
+    assert os.path.isfile(output_dfjson)
+
     os.remove(output_gbxml)
+    os.remove(output_dfjson)
 
 
 def test_model_to_trace_gbxml():
