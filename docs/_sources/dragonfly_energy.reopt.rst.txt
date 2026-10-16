@@ -1,0 +1,7 @@
+dragonfly\_energy.reopt module
+==============================
+
+.. automodule:: dragonfly_energy.reopt
+   :members:
+   :undoc-members:
+   :show-inheritance:
