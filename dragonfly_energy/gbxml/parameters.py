@@ -63,7 +63,7 @@ class GBXMLParameters(object):
         name_format = GBXMLNameFormat(
             ground_face_type='SlabOnGrade',
             face_rename_format='{gbxml_type} - {cardinal_direction}',
-            subface_rename_format='{gbxml_type} - {cardinal_direction}'
+            subface_rename_format='{type} - {cardinal_direction}'
         )
         return cls(
             ip_units=True, geometry_format=geometry_format, name_format=name_format
@@ -93,7 +93,7 @@ class GBXMLParameters(object):
         name_format = GBXMLNameFormat(
             reset_geometry_ids=True,
             face_rename_format='{gbxml_type} - {cardinal_direction}',
-            subface_rename_format='{gbxml_type} - {cardinal_direction}'
+            subface_rename_format='{type} - {cardinal_direction}'
         )
         version_format = GBXMLVersionFormat(gbxml_schema_version='5.00')
         return cls(
