@@ -1,0 +1,6 @@
+translate
+=========
+
+.. click:: dragonfly_energy.cli.translate:translate
+   :prog: dragonfly-energy translate
+   :show-nested:
