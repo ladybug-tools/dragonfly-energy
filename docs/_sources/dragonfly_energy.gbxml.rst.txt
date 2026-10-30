@@ -1,0 +1,22 @@
+dragonfly\_energy.gbxml package
+===============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dragonfly_energy.gbxml.energy
+   dragonfly_energy.gbxml.geometry
+   dragonfly_energy.gbxml.name
+   dragonfly_energy.gbxml.parameters
+   dragonfly_energy.gbxml.version
+
+Module contents
+---------------
+
+.. automodule:: dragonfly_energy.gbxml
+   :members:
+   :undoc-members:
+   :show-inheritance:
