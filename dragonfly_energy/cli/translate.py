@@ -97,6 +97,32 @@ def translate():
               'Cases of duplicate IDs resulting from non-unique names will be resolved '
               'by adding integers to the ends of the new IDs that are derived from '
               'the name.', default=True, show_default=True)
+@click.option('--face-rename-format', '-fn', help='Optional text for the pattern '
+              'with which faces will be renamed. Any property on the honeybee Face class '
+              'may be used (eg. gbxml_str) and each property should be put in curly '
+              'brackets. Nested properties can be specified by using "." to denote '
+              'nesting levels (eg. properties.energy.construction.display_name). '
+              'Functions that return string outputs can also be passed here as long '
+              'as these functions defaults specified for all arguments. If None, the '
+              'names will match the identifiers.', type=str, show_default=True,
+              default="{parent.display_name} - {gbxml_type} - {cardinal_direction}")
+@click.option('--subface-rename-format', '-sfn', help='Optional text for the pattern '
+              'with which apertures and doors will be renamed. Any property that exists '
+              'on both the honeybee Aperture and honeybee Door class may be used '
+              '(eg. type) and each property should be put in curly brackets. Nested '
+              'properties can be specified by using "." to denote nesting levels '
+              '(eg. properties.energy.construction.display_name). Functions that '
+              'return string outputs can also be passed here as long as these '
+              'functions defaults specified for all arguments. If None, the names '
+              'will match the identifiers.', type=str, show_default=True,
+              default="{parent.parent.display_name} - {type} - {cardinal_direction}")
+@click.option('--name-decimal-count', '-dc', help='An integer to set the number of '
+              'decimal places that appear in face and sub-face names for all numerical '
+              'properties. If None, the number of decimal places are determined by the '
+              'model tolerance.', type=int, default=None, show_default=True)
+@click.option('--include-units-in-name/--exclude-units-in-name', ' /-xu', help='Flag '
+              'to note whether the units should be excluded from all length, area '
+              'and volume attributes.', default=True, show_default=True)
 @click.option('--openstudio-version', '-v', help='Optional text to specify the version '
               'of OpenStudio with which the OSM will be written (eg. "3.9.0"). '
               'Versions going back to 3.7 are supported. If unspecified, the OSM will '
@@ -110,8 +136,9 @@ def translate():
 def model_to_osm_cli(
     model_file, sim_par_json, epw_file,
     multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
-    osm_file, idf_file, epjson_file, geometry_ids, resource_ids, openstudio_version,
-    log_file
+    osm_file, idf_file, epjson_file, geometry_ids, resource_ids,
+    face_rename_format, subface_rename_format, name_decimal_count, include_units_in_name,
+    openstudio_version, log_file
 ):
     """Translate a Dragonfly Model to an OpenStudio Model.
 
@@ -126,11 +153,13 @@ def model_to_osm_cli(
         ceil_adjacency = not no_ceil_adjacency
         geo_names = not geometry_ids
         res_names = not resource_ids
+        exclude_units_in_name = not include_units_in_name
         model_to_osm(
             model_file, sim_par_json, epw_file,
             full_geometry, no_plenum, ceil_adjacency, merge_method, wall_modifier_json,
-            osm_file, idf_file, epjson_file, geo_names, res_names, openstudio_version,
-            log_file
+            osm_file, idf_file, epjson_file, geo_names, res_names,
+            face_rename_format, subface_rename_format, name_decimal_count,
+            exclude_units_in_name, openstudio_version, log_file
         )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -143,9 +172,12 @@ def model_to_osm(
     model_file, sim_par_json=None, epw_file=None,
     full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     wall_modifier_json=None, osm_file=None, idf_file=None, epjson_file=None,
-    geometry_names=False, resource_names=False, openstudio_version=None, log_file=None,
+    geometry_names=False, resource_names=False,
+    face_rename_format='{parent.display_name} - {gbxml_type} - {cardinal_direction}',
+    subface_rename_format='{parent.parent.display_name} - {type} - {cardinal_direction}',
+    name_decimal_count=None, exclude_units_in_name=False, openstudio_version=None, log_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
-    geometry_ids=True, resource_ids=True
+    geometry_ids=True, resource_ids=True, include_units_in_name=True
 ):
     """Translate a Dragonfly Model to an OpenStudio Model.
 
@@ -210,6 +242,29 @@ def model_to_osm(
             in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new IDs
             that are derived from the name. (Default: False).
+        face_rename_format: An optional text string for the pattern with which
+            faces will be renamed. Any property on the honeybee Face class may be
+            used (eg. gbxml_str) and each property should be put in curly brackets.
+            Nested properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        subface_rename_format: An optional text string for the pattern with which
+            apertures and doors will be renamed. Any property that exists on both
+            the honeybee Aperture and honeybee Door class may be used (eg. gbxml_type)
+            and each property should be put in curly brackets. Nested
+            properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        name_decimal_count: An integer to set the number of decimal places that
+            appear in face and opening names for all numerical properties.
+            If None, the number of decimal places are determined by the
+            model tolerance. (Default: None).
+        exclude_units_in_name: Boolean for wether the units should be
+            excluded from all length, area and volume attributes. (Default: False).
         openstudio_version: Optional text to specify the version of OpenStudio
             with which the OSM will be written (eg. "3.9.0"). Versions going
             back to 3.7 are supported. If None, the OSM will be for the latest
@@ -286,14 +341,17 @@ def model_to_osm(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        merge_method=merge_method, enforce_adj=False
+        merge_method=merge_method, enforce_adj=False,
+        face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
     )
     hb_model = hb_models[0]
 
     # create the HBJSON for input to OpenStudio CLI
     model_to_openstudio(
         hb_model, os_model, use_geometry_names=geometry_names,
-        use_resource_names=resource_names, print_progress=True)
+        use_resource_names=resource_names, print_progress=True
+    )
     gen_files = []
 
     # write the OpenStudio Model if specified
@@ -402,13 +460,40 @@ def model_to_osm(
               'from non-unique names will be resolved by adding integers to the ends '
               'of the new IDs that are derived from the name.',
               default=True, show_default=True)
+@click.option('--face-rename-format', '-fn', help='Optional text for the pattern '
+              'with which faces will be renamed. Any property on the honeybee Face class '
+              'may be used (eg. gbxml_str) and each property should be put in curly '
+              'brackets. Nested properties can be specified by using "." to denote '
+              'nesting levels (eg. properties.energy.construction.display_name). '
+              'Functions that return string outputs can also be passed here as long '
+              'as these functions defaults specified for all arguments. If None, the '
+              'names will match the identifiers.', type=str, show_default=True,
+              default="{parent.display_name} - {gbxml_type} - {cardinal_direction}")
+@click.option('--subface-rename-format', '-sfn', help='Optional text for the pattern '
+              'with which apertures and doors will be renamed. Any property that exists '
+              'on both the honeybee Aperture and honeybee Door class may be used '
+              '(eg. type) and each property should be put in curly brackets. Nested '
+              'properties can be specified by using "." to denote nesting levels '
+              '(eg. properties.energy.construction.display_name). Functions that '
+              'return string outputs can also be passed here as long as these '
+              'functions defaults specified for all arguments. If None, the names '
+              'will match the identifiers.', type=str, show_default=True,
+              default="{parent.parent.display_name} - {type} - {cardinal_direction}")
+@click.option('--name-decimal-count', '-dc', help='An integer to set the number of '
+              'decimal places that appear in face and sub-face names for all numerical '
+              'properties. If None, the number of decimal places are determined by the '
+              'model tolerance.', type=int, default=None, show_default=True)
+@click.option('--include-units-in-name/--exclude-units-in-name', ' /-xu', help='Flag '
+              'to note whether the units should be excluded from all length, area '
+              'and volume attributes.', default=True, show_default=True)
 @click.option('--output-file', '-f', help='Optional IDF file to output the IDF string '
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_idf_cli(
     model_file, sim_par_json, multiplier, plenum, no_ceil_adjacency, merge_method,
-    additional_str, compact_schedules, hvac_to_ideal_air,
-    geometry_ids, resource_ids, output_file
+    additional_str, compact_schedules, hvac_to_ideal_air, geometry_ids, resource_ids,
+    face_rename_format, subface_rename_format, name_decimal_count,
+    include_units_in_name, output_file
 ):
     """Translate a Dragonfly Model to an IDF using direct-to-idf translators.
 
@@ -428,10 +513,13 @@ def model_to_idf_cli(
         hvac_check = not hvac_to_ideal_air
         geo_names = not geometry_ids
         res_names = not resource_ids
+        exclude_units_in_name = not include_units_in_name
         model_to_idf(
             model_file, sim_par_json, full_geometry, no_plenum, ceil_adjacency,
-            merge_method, additional_str, csv_schedules,
-            hvac_check, geo_names, res_names, output_file)
+            merge_method, additional_str, csv_schedules, hvac_check, geo_names, res_names,
+            face_rename_format, subface_rename_format, name_decimal_count,
+            exclude_units_in_name, output_file
+        )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}\n'.format(e))
         sys.exit(1)
@@ -443,9 +531,13 @@ def model_to_idf(
     model_file, sim_par_json=None,
     full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     additional_str='', csv_schedules=False, hvac_check=False,
-    geometry_names=False, resource_names=False, output_file=None,
+    geometry_names=False, resource_names=False,
+    face_rename_format='{parent.display_name} - {gbxml_type} - {cardinal_direction}',
+    subface_rename_format='{parent.parent.display_name} - {type} - {cardinal_direction}',
+    name_decimal_count=None, exclude_units_in_name=False, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
-    compact_schedules=True, hvac_to_ideal_air=True, geometry_ids=True, resource_ids=True
+    compact_schedules=True, hvac_to_ideal_air=True,
+    geometry_ids=True, resource_ids=True, include_units_in_name=True
 ):
     """Translate a Dragonfly Model to an IDF using direct-to-idf translators.
 
@@ -512,6 +604,29 @@ def model_to_idf(
             in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new IDs
             that are derived from the name. (Default: False).
+        face_rename_format: An optional text string for the pattern with which
+            faces will be renamed. Any property on the honeybee Face class may be
+            used (eg. gbxml_str) and each property should be put in curly brackets.
+            Nested properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        subface_rename_format: An optional text string for the pattern with which
+            apertures and doors will be renamed. Any property that exists on both
+            the honeybee Aperture and honeybee Door class may be used (eg. gbxml_type)
+            and each property should be put in curly brackets. Nested
+            properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        name_decimal_count: An integer to set the number of decimal places that
+            appear in face and opening names for all numerical properties.
+            If None, the number of decimal places are determined by the
+            model tolerance. (Default: None).
+        exclude_units_in_name: Boolean for wether the units should be
+            excluded from all length, area and volume attributes. (Default: False).
         output_file: Optional IDF file to output the IDF string of the translation.
             By default this string will be returned from this method.
     """
@@ -536,7 +651,9 @@ def model_to_idf(
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        merge_method=merge_method, enforce_adj=False
+        merge_method=merge_method, enforce_adj=False,
+        face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
     )
     hb_model = hb_models[0]
 
@@ -560,7 +677,8 @@ def model_to_idf(
     hvac_to_ideal_air = not hvac_check
     model_str = hb_model.to.idf(
         hb_model, schedule_directory=sch_directory,
-        use_ideal_air_equivalent=hvac_to_ideal_air)
+        use_ideal_air_equivalent=hvac_to_ideal_air
+    )
     idf_str = '\n\n'.join([ver_str, sim_par_str, model_str, additional_str])
 
     # write out the result
@@ -1090,12 +1208,39 @@ def model_to_trace_gbxml(
               'from non-unique names will be resolved by adding integers to the ends '
               'of the new IDs that are derived from the name.',
               default=True, show_default=True)
+@click.option('--face-rename-format', '-fn', help='Optional text for the pattern '
+              'with which faces will be renamed. Any property on the honeybee Face class '
+              'may be used (eg. gbxml_str) and each property should be put in curly '
+              'brackets. Nested properties can be specified by using "." to denote '
+              'nesting levels (eg. properties.energy.construction.display_name). '
+              'Functions that return string outputs can also be passed here as long '
+              'as these functions defaults specified for all arguments. If None, the '
+              'names will match the identifiers.', type=str, show_default=True,
+              default="{parent.display_name} - {gbxml_type} - {cardinal_direction}")
+@click.option('--subface-rename-format', '-sfn', help='Optional text for the pattern '
+              'with which apertures and doors will be renamed. Any property that exists '
+              'on both the honeybee Aperture and honeybee Door class may be used '
+              '(eg. type) and each property should be put in curly brackets. Nested '
+              'properties can be specified by using "." to denote nesting levels '
+              '(eg. properties.energy.construction.display_name). Functions that '
+              'return string outputs can also be passed here as long as these '
+              'functions defaults specified for all arguments. If None, the names '
+              'will match the identifiers.', type=str, show_default=True,
+              default="{parent.parent.display_name} - {type} - {cardinal_direction}")
+@click.option('--name-decimal-count', '-dc', help='An integer to set the number of '
+              'decimal places that appear in face and sub-face names for all numerical '
+              'properties. If None, the number of decimal places are determined by the '
+              'model tolerance.', type=int, default=None, show_default=True)
+@click.option('--include-units-in-name/--exclude-units-in-name', ' /-xu', help='Flag '
+              'to note whether the units should be excluded from all length, area '
+              'and volume attributes.', default=True, show_default=True)
 @click.option('--output-file', '-f', help='Optional gbXML file to output the string '
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_sdd_cli(
     model_file, multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
-    geometry_ids, resource_ids, output_file
+    geometry_ids, resource_ids, face_rename_format, subface_rename_format,
+    name_decimal_count, include_units_in_name, output_file
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
 
@@ -1110,9 +1255,12 @@ def model_to_sdd_cli(
         ceil_adjacency = not no_ceil_adjacency
         geo_names = not geometry_ids
         res_names = not resource_ids
+        exclude_units_in_name = not include_units_in_name
         model_to_sdd(
             model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
-            wall_modifier_json, geo_names, res_names, output_file
+            wall_modifier_json, geo_names, res_names,
+            face_rename_format, subface_rename_format, name_decimal_count,
+            exclude_units_in_name, output_file
         )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
@@ -1124,9 +1272,12 @@ def model_to_sdd_cli(
 def model_to_sdd(
     model_file, full_geometry=False, no_plenum=False,
     ceil_adjacency=False, merge_method='None', wall_modifier_json=None,
-    geometry_names=False, resource_names=False, output_file=None,
+    geometry_names=False, resource_names=False,
+    face_rename_format='{parent.display_name} - {gbxml_type} - {cardinal_direction}',
+    subface_rename_format='{parent.parent.display_name} - {type} - {cardinal_direction}',
+    name_decimal_count=None, exclude_units_in_name=False, output_file=None,
     multiplier=True, plenum=True, no_ceil_adjacency=True,
-    geometry_ids=True, resource_ids=True
+    geometry_ids=True, resource_ids=True, include_units_in_name=True
 ):
     """Translate a Dragonfly Model to a CBECC SDD file.
 
@@ -1180,6 +1331,29 @@ def model_to_sdd(
             in the OSM and IDF. Cases of duplicate IDs resulting from non-unique
             names will be resolved by adding integers to the ends of the new IDs
             that are derived from the name. (Default: False).
+        face_rename_format: An optional text string for the pattern with which
+            faces will be renamed. Any property on the honeybee Face class may be
+            used (eg. gbxml_str) and each property should be put in curly brackets.
+            Nested properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        subface_rename_format: An optional text string for the pattern with which
+            apertures and doors will be renamed. Any property that exists on both
+            the honeybee Aperture and honeybee Door class may be used (eg. gbxml_type)
+            and each property should be put in curly brackets. Nested
+            properties can be specified by using "." to denote nesting levels
+            (eg. properties.energy.construction.display_name). Functions that
+            return string outputs can also be passed here as long as these
+            functions defaults specified for all arguments. If None, the names
+            will match the identifiers.
+        name_decimal_count: An integer to set the number of decimal places that
+            appear in face and opening names for all numerical properties.
+            If None, the number of decimal places are determined by the
+            model tolerance. (Default: None).
+        exclude_units_in_name: Boolean for wether the units should be
+            excluded from all length, area and volume attributes. (Default: False).
         output_file: Optional SDD file to output the string of the translation.
             By default it will be returned from this method.
     """
@@ -1202,9 +1376,11 @@ def model_to_sdd(
     model.convert_to_units('Meters')
     multiplier = not full_geometry
     hb_models = model.to_honeybee(
-        object_per_model='District', use_multiplier=multiplier,
-        exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
-        enforce_adj=False)
+        object_per_model='District', use_multiplier=multiplier, exclude_plenums=no_plenum,
+        solve_ceiling_adjacencies=ceil_adjacency, enforce_adj=False,
+        face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
+    )
     hb_model = hb_models[0]
 
     if geometry_names:  # rename all face geometry so that it is easy to identify
