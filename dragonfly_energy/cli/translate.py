@@ -338,6 +338,8 @@ def model_to_osm(
     # convert Dragonfly Model to Honeybee
     model.convert_to_units('Meters')
     multiplier = not full_geometry
+    if isinstance(name_decimal_count, str):
+        name_decimal_count = int(name_decimal_count)
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
@@ -648,6 +650,8 @@ def model_to_idf(
 
     # convert Dragonfly Model to Honeybee
     multiplier = not full_geometry
+    if isinstance(name_decimal_count, str):
+        name_decimal_count = int(name_decimal_count)
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier,
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
@@ -1375,6 +1379,8 @@ def model_to_sdd(
     # convert Dragonfly Model to Honeybee
     model.convert_to_units('Meters')
     multiplier = not full_geometry
+    if isinstance(name_decimal_count, str):
+        name_decimal_count = int(name_decimal_count)
     hb_models = model.to_honeybee(
         object_per_model='District', use_multiplier=multiplier, exclude_plenums=no_plenum,
         solve_ceiling_adjacencies=ceil_adjacency, enforce_adj=False,
