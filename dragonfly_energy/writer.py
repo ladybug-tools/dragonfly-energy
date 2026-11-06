@@ -151,6 +151,7 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
     total_vent = not gbxml_parameters.energy_attribute_format.ventilation_components
     gbxml_root = hb_model_to_gbxml_element(
         hb_model,
+        project_info=gbxml_parameters.project_info,
         ip_units=gbxml_parameters.ip_units,
         include_shell_geometry=geo_par.include_shell_geometry,
         include_space_boundaries=geo_par.include_space_boundaries,

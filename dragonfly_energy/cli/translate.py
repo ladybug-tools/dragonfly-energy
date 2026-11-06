@@ -12,6 +12,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from ladybug.commandutil import process_content_to_output
 from ladybug.epw import EPW
 from ladybug.stat import STAT
+from ladybug.projectinfo import ProjectInfo
 from honeybee.config import folders as hb_folders
 from honeybee_energy.simulation.parameter import SimulationParameter
 from honeybee_energy.run import HB_OS_MSG
@@ -46,6 +47,14 @@ def translate():
               'used when a sim-par-json is specified that requests a HVAC sizing '
               'calculation to be run as part of the translation process but no design '
               'days are inside this simulation parameter.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
+@click.option('--project-info', '-pi', help='Full path to a ladybug ProjectInfo '
+              'JSON that describes criteria about the project site. This will be '
+              'used to fill in any information that is not described in the '
+              '--sim-par-json. Otherwise, --sim-par-json overrides '
+              'whatever is specified within the --project-info.',
               default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False,
                               resolve_path=True))
@@ -134,7 +143,7 @@ def translate():
               'By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_osm_cli(
-    model_file, sim_par_json, epw_file,
+    model_file, sim_par_json, epw_file, project_info,
     multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
     osm_file, idf_file, epjson_file, geometry_ids, resource_ids,
     face_rename_format, subface_rename_format, name_decimal_count, include_units_in_name,
@@ -155,7 +164,7 @@ def model_to_osm_cli(
         res_names = not resource_ids
         exclude_units_in_name = not include_units_in_name
         model_to_osm(
-            model_file, sim_par_json, epw_file,
+            model_file, sim_par_json, epw_file, project_info,
             full_geometry, no_plenum, ceil_adjacency, merge_method, wall_modifier_json,
             osm_file, idf_file, epjson_file, geo_names, res_names,
             face_rename_format, subface_rename_format, name_decimal_count,
@@ -169,7 +178,7 @@ def model_to_osm_cli(
 
 
 def model_to_osm(
-    model_file, sim_par_json=None, epw_file=None,
+    model_file, sim_par_json=None, epw_file=None, project_info=None,
     full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     wall_modifier_json=None, osm_file=None, idf_file=None, epjson_file=None,
     geometry_names=False, resource_names=False,
@@ -192,6 +201,11 @@ def model_to_osm(
             specified that requests a HVAC sizing calculation to be run as part
             of the translation process but no design days are inside this
             simulation parameter.
+        project_info: Full path to a ladybug ProjectInfo JSON that describes
+            criteria about the project site. This will be used to fill in any
+            information that is not described in the sim_par_json or epw_file.
+            Otherwise, these two options override whatever is specified within
+            the project_info.
         full_geometry: Boolean to note if the multipliers on each Building story
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
@@ -286,6 +300,15 @@ def model_to_osm(
 
     # initialize the OpenStudio model that will hold everything
     os_model = OSModel()
+
+    # load the project information if it exists
+    if project_info is not None:
+        with open(project_info) as json_file:
+            data = json.load(json_file)
+        project_info = ProjectInfo.from_dict(data)
+        if epw_file is None:
+            epw_file = project_info.default_epw_file
+
     # generate default simulation parameters
     if sim_par_json is None:
         sim_par = SimulationParameter()
@@ -293,10 +316,14 @@ def model_to_osm(
         sim_par.output.add_hvac_energy_use()
         sim_par.output.add_electricity_generation()
         sim_par.output.reporting_frequency = 'Monthly'
+        if project_info is not None:
+            sim_par.assign_from_project_info(project_info, overwrite=True)
     else:
         with open(sim_par_json) as json_file:
             data = json.load(json_file)
         sim_par = SimulationParameter.from_dict(data)
+        if project_info is not None:
+            sim_par.assign_from_project_info(project_info, overwrite=False)
 
     # perform a check to be sure the EPW file is specified for sizing runs
     def ddy_from_epw(epw_file, sim_par):
@@ -413,6 +440,14 @@ def model_to_osm(
               default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False,
                               resolve_path=True))
+@click.option('--project-info', '-pi', help='Full path to a ladybug ProjectInfo '
+              'JSON that describes criteria about the project site. This will be '
+              'used to fill in any information that is not described in the '
+              '--sim-par-json. Otherwise, --sim-par-json overrides '
+              'whatever is specified within the --project-info.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
@@ -492,7 +527,8 @@ def model_to_osm(
               'of the translation. By default this will be printed out to stdout',
               type=click.File('w'), default='-', show_default=True)
 def model_to_idf_cli(
-    model_file, sim_par_json, multiplier, plenum, no_ceil_adjacency, merge_method,
+    model_file, sim_par_json, project_info,
+    multiplier, plenum, no_ceil_adjacency, merge_method,
     additional_str, compact_schedules, hvac_to_ideal_air, geometry_ids, resource_ids,
     face_rename_format, subface_rename_format, name_decimal_count,
     include_units_in_name, output_file
@@ -517,7 +553,8 @@ def model_to_idf_cli(
         res_names = not resource_ids
         exclude_units_in_name = not include_units_in_name
         model_to_idf(
-            model_file, sim_par_json, full_geometry, no_plenum, ceil_adjacency,
+            model_file, sim_par_json, project_info,
+            full_geometry, no_plenum, ceil_adjacency,
             merge_method, additional_str, csv_schedules, hvac_check, geo_names, res_names,
             face_rename_format, subface_rename_format, name_decimal_count,
             exclude_units_in_name, output_file
@@ -530,7 +567,7 @@ def model_to_idf_cli(
 
 
 def model_to_idf(
-    model_file, sim_par_json=None,
+    model_file, sim_par_json=None, project_info=None,
     full_geometry=False, no_plenum=False, ceil_adjacency=False, merge_method='None',
     additional_str='', csv_schedules=False, hvac_check=False,
     geometry_names=False, resource_names=False,
@@ -552,6 +589,11 @@ def model_to_idf(
         sim_par_json: Full path to a honeybee energy SimulationParameter JSON that
             describes all of the settings for the simulation. If None, default
             parameters will be generated.
+        project_info: Full path to a ladybug ProjectInfo JSON that describes
+            criteria about the project site. This will be used to fill in any
+            information that is not described in the sim_par_json or epw_file.
+            Otherwise, these two options override whatever is specified within
+            the project_info.
         full_geometry: Boolean to note if the multipliers on each Building story
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
@@ -632,17 +674,27 @@ def model_to_idf(
         output_file: Optional IDF file to output the IDF string of the translation.
             By default this string will be returned from this method.
     """
+    # load the project information if it exists
+    if project_info is not None:
+        with open(project_info) as json_file:
+            data = json.load(json_file)
+        project_info = ProjectInfo.from_dict(data)
+
     # check that the simulation parameters are there and load them
     if sim_par_json is not None:
         with open(sim_par_json) as json_file:
             data = json.load(json_file)
         sim_par = SimulationParameter.from_dict(data)
+        if project_info is not None:
+            sim_par.assign_from_project_info(project_info, overwrite=False)
     else:
         sim_par = SimulationParameter()
         sim_par.output.add_zone_energy_use()
         sim_par.output.add_hvac_energy_use()
         sim_par.output.add_electricity_generation()
         sim_par.output.reporting_frequency = 'Monthly'
+        if project_info is not None:
+            sim_par.assign_from_project_info(project_info, overwrite=True)
 
     # re-serialize the Dragonfly Model
     model = Model.from_file(model_file)
@@ -692,6 +744,14 @@ def model_to_idf(
 @translate.command('model-to-gbxml')
 @click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--project-info', '-pi', help='Full path to a ladybug ProjectInfo '
+              'JSON that describes criteria about the project site. This will be '
+              'used to fill in any information that is not described in the '
+              '--sim-par-json. Otherwise, --sim-par-json overrides '
+              'whatever is specified within the --project-info.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
 @click.option('--si-units/--ip-units', '-si/-ip', help='Flag to note whether '
               'the geometry, space loads, and construction properties are reported '
               'in IP or SI units.', default=True, show_default=True)
@@ -791,7 +851,8 @@ def model_to_idf(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_gbxml_cli(
-    model_file, si_units, full_geometry, plenum, ceil_adjacency, merge_method,
+    model_file, project_info, si_units,
+    full_geometry, plenum, ceil_adjacency, merge_method,
     default_subfaces, triangulate_non_planar, minimal,
     interior_face_type, ground_face_type, keep_geometry_ids, keep_resource_ids,
     rect_geo_format, collapsed_holes,
@@ -816,7 +877,8 @@ def model_to_gbxml_cli(
         reset_resource_ids = not keep_resource_ids
         explicit_holes = not collapsed_holes
         model_to_gbxml(
-            model_file, ip_units, multiplier, no_plenum, no_ceil_adjacency, merge_method,
+            model_file, project_info, ip_units,
+            multiplier, no_plenum, no_ceil_adjacency, merge_method,
             triangulate_subfaces, permit_non_planar, complete_geometry,
             interior_face_type, ground_face_type, reset_geometry_ids, reset_resource_ids,
             rect_geo_format, explicit_holes,
@@ -829,7 +891,7 @@ def model_to_gbxml_cli(
 
 
 def model_to_gbxml(
-    model_file, ip_units=False, multiplier=False, no_plenum=False,
+    model_file, project_info=None, ip_units=False, multiplier=False, no_plenum=False,
     no_ceil_adjacency=False, merge_method='None',
     triangulate_subfaces=False, permit_non_planar=False, complete_geometry=False,
     interior_face_type='InteriorFloor', ground_face_type='AutoAssign',
@@ -845,6 +907,11 @@ def model_to_gbxml(
     Args:
         model_file: Path to either a DFJSON or DFpkl file. This can also be a
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        project_info: Full path to a ladybug ProjectInfo JSON that describes
+            criteria about the project site. This will be used to fill in any
+            information that is not described in the sim_par_json or epw_file.
+            Otherwise, these two options override whatever is specified within
+            the project_info.
         ip_units: A boolean to note whether the geometry, space loads, and
             construction properties are reported in IP units (True) or SI
             units (False). (Default: False).
@@ -961,8 +1028,14 @@ def model_to_gbxml(
         output_file: Optional gbXML file to output the string of the translation.
             By default it will be returned from this method.
     """
+    # load the project information if it exists
+    if project_info is not None:
+        with open(project_info) as json_file:
+            data = json.load(json_file)
+        project_info = ProjectInfo.from_dict(data)
+
     # set up gbXML translation parameters
-    gbxml_par = GBXMLParameters(ip_units=ip_units)
+    gbxml_par = GBXMLParameters(project_info=project_info, ip_units=ip_units)
     gbxml_par.geometry_format.triangulate_non_planar = True
     if permit_non_planar:
         gbxml_par.geometry_format.triangulate_non_planar = False
