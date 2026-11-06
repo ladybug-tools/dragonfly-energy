@@ -10,9 +10,11 @@ from dragonfly_energy.cli.translate import model_to_osm_cli, model_to_idf_cli, \
 def test_model_to_osm():
     runner = CliRunner()
     input_df_model = './tests/json/model_complete_simple.dfjson'
+    proj_info = './tests/json/project_info.json'
 
     output_osm = './tests/json/in.osm'
-    result = runner.invoke(model_to_osm_cli, [input_df_model, '--osm-file', output_osm])
+    in_args = [input_df_model, '--project-info', proj_info, '--osm-file', output_osm]
+    result = runner.invoke(model_to_osm_cli, in_args)
     assert result.exit_code == 0
     assert os.path.isfile(output_osm)
 
@@ -22,9 +24,11 @@ def test_model_to_osm():
 def test_model_to_idf():
     runner = CliRunner()
     input_df_model = './tests/json/model_complete_simple.dfjson'
+    proj_info = './tests/json/project_info.json'
 
     output_idf = './tests/json/in.idf'
-    result = runner.invoke(model_to_idf_cli, [input_df_model, '-f', output_idf])
+    in_args = [input_df_model, '--project-info', proj_info, '-f', output_idf]
+    result = runner.invoke(model_to_idf_cli, in_args)
     assert result.exit_code == 0
     assert os.path.isfile(output_idf)
 
@@ -40,12 +44,15 @@ def test_model_to_idf():
 def test_model_to_gbxml():
     runner = CliRunner()
     input_df_model = './tests/json/model_complete_simple.dfjson'
+    proj_info = './tests/json/project_info.json'
 
     output_gbxml = './tests/json/in.xml'
-    in_args = [input_df_model, '--complete-geometry',
-               '--reset-geometry-ids', '--reset-resource-ids',
-               '--program-name', 'Ladybug Tools', '--program-version', '1.9',
-               '--gbxml-schema-version', '5.00', '-f', output_gbxml]
+    in_args = [
+        input_df_model, '--project-info', proj_info, '--complete-geometry',
+        '--reset-geometry-ids', '--reset-resource-ids',
+        '--program-name', 'Ladybug Tools', '--program-version', '1.9',
+        '--gbxml-schema-version', '5.00', '-f', output_gbxml
+    ]
     result = runner.invoke(model_to_gbxml_cli, in_args)
     assert result.exit_code == 0
     assert os.path.isfile(output_gbxml)

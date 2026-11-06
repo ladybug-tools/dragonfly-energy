@@ -1,6 +1,7 @@
 # coding=utf-8
 """Parameters for customizing the translation to gbXML."""
 from __future__ import division
+from ladybug.projectinfo import ProjectInfo
 
 from .geometry import GBXMLGeometryFormat
 from .name import GBXMLNameFormat
@@ -12,11 +13,22 @@ class GBXMLParameters(object):
     """Complete set of GBXML translation parameters.
 
     Args:
+        project_info: An optional ladybug ProjectInfo object that describes criteria
+            about the project site. When specified, this will result in the location,
+            north_angle and building type written into the gbXML. (Default: None).
         ip_units: A boolean to note whether the geometry, space loads, and
             construction properties are reported in IP units (True) or SI
             units (False). (Default: False).
+        geometry_format: A GBXMLGeometryFormat to describe how geometry is
+            exported into a gbXML file.
+        name_format: A GBXMLNameFormat object for the customizing the names in export.
+        energy_attribute_format: A GBXMLEnergyAttributeFormat object for the
+            customizing the export.
+        version_format: A GBXMLVersionFormat object for the version metadata
+            in the export.
 
     Properties:
+        * project_info
         * ip_units
         * geometry_format
         * name_format
@@ -24,13 +36,16 @@ class GBXMLParameters(object):
         * version_format
     """
     __slots__ = (
-        '_ip_units', '_geometry_format', '_name_format',
+        '_project_info', '_ip_units', '_geometry_format', '_name_format',
         '_energy_attribute_format', '_version_format'
     )
 
-    def __init__(self, ip_units=False, geometry_format=None, name_format=None,
-                 energy_attribute_format=None, version_format=None):
+    def __init__(
+        self, project_info=None, ip_units=False, geometry_format=None, name_format=None,
+        energy_attribute_format=None, version_format=None
+    ):
         """Initialize GBXMLParameters."""
+        self.project_info = project_info
         self.ip_units = ip_units
         self.geometry_format = geometry_format
         self.name_format = name_format
@@ -103,6 +118,21 @@ class GBXMLParameters(object):
         )
 
     @property
+    def project_info(self):
+        """Get or set a ladybug ProjectInfo that describes criteria about the project site.
+        """
+        return self._project_info
+
+    @project_info.setter
+    def project_info(self, value):
+        if value is not None:
+            assert isinstance(value, ProjectInfo), 'Expected ProjectInfo ' \
+                'for GBXMLParameters.project_info. Got {}.'.format(type(value))
+            self._project_info = value
+        else:
+            self._project_info = None
+
+    @property
     def ip_units(self):
         """Get or set a boolean for whether the gbXML is exported in IP units."""
         return self._ip_units
@@ -159,7 +189,7 @@ class GBXMLParameters(object):
 
     @property
     def version_format(self):
-        """Get or set a GBXMLVersionFormat object for the customizing the names in export.
+        """Get or set a GBXMLVersionFormat object for the version metadata in the export.
         """
         return self._version_format
 
@@ -183,6 +213,7 @@ class GBXMLParameters(object):
 
             {
             "type": "GBXMLParameters",
+            "project_info": {}, # Ladybug ProjectInfo dictionary
             "ip_units": False,
             "geometry_format": {}, # Dragonfly GBXMLGeometryFormat dictionary
             "name_format": {}, # Dragonfly GBXMLNameFormat dictionary
@@ -193,6 +224,9 @@ class GBXMLParameters(object):
         assert data['type'] == 'GBXMLParameters', \
             'Expected GBXMLParameters dictionary. Got {}.'.format(data['type'])
 
+        p_info = None
+        if 'project_info' in data and data['project_info'] is not None:
+            p_info = ProjectInfo.from_dict(data['project_info'])
         ip = data['ip_units'] if 'ip_units' in data else False
         geo = None
         if 'geometry_format' in data and data['geometry_format'] is not None:
@@ -208,11 +242,11 @@ class GBXMLParameters(object):
         if 'version_format' in data and data['version_format'] is not None:
             version = GBXMLVersionFormat.from_dict(data['version_format'])
 
-        return cls(ip, geo, name, energy, version)
+        return cls(p_info, ip, geo, name, energy, version)
 
     def to_dict(self):
         """GBXMLParameters dictionary representation."""
-        return {
+        data = {
             'type': 'GBXMLParameters',
             'ip_units': self.ip_units,
             'geometry_format': self.geometry_format.to_dict(),
@@ -220,6 +254,9 @@ class GBXMLParameters(object):
             'energy_attribute_format': self.energy_attribute_format.to_dict(),
             'version_format': self.version_format.to_dict()
         }
+        if self.project_info is not None:
+            data['project_info'] = self.project_info.to_dict()
+        return data
 
     def duplicate(self):
         """Get a copy of this object."""
@@ -231,6 +268,7 @@ class GBXMLParameters(object):
 
     def __copy__(self):
         return GBXMLParameters(
+            self.project_info,
             self.ip_units,
             self.geometry_format.duplicate(),
             self.name_format.duplicate(),
@@ -241,7 +279,8 @@ class GBXMLParameters(object):
     def __key(self):
         """A tuple based on the object properties, useful for hashing."""
         return (
-            self.ip_units, hash(self.geometry_format), hash(self.name_format),
+            hash(self.project_info), self.ip_units,
+            hash(self.geometry_format), hash(self.name_format),
             hash(self.energy_attribute_format), hash(self.version_format)
         )
 
