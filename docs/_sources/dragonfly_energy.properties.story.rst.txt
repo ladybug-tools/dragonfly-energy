@@ -1,0 +1,7 @@
+dragonfly\_energy.properties.story module
+=========================================
+
+.. automodule:: dragonfly_energy.properties.story
+   :members:
+   :undoc-members:
+   :show-inheritance:

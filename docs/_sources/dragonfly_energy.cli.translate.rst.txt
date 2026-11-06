@@ -1,0 +1,7 @@
+dragonfly\_energy.cli.translate module
+======================================
+
+.. automodule:: dragonfly_energy.cli.translate
+   :members:
+   :undoc-members:
+   :show-inheritance:
