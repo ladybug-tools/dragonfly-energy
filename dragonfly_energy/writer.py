@@ -135,16 +135,21 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
         )
 
     # rename faces and openings at the model level if requested
+    north_angle = gbxml_parameters.project_info.north_angle \
+        if gbxml_parameters.project_info is not None else 0
     if name_par.face_rename_format:
         hb_model.rename_faces_by_attribute(
-            name_par.face_rename_format, name_par.decimal_count, name_par.include_units
+            name_par.face_rename_format,
+            name_par.decimal_count, name_par.include_units, north_angle
         )
     if name_par.subface_rename_format:
         hb_model.rename_apertures_by_attribute(
-            name_par.subface_rename_format, name_par.decimal_count, name_par.include_units
+            name_par.subface_rename_format,
+            name_par.decimal_count, name_par.include_units, north_angle
         )
         hb_model.rename_doors_by_attribute(
-            name_par.subface_rename_format, name_par.decimal_count, name_par.include_units
+            name_par.subface_rename_format,
+            name_par.decimal_count, name_par.include_units, north_angle
         )
 
     # translate the honeybee model to a gbXML element
