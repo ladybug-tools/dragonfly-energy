@@ -303,9 +303,7 @@ def model_to_osm(
 
     # load the project information if it exists
     if project_info is not None:
-        with open(project_info) as json_file:
-            data = json.load(json_file)
-        project_info = ProjectInfo.from_dict(data)
+        project_info = ProjectInfo.from_json(project_info)
         if epw_file is None:
             epw_file = project_info.default_epw_file
 
@@ -372,7 +370,8 @@ def model_to_osm(
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         merge_method=merge_method, enforce_adj=False,
         face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
-        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name,
+        north_angle=sim_par.north_angle
     )
     hb_model = hb_models[0]
 
@@ -676,9 +675,7 @@ def model_to_idf(
     """
     # load the project information if it exists
     if project_info is not None:
-        with open(project_info) as json_file:
-            data = json.load(json_file)
-        project_info = ProjectInfo.from_dict(data)
+        project_info = ProjectInfo.from_json(project_info)
 
     # check that the simulation parameters are there and load them
     if sim_par_json is not None:
@@ -709,7 +706,8 @@ def model_to_idf(
         exclude_plenums=no_plenum, solve_ceiling_adjacencies=ceil_adjacency,
         merge_method=merge_method, enforce_adj=False,
         face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
-        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name,
+        north_angle=sim_par.north_angle
     )
     hb_model = hb_models[0]
 
@@ -745,11 +743,9 @@ def model_to_idf(
 @click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
 @click.option('--project-info', '-pi', help='Full path to a ladybug ProjectInfo '
-              'JSON that describes criteria about the project site. This will be '
-              'used to fill in any information that is not described in the '
-              '--sim-par-json. Otherwise, --sim-par-json overrides '
-              'whatever is specified within the --project-info.',
-              default=None, show_default=True,
+              'JSON that describes criteria about the project site. When specified, '
+              'this will result in the location, north_angle and building type written '
+              'into the gbXML.', default=None, show_default=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False,
                               resolve_path=True))
 @click.option('--si-units/--ip-units', '-si/-ip', help='Flag to note whether '
@@ -908,10 +904,8 @@ def model_to_gbxml(
         model_file: Path to either a DFJSON or DFpkl file. This can also be a
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
         project_info: Full path to a ladybug ProjectInfo JSON that describes
-            criteria about the project site. This will be used to fill in any
-            information that is not described in the sim_par_json or epw_file.
-            Otherwise, these two options override whatever is specified within
-            the project_info.
+            criteria about the project site. When specified, this will result
+            in the location, north_angle and building type written into the gbXML.
         ip_units: A boolean to note whether the geometry, space loads, and
             construction properties are reported in IP units (True) or SI
             units (False). (Default: False).
@@ -1030,9 +1024,7 @@ def model_to_gbxml(
     """
     # load the project information if it exists
     if project_info is not None:
-        with open(project_info) as json_file:
-            data = json.load(json_file)
-        project_info = ProjectInfo.from_dict(data)
+        project_info = ProjectInfo.from_json(project_info)
 
     # set up gbXML translation parameters
     gbxml_par = GBXMLParameters(project_info=project_info, ip_units=ip_units)
@@ -1244,6 +1236,12 @@ def model_to_trace_gbxml(
 @translate.command('model-to-sdd')
 @click.argument('model-file', type=click.Path(
     exists=True, file_okay=True, dir_okay=False, resolve_path=True))
+@click.option('--project-info', '-pi', help='Full path to a ladybug ProjectInfo '
+              'JSON that describes criteria about the project site. When specified, '
+              'this will result in the north written into the SDD XML.',
+              default=None, show_default=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True))
 @click.option('--multiplier/--full-geometry', ' /-fg', help='Flag to note if the '
               'multipliers on each Building story will be passed along to the '
               'generated Honeybee Room objects or if full geometry objects should be '
@@ -1315,7 +1313,8 @@ def model_to_trace_gbxml(
               'of the translation. By default it printed out to stdout', default='-',
               type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 def model_to_sdd_cli(
-    model_file, multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
+    model_file, project_info,
+    multiplier, plenum, no_ceil_adjacency, merge_method, wall_modifier_json,
     geometry_ids, resource_ids, face_rename_format, subface_rename_format,
     name_decimal_count, include_units_in_name, output_file
 ):
@@ -1334,8 +1333,9 @@ def model_to_sdd_cli(
         res_names = not resource_ids
         exclude_units_in_name = not include_units_in_name
         model_to_sdd(
-            model_file, full_geometry, no_plenum, ceil_adjacency, merge_method,
-            wall_modifier_json, geo_names, res_names,
+            model_file, project_info, full_geometry,
+            no_plenum, ceil_adjacency, merge_method, wall_modifier_json,
+            geo_names, res_names,
             face_rename_format, subface_rename_format, name_decimal_count,
             exclude_units_in_name, output_file
         )
@@ -1347,7 +1347,7 @@ def model_to_sdd_cli(
 
 
 def model_to_sdd(
-    model_file, full_geometry=False, no_plenum=False,
+    model_file, project_info=None, full_geometry=False, no_plenum=False,
     ceil_adjacency=False, merge_method='None', wall_modifier_json=None,
     geometry_names=False, resource_names=False,
     face_rename_format='{parent.display_name} - {gbxml_type} - {cardinal_direction}',
@@ -1361,6 +1361,9 @@ def model_to_sdd(
     Args:
         model_file: Path to either a DFJSON or DFpkl file. This can also be a
             HBJSON or a HBpkl from which a Dragonfly model should be derived.
+        project_info: Full path to a ladybug ProjectInfo JSON that describes
+            criteria about the project site. When specified, this will result
+            in the north written into the SDD XML.
         full_geometry: Boolean to note if the multipliers on each Building story
             will be passed along to the generated Honeybee Room objects or if
             full geometry objects should be written for each story in the
@@ -1436,10 +1439,19 @@ def model_to_sdd(
     """
     # check that honeybee-openstudio is installed
     try:
-        from honeybee_openstudio.openstudio import openstudio
+        from honeybee_openstudio.openstudio import openstudio, OSModel
+        from honeybee_openstudio.simulation import simulation_parameter_to_openstudio
         from honeybee_openstudio.writer import model_to_openstudio
     except ImportError as e:  # honeybee-openstudio is not installed
         raise ImportError('{}\n{}'.format(HB_OS_MSG, e))
+
+    # load the project information if it exists
+    sim_par, north_angle = None, 0
+    if project_info is not None:
+        project_info = ProjectInfo.from_json(project_info)
+        sim_par = SimulationParameter()
+        sim_par.assign_from_project_info(project_info, overwrite=True)
+        north_angle = sim_par.north_angle
 
     # re-serialize the Dragonfly Model
     model = Model.from_dfjson(model_file)
@@ -1458,7 +1470,8 @@ def model_to_sdd(
         object_per_model='District', use_multiplier=multiplier, exclude_plenums=no_plenum,
         solve_ceiling_adjacencies=ceil_adjacency, enforce_adj=False,
         face_rename_format=face_rename_format, subface_rename_format=subface_rename_format,
-        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name
+        name_decimal_count=name_decimal_count, exclude_units_in_name=exclude_units_in_name,
+        north_angle=north_angle
     )
     hb_model = hb_models[0]
 
@@ -1478,8 +1491,11 @@ def model_to_sdd(
         hb_model.reset_ids()
 
     # convert the Honeybee model to an OpenStudio Model
+    os_model = OSModel()
+    if sim_par is not None:
+        simulation_parameter_to_openstudio(sim_par, os_model)
     os_model = model_to_openstudio(
-        hb_model,
+        hb_model, os_model,
         use_simple_window_constructions=True,
         use_resource_names=resource_names
     )
