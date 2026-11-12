@@ -1,0 +1,7 @@
+dragonfly\_energy.des.plant module
+==================================
+
+.. automodule:: dragonfly_energy.des.plant
+   :members:
+   :undoc-members:
+   :show-inheritance:
