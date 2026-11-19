@@ -1,0 +1,7 @@
+dragonfly\_energy.gbxml.name module
+===================================
+
+.. automodule:: dragonfly_energy.gbxml.name
+   :members:
+   :undoc-members:
+   :show-inheritance:
