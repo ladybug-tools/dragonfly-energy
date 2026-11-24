@@ -8,6 +8,7 @@ import shutil
 import xml.etree.ElementTree as ET
 
 from ladybug_geometry.geometry2d import Point2D
+from ladybug_geometry.geometry3d import Point3D
 from ladybug.futil import nukedir, preparedir
 from ladybug.epw import EPW
 from honeybee.config import folders
@@ -100,6 +101,18 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
                 except Exception:  # too much overlapping to be fixed
                     pass
 
+    # rotate the model to account for true North if it was requested explicitly
+    north_angle = gbxml_parameters.project_info.north_angle \
+        if gbxml_parameters.project_info is not None else 0
+    if geo_par.explicit_true_north and north_angle != 0:
+        min_pt, max_pt = model.min, model.max
+        z_val = model.average_height - model.average_height_above_ground
+        center = Point3D((max_pt.x + min_pt.x) / 2, (max_pt.y + min_pt.y) / 2, z_val)
+        model.rotate_xy(-north_angle, center)
+        gbxml_parameters.project_info = gbxml_parameters.project_info.duplicate()
+        gbxml_parameters.project_info.north_angle = 0
+        north_angle = 0
+
     # translate the dragonfly model to honeybee
     use_multiplier = not geo_par.ignore_multipliers
     solve_ceiling_adjacencies = not geo_par.ignore_ceiling_adjacencies
@@ -135,8 +148,6 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
         )
 
     # rename faces and openings at the model level if requested
-    north_angle = gbxml_parameters.project_info.north_angle \
-        if gbxml_parameters.project_info is not None else 0
     if name_par.face_rename_format:
         hb_model.rename_faces_by_attribute(
             name_par.face_rename_format,
@@ -168,6 +179,8 @@ def model_to_gbxml_element(model, gbxml_parameters=None, room_order=None):
         triangulate_non_planar=geo_par.triangulate_non_planar,
         rect_geo_format=geo_par.rect_geo_format,
         explicit_holes=geo_par.explicit_holes,
+        net_floor_area=geo_par.net_floor_area,
+        outer_wall_finish=geo_par.outer_wall_finish,
         total_ventilation=total_vent,
         program_name=ver_par.program_name,
         program_version=ver_par.program_version,
