@@ -88,6 +88,24 @@ class GBXMLGeometryFormat(object):
             represented explicitly with their own PolyLoop or the hole and boundary
             should be collapsed into a single PolyLoop that winds inwards to
             cut out the holes. (Default: False).
+        explicit_true_north: Boolean to note whether the geometry is rotated
+            in the gbXML to account for the true North specified within project_info
+            (True) or the geometry remains in the coordinate system defined by project
+            North and the true north is only defined by the CADModelAzimuth
+            in the gbXML (False). (Default: False).
+        net_floor_area: Boolean to note whether the Spaces in the gbXML use
+            net floor area with construction thicknesses subtracted from the
+            actual floor area of the Room geometries (True) or whether the
+            gross floor area of the Room geometry is used (False). (Default: False).
+        outer_wall_finish: Text for the wall finish location of Faces with
+            Outdoor or Ground boundary condition. This is used in the computation
+            of net floor area and has no effect when net_floor_area is False.
+            Choose from the following. (Default: Centerline).
+
+            * Exterior
+            * Centerline
+            * Interior
+
         ignore_multipliers: Boolean to note whether story multipliers are accounted
             for in the gbXML by explicitly converting multipliers to geometry (False)
             or whether they are completely ignored (True). Given that gbXML has
@@ -116,6 +134,9 @@ class GBXMLGeometryFormat(object):
         * triangulate_non_planar
         * rect_geo_format
         * explicit_holes
+        * explicit_true_north
+        * net_floor_area
+        * outer_wall_finish
         * ignore_multipliers
         * ignore_ceiling_adjacencies
     """
@@ -124,6 +145,7 @@ class GBXMLGeometryFormat(object):
         '_exclude_roofs', '_exclude_shades', '_exclude_plenums',
         '_opening_simplification', '_triangulate_openings',
         '_triangulate_non_planar', '_rect_geo_format', '_explicit_holes',
+        '_explicit_true_north', '_net_floor_area', '_outer_wall_finish',
         '_ignore_multipliers', '_ignore_ceiling_adjacencies'
     )
     MERGE_METHODS = ('None', 'Zones', 'PlenumZones', 'Stories', 'PlenumStories')
@@ -135,12 +157,14 @@ class GBXMLGeometryFormat(object):
     RECTANGULAR_FORMATS = (
         'BoundingRectangle', 'SimpleArea', 'SimpleAreaForNonRectOnly'
     )
+    WALL_FINISHES = ('Interior', 'Centerline', 'Exterior')
 
     def __init__(
         self, merge_method=None, include_shell_geometry=False, include_space_boundaries=False,
         exclude_roofs=False, exclude_shades=False, exclude_plenums=False,
         opening_simplification=None, triangulate_openings=False, triangulate_non_planar=False,
         rect_geo_format='BoundingRectangle', explicit_holes=False,
+        explicit_true_north=False, net_floor_area=False, outer_wall_finish='Centerline',
         ignore_multipliers=False, ignore_ceiling_adjacencies=False
     ):
         """Initialize GBXMLGeometryFormat."""
@@ -155,6 +179,9 @@ class GBXMLGeometryFormat(object):
         self.triangulate_non_planar = triangulate_non_planar
         self.rect_geo_format = rect_geo_format
         self.explicit_holes = explicit_holes
+        self.explicit_true_north = explicit_true_north
+        self.net_floor_area = net_floor_area
+        self.outer_wall_finish = outer_wall_finish
         self.ignore_multipliers = ignore_multipliers
         self.ignore_ceiling_adjacencies = ignore_ceiling_adjacencies
 
@@ -304,6 +331,8 @@ class GBXMLGeometryFormat(object):
                 raise ValueError(
                     'rect_geo_format {} is not recognized.\nChoose from the '
                     'following:\n{}'.format(value, self.RECTANGULAR_FORMATS))
+        else:
+            value = 'BoundingRectangle'
         self._rect_geo_format = value
 
     @property
@@ -314,6 +343,53 @@ class GBXMLGeometryFormat(object):
     @explicit_holes.setter
     def explicit_holes(self, value):
         self._explicit_holes = bool(value)
+
+    @property
+    def explicit_true_north(self):
+        """Get or set a boolean for whether the geometry is rotated to account for true North."""
+        return self._explicit_true_north
+
+    @explicit_true_north.setter
+    def explicit_true_north(self, value):
+        self._explicit_true_north = bool(value)
+
+    @property
+    def net_floor_area(self):
+        """Get or set a boolean for whether Spaces in the gbXML use net floor area."""
+        return self._net_floor_area
+
+    @net_floor_area.setter
+    def net_floor_area(self, value):
+        self._net_floor_area = bool(value)
+
+    @property
+    def outer_wall_finish(self):
+        """Get or set text for the wall finish location.
+
+        This is used in the computation of net floor area and has no effect
+        when net_floor_area is False. Choose from the options below:
+
+        * Interior
+        * Centerline
+        * Exterior
+        """
+        return self._outer_wall_finish
+
+    @outer_wall_finish.setter
+    def outer_wall_finish(self, value):
+        if value is not None:
+            clean_input = clean_string(value).lower()
+            for key in self.WALL_FINISHES:
+                if key.lower() == clean_input:
+                    value = key
+                    break
+            else:
+                raise ValueError(
+                    'outer_wall_finish {} is not recognized.\nChoose from the '
+                    'following:\n{}'.format(value, self.WALL_FINISHES))
+        else:
+            value = 'Centerline'
+        self._outer_wall_finish = value
 
     @property
     def ignore_multipliers(self):
@@ -355,6 +431,9 @@ class GBXMLGeometryFormat(object):
             "triangulate_non_planar": False,
             "simple_rect_areas": False,
             "explicit_holes": False,
+            "explicit_true_north": False,
+            "net_floor_area": True,
+            "outer_wall_finish": "Exterior",
             "ignore_multipliers": False,
             "ignore_ceiling_adjacencies": False
             }
@@ -373,11 +452,14 @@ class GBXMLGeometryFormat(object):
         tnp = data['triangulate_non_planar'] if 'triangulate_non_planar' in data else False
         sra = data['simple_rect_areas'] if 'simple_rect_areas' in data else False
         eh = data['explicit_holes'] if 'explicit_holes' in data else False
+        tn = data['explicit_true_north'] if 'explicit_true_north' in data else False
+        nfa = data['net_floor_area'] if 'net_floor_area' in data else False
+        owf = data['outer_wall_finish'] if 'outer_wall_finish' in data else 'Centerline'
         im = data['ignore_multipliers'] if 'ignore_multipliers' in data else False
         ica = data['ignore_ceiling_adjacencies'] \
             if 'ignore_ceiling_adjacencies' in data else False
 
-        return cls(mm, sg, sb, er, es, ep, ops, to, tnp, sra, eh, im, ica)
+        return cls(mm, sg, sb, er, es, ep, ops, to, tnp, sra, eh, tn, nfa, owf, im, ica)
 
     def to_dict(self):
         """GBXMLGeometryFormat dictionary representation."""
@@ -394,6 +476,9 @@ class GBXMLGeometryFormat(object):
             'triangulate_non_planar': self.triangulate_non_planar,
             'simple_rect_areas': self.simple_rect_areas,
             'explicit_holes': self.explicit_holes,
+            'explicit_true_north': self.explicit_true_north,
+            'net_floor_area': self.net_floor_area,
+            'outer_wall_finish': self.outer_wall_finish,
             'ignore_multipliers': self.ignore_multipliers,
             'ignore_ceiling_adjacencies': self.ignore_ceiling_adjacencies
         }
@@ -419,6 +504,9 @@ class GBXMLGeometryFormat(object):
             self.triangulate_non_planar,
             self.simple_rect_areas,
             self.explicit_holes,
+            self.explicit_true_north,
+            self.net_floor_area,
+            self.outer_wall_finish,
             self.ignore_multipliers,
             self.ignore_ceiling_adjacencies
         )
@@ -430,6 +518,7 @@ class GBXMLGeometryFormat(object):
             self.exclude_roofs, self.exclude_shades, self.exclude_plenums,
             self.opening_simplification, self.triangulate_openings,
             self.triangulate_non_planar, self.simple_rect_areas, self.explicit_holes,
+            self.explicit_true_north, self.net_floor_area, self.outer_wall_finish,
             self.ignore_multipliers, self.ignore_ceiling_adjacencies
         )
 

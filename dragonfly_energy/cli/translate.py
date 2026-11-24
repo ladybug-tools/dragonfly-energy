@@ -827,6 +827,23 @@ def model_to_idf(
               'explicitly with their own PolyLoop or the hole and boundary '
               'should be collapsed into a single PolyLoop that winds inwards to '
               'cut out the holes.', default=True, show_default=True)
+@click.option('--annotated-true-north/--explicit-true-north', ' /-etn',
+              help='Flag to note whether the geometry is rotated in the gbXML '
+              'to account for the true North specified within --project-info '
+              'or the geometry remains in the coordinate system defined by project '
+              'North and the true north is only defined by the CADModelAzimuth '
+              'in the gbXML', default=True, show_default=True)
+@click.option('--gross-floor-area/--net-floor-area', ' /-nfa',
+              help='Flag to note whether whether the Spaces in the gbXML use '
+              'net floor area with construction thicknesses subtracted from the '
+              'actual floor area of the Room geometries (True) or whether the '
+              'gross floor area of the Room geometry is used (False).',
+              default=True, show_default=True)
+@click.option('--outer-wall-finish', '-owf', help='Text string for the wall finish '
+              'location of Faces with Outdoor or Ground boundary condition. This is '
+              'used in the computation of net floor area and has no effect when '
+              '--gross-floor-area is used. Choose from Exterior, Centerline, Interior.',
+              type=str, default='Centerline', show_default=True)
 @click.option('--program-name', '-pn', help='Optional text to set the name of the '
               'software that will appear under the programId and ProductName tags '
               'of the DocumentHistory section. This can be set things like "Ladybug '
@@ -851,7 +868,8 @@ def model_to_gbxml_cli(
     full_geometry, plenum, ceil_adjacency, merge_method,
     default_subfaces, triangulate_non_planar, minimal,
     interior_face_type, ground_face_type, keep_geometry_ids, keep_resource_ids,
-    rect_geo_format, collapsed_holes,
+    rect_geo_format, collapsed_holes, annotated_true_north,
+    gross_floor_area, outer_wall_finish,
     program_name, program_version, gbxml_schema_version, output_file
 ):
     """Translate a Dragonfly Model to a gbXML file.
@@ -872,13 +890,17 @@ def model_to_gbxml_cli(
         reset_geometry_ids = not keep_geometry_ids
         reset_resource_ids = not keep_resource_ids
         explicit_holes = not collapsed_holes
+        explicit_true_north = not annotated_true_north
+        net_floor_area = not gross_floor_area
         model_to_gbxml(
             model_file, project_info, ip_units,
             multiplier, no_plenum, no_ceil_adjacency, merge_method,
             triangulate_subfaces, permit_non_planar, complete_geometry,
             interior_face_type, ground_face_type, reset_geometry_ids, reset_resource_ids,
-            rect_geo_format, explicit_holes,
-            program_name, program_version, gbxml_schema_version, output_file)
+            rect_geo_format, explicit_holes, explicit_true_north,
+            net_floor_area, outer_wall_finish,
+            program_name, program_version, gbxml_schema_version, output_file
+        )
     except Exception as e:
         _logger.exception('Model translation failed.\n{}'.format(e))
         sys.exit(1)
@@ -893,10 +915,12 @@ def model_to_gbxml(
     interior_face_type='InteriorFloor', ground_face_type='AutoAssign',
     reset_geometry_ids=False, reset_resource_ids=False,
     rect_geo_format='BoundingRectangle', explicit_holes=False,
+    explicit_true_north=False, net_floor_area=False, outer_wall_finish='Centerline',
     program_name=None, program_version=None, gbxml_schema_version=None, output_file=None,
     si_units=True, full_geometry=True, plenum=True, ceil_adjacency=True,
     default_subfaces=True, triangulate_non_planar=True, minimal=True,
-    keep_geometry_ids=True, keep_resource_ids=True, collapsed_holes=True
+    keep_geometry_ids=True, keep_resource_ids=True, collapsed_holes=True,
+    gross_floor_area=True, annotated_true_north=True
 ):
     """Translate a Dragonfly Model to a gbXML file.
 
@@ -1006,6 +1030,24 @@ def model_to_gbxml(
             represented explicitly with their own PolyLoop or the hole and boundary
             should be collapsed into a single PolyLoop that winds inwards to
             cut out the holes. (Default: False).
+        explicit_true_north: Boolean to note whether the geometry is rotated
+            in the gbXML to account for the true North specified within project_info
+            (True) or the geometry remains in the coordinate system defined by project
+            North and the true north is only defined by the CADModelAzimuth
+            in the gbXML (False). (Default: False).
+        net_floor_area: Boolean to note whether the Spaces in the gbXML use
+            net floor area with construction thicknesses subtracted from the
+            actual floor area of the Room geometries (True) or whether the
+            gross floor area of the Room geometry is used (False). (Default: False).
+        outer_wall_finish: Text for the wall finish location of Faces with
+            Outdoor or Ground boundary condition. This is used in the computation
+            of net floor area and has no effect when net_floor_area is False.
+            Choose from the following. (Default: Centerline).
+
+            * Exterior
+            * Centerline
+            * Interior
+
         program_name: Optional text to set the name of the software that will
             appear under the programId and ProductName tags of the DocumentHistory
             section. This can be set things like "Ladybug Tools" or "Pollination"
@@ -1047,6 +1089,9 @@ def model_to_gbxml(
     gbxml_par.name_format.reset_resource_ids = reset_resource_ids
     gbxml_par.geometry_format.rect_geo_format = rect_geo_format
     gbxml_par.geometry_format.explicit_holes = explicit_holes
+    gbxml_par.geometry_format.explicit_true_north = explicit_true_north
+    gbxml_par.geometry_format.net_floor_area = net_floor_area
+    gbxml_par.geometry_format.outer_wall_finish = outer_wall_finish
     gbxml_par.version_format.program_name = program_name
     gbxml_par.version_format.program_version = program_version
     gbxml_par.version_format.gbxml_schema_version = gbxml_schema_version
