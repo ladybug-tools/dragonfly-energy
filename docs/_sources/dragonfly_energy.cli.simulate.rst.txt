@@ -1,0 +1,7 @@
+dragonfly\_energy.cli.simulate module
+=====================================
+
+.. automodule:: dragonfly_energy.cli.simulate
+   :members:
+   :undoc-members:
+   :show-inheritance:

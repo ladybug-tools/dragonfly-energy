@@ -1,0 +1,7 @@
+dragonfly\_energy.gbxml.geometry module
+=======================================
+
+.. automodule:: dragonfly_energy.gbxml.geometry
+   :members:
+   :undoc-members:
+   :show-inheritance:
